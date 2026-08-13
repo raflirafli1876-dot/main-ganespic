@@ -1,49 +1,116 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ganespic XXV • Selamat Datang</title>
-<link rel="shortcut icon" href="Logo_xxvganespic.png" type="image/x-icon">
-<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ganespic XXV • Selamat Datang</title>
+    <link rel="shortcut icon" href="Logo_xxvganespic.png" type="image/x-icon" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="glow one"></div>
-<div class="glow two"></div>
-<main>
-<header>
-<div class="hero">
-<img src="Logo_xxvganespic.png" alt=""><br>
-<div class="overline">Angkatan XXV Ganespic</div>
-<h1 class="title">Selamat Datang di halaman utama website Ganespic</h1>
-<p class="subtitle">Mari rayakan kebersamaan, semangat juang, dan karya terbaik angkatan XXV Ganespic. Jelajahi halaman resmi angkatan.</p>
-<div class="buttons">
-<div class="button" >Mulai Jelajah</div>
-</div>
-</div>
-</header>
-<section class="cards" id="nav">
-<article class="card">
-<strong>Kas Angkatan</strong>
-<p>Kelola keuangan angkatan dengan ringkas. Lihat catatan pemasukan, pengeluaran, dan perencanaan dana acara.</p>
-<a href="https://kas-ganespic.vercel.app/">Buka Kas →</a>
-</article>
-<article class="card">
-<strong>Struktural MPK</strong>
-<p>Kenali tim MPK yang menggerakkan angkatan XXV. Lihat susunan pengurus dan peran setiap anggota di struktural resmi.</p>
-<a href="https://mpk-ganespic.vercel.app/">Lihat Struktur →</a>
-</article>
-<article class="card">
-<strong>Galeri Angkatan</strong>
-<p>Abadikan cerita dan kebersamaan dalam foto-foto penuh energi. Jelajahi dokumentasi acara, gathering, dan kegiatan angkatan.</p>
-<a href="prank_kentung.html">Masuk Galeri →</a>
-</article>
-</section>
-<section class="section">
-<h2>Pesan Sambutan</h2>
-<p>Selamat datang, anggota baru dan sahabat lama angkatan XXV Ganespic. Semoga halaman ini menjadi jembatan kreativitas, informasi, dan kebersamaan untuk setiap momen perjalanan kita. Tetap semangat, hormat, dan bangga berkolaborasi dalam keluarga besar Ganespic.</p>
-</section>
-<div class="footer">Dirancang khusus untuk Angkatan XXV Ganespic • Mari bangun sejarah bersama.</div>
-</main>
+    
+    <!-- Glow -->
+    <div class="glow one"></div>
+    <div class="glow two"></div>
+    
+    <!-- Dark Mode Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span class="icon-sun"><i class="fas fa-sun"></i></span>
+        <span class="toggle-track">
+            <span class="thumb"></span>
+        </span>
+        <span class="icon-moon"><i class="fas fa-moon"></i></span>
+    </button>
+    
+    <main>
+        <!-- ─── Hero ─── -->
+        <header class="hero">
+            <img src="Logo_xxvganespic.png" alt="Logo Ganespic XXV" /><br>
+            <div class="overline">Angkatan XXV Ganespic</div>
+            <h1 class="title">
+                Selamat Datang di halaman utama<br />
+                <span class="highlight">website Ganespic</span>
+            </h1>
+            <p class="subtitle">
+                Mari rayakan kebersamaan, semangat juang, dan karya terbaik
+                angkatan XXV Ganespic. Jelajahi halaman resmi angkatan.
+            </p>
+            <div class="buttons">
+                <div class="button" onclick="document.getElementById('nav').scrollIntoView({behavior:'smooth'})">
+                    <i class="fas fa-arrow-right"></i> Mulai Jelajah
+                </div>
+            </div>
+        </header>
+        
+        <!-- ─── Cards ─── -->
+        <section class="cards" id="nav">
+            <article class="card">
+                <div class="icon-big"><i class="fas fa-wallet"></i></div>
+                <strong>Kas Angkatan</strong>
+                <p>Kelola keuangan angkatan dengan ringkas. Lihat catatan pemasukan, pengeluaran, dan perencanaan dana acara.</p>
+                <a href="https://kas-ganespic.vercel.app/">Buka Kas →</a>
+            </article>
+            
+            <article class="card">
+                <div class="icon-big"><i class="fas fa-users-gear"></i></div>
+                <strong>Struktural MPK</strong>
+                <p>Kenali tim MPK yang menggerakkan angkatan XXV. Lihat susunan pengurus dan peran setiap anggota di struktural resmi.</p>
+                <a href="https://mpk-ganespic.vercel.app/">Lihat Struktur →</a>
+            </article>
+            
+            <article class="card">
+                <div class="icon-big"><i class="fas fa-images"></i></div>
+                <strong>Galeri Angkatan</strong>
+                <p>Abadikan cerita dan kebersamaan dalam foto-foto penuh energi. Jelajahi dokumentasi acara, gathering, dan kegiatan angkatan.</p>
+                <a href="prank_kentung.html">Masuk Galeri →</a>
+            </article>
+        </section>
+        
+        <!-- ─── Sambutan ─── -->
+        <section class="section">
+            <h2>Pesan <span class="highlight">Sambutan</span></h2>
+            <p>
+                Selamat datang, anggota baru dan sahabat lama angkatan XXV Ganespic.
+                Semoga halaman ini menjadi jembatan kreativitas, informasi, dan
+                kebersamaan untuk setiap momen perjalanan kita. Tetap semangat,
+                hormat, dan bangga berkolaborasi dalam keluarga besar Ganespic.
+            </p>
+            <div class="signature">— <span>Pengurus</span> Ganespic XXV</div>
+        </section>
+        
+        <!-- ─── Footer ─── -->
+        <div class="footer">
+            Dirancang khusus untuk Angkatan XXV Ganespic • <i class="fas fa-leaf"></i> Mari bangun sejarah bersama.
+        </div>
+    </main>
+    
+    <!-- ─── JavaScript Dark Mode ─── -->
+    <script>
+        (function() {
+            const toggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+            
+            // Cek preferensi tersimpan
+            const saved = localStorage.getItem('ganespic-theme');
+            if (saved) {
+                html.setAttribute('data-theme', saved);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                html.setAttribute('data-theme', 'light');
+            }
+            
+            toggle.addEventListener('click', function() {
+                const current = html.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('ganespic-theme', next);
+            });
+        })();
+    </script>
+    
 </body>
 </html>
