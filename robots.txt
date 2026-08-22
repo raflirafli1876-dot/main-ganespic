@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /*.json$
+
+Sitemap: https://main-ganespic.vercel.app/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1
+
+# User-agents
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
