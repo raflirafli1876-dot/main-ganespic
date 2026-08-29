@@ -881,6 +881,80 @@
             color: #fff;
             border-color: var(--danger);
         }
+        .kelola-edit-btn {
+            background: transparent;
+            border: 1px solid rgba(124,244,152,0.25);
+            color: var(--sage);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+        .kelola-edit-btn:hover {
+            background: var(--sage);
+            color: #0a0d0b;
+            border-color: var(--sage);
+        }
+        .kelola-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+        .edit-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: var(--gold-dim);
+            border: 1px solid rgba(255,200,90,0.4);
+            color: var(--gold);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .edit-banner.error { background: var(--danger-dim); border-color: rgba(239,68,68,0.4); color: var(--danger); }
+        .edit-banner i { margin-right: 6px; }
+        .edit-cancel-btn {
+            background: transparent;
+            border: 1px solid currentColor;
+            color: inherit;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+        .edit-cancel-btn:hover { background: currentColor; color: var(--bg-card); }
+        .btn-edit-submit {
+            background: linear-gradient(135deg, var(--gold), #e6a800);
+            color: #0a0d0b;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all var(--transition);
+            box-shadow: 0 4px 16px rgba(255,200,90,0.2);
+            margin-top: 8px;
+        }
+        .btn-edit-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,200,90,0.35); }
+        .btn-edit-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         
         /* ─── Toast Notifications ─── */
         .toast-container {
@@ -1109,8 +1183,12 @@
             <section class="tab-section" id="tabAddEvent">
                 <div class="form-card">
                     <div class="form-card-header">
-                        <h2><i class="fas fa-calendar-plus" style="color:var(--sage);"></i> Tambah Event Baru</h2>
+                        <h2><i class="fas fa-calendar-plus" style="color:var(--sage);"></i> <span id="eventFormTitle">Tambah Event Baru</span></h2>
                         <p>Simpan data event dan tautan foto CDN langsung ke database.</p>
+                    </div>
+                    <div class="edit-banner" id="editBannerEvent" style="display:none;">
+                        <span><i class="fas fa-pen-to-square"></i> Sedang mengedit event — ID: <b id="editIdEvent"></b></span>
+                        <button type="button" class="edit-cancel-btn" onclick="cancelEdit('event')"><i class="fas fa-xmark"></i> Batal</button>
                     </div>
                     <form class="admin-form" id="formAddEvent">
                         <div class="form-group">
@@ -1146,8 +1224,12 @@
             <section class="tab-section" id="tabAddUltah">
                 <div class="form-card">
                     <div class="form-card-header">
-                        <h2><i class="fas fa-cake-candles" style="color:var(--gold);"></i> Tambah Ulang Tahun Anggota</h2>
+                        <h2><i class="fas fa-cake-candles" style="color:var(--gold);"></i> <span id="ultahFormTitle">Tambah Ulang Tahun Anggota</span></h2>
                         <p>Masukkan tanggal lahir lengkap agar umur anggota dapat terhitung otomatis setiap tahun.</p>
+                    </div>
+                    <div class="edit-banner" id="editBannerUltah" style="display:none;">
+                        <span><i class="fas fa-pen-to-square"></i> Sedang mengedit data — ID: <b id="editIdUltah"></b></span>
+                        <button type="button" class="edit-cancel-btn" onclick="cancelEdit('ultah')"><i class="fas fa-xmark"></i> Batal</button>
                     </div>
                     <form class="admin-form" id="formAddUltah">
                         <div class="form-group">
@@ -1230,6 +1312,8 @@
             let currentCalMonth = new Date().getMonth();
             let selectedCalDate = null;
             let activeFilter = 'all';
+            let editingEventId = null;
+            let editingUltahId = null;
             
             const monthNames = [
                 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -1589,13 +1673,18 @@
             });
             
             // ── Submit Forms with JSON (CDN Link & Data) ──
-            async function saveNewsPayload(payload, form, submitBtn) {
+            async function saveNewsPayload(payload, form, submitBtn, method = 'POST', editingId = null) {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan ke Database...';
+                submitBtn.innerHTML = method === 'PUT'
+                    ? '<i class="fas fa-spinner fa-spin"></i> Menyimpan Perubahan...'
+                    : '<i class="fas fa-spinner fa-spin"></i> Menyimpan ke Database...';
+                
+                const isEdit = method === 'PUT' && editingId;
+                const url = isEdit ? `${API_URL}?id=${editingId}` : API_URL;
                 
                 try {
-                    const res = await fetch(API_URL, {
-                        method: 'POST',
+                    const res = await fetch(url, {
+                        method,
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${ADMIN_PASS}`
@@ -1609,11 +1698,14 @@
                         throw new Error(resData.error || `Server error (HTTP ${res.status})`);
                     }
                     
-                    showToast('Berhasil disimpan ke database!', 'success');
+                    showToast(isEdit ? 'Perubahan berhasil disimpan!' : 'Berhasil disimpan ke database!', 'success');
                     form.reset();
                     document.getElementById('previewBoxEvent').style.display = 'none';
                     document.getElementById('previewBoxUltah').style.display = 'none';
                     liveAgePreview.style.display = 'none';
+                    if (isEdit) {
+                        cancelEdit(form.id === 'formAddEvent' ? 'event' : 'ultah');
+                    }
                     await loadData();
                     document.querySelector('.tab-btn[data-target="tabCalendar"]').click();
                 } catch(e) {
@@ -1622,7 +1714,9 @@
                     alert('Gagal menyimpan ke database:\n' + e.message + '\n\nPastikan Vercel sudah di-redeploy setelah Neon terhubung.');
                 } finally {
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Simpan ke Database';
+                    submitBtn.innerHTML = isEdit
+                        ? '<i class="fas fa-floppy-disk"></i> Simpan Perubahan'
+                        : '<i class="fas fa-paper-plane"></i> Simpan ke Database';
                 }
             }
             
@@ -1634,7 +1728,7 @@
                     deskripsi: document.getElementById('eventDeskripsi').value.trim(),
                     tanggal: document.getElementById('eventTanggal').value, // YYYY-MM-DD
                     fotoUrl: document.getElementById('eventFotoUrl').value.trim()
-                }, e.target, document.getElementById('btnSubmitEvent'));
+                }, e.target, document.getElementById('btnSubmitEvent'), editingEventId ? 'PUT' : 'POST', editingEventId);
             });
             
             document.getElementById('formAddUltah').addEventListener('submit', async (e) => {
@@ -1645,7 +1739,7 @@
                     id: document.getElementById('ultahId').value.trim(),
                     tanggal: document.getElementById('ultahTanggal').value, // YYYY-MM-DD
                     fotoUrl: document.getElementById('ultahFotoUrl').value.trim()
-                }, e.target, document.getElementById('btnSubmitUltah'));
+                }, e.target, document.getElementById('btnSubmitUltah'), editingUltahId ? 'PUT' : 'POST', editingUltahId);
             });
             
             // ── Kelola Data ──
@@ -1705,13 +1799,24 @@
                                 <div class="kelola-card-title">${title}</div>
                                 <div class="kelola-card-meta">${meta}</div>
                             </div>
-                            <button class="kelola-delete-btn" data-id="${item.id}" title="Hapus data">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div class="kelola-actions">
+                                <button class="kelola-edit-btn" data-edit-id="${item.id}" title="Edit data">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button class="kelola-delete-btn" data-id="${item.id}" title="Hapus data">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     `;
                 }).join('');
                 
+                grid.querySelectorAll('.kelola-edit-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const item = allNewsData.find(n => n.id === btn.dataset.editId);
+                        if (item) startEdit(item);
+                    });
+                });
                 grid.querySelectorAll('.kelola-delete-btn').forEach(btn => {
                     btn.addEventListener('click', async () => {
                         const id = btn.dataset.id;
@@ -1734,6 +1839,84 @@
                     });
                 });
             }
+
+            // ── Edit Event / Ulang Tahun ──
+            function fixTanggalInput(tgl) {
+                if (!tgl) return '';
+                if (tgl.length === 5) return new Date().getFullYear() + '-' + tgl;
+                return tgl;
+            }
+
+            function startEdit(item) {
+                const isEvent = item && item.tipe === 'event';
+                if (isEvent) {
+                    editingEventId = item.id;
+                    document.getElementById('eventJudul').value = item.judul || '';
+                    document.getElementById('eventDeskripsi').value = item.deskripsi || '';
+                    document.getElementById('eventTanggal').value = fixTanggalInput(item.tanggal);
+                    const foto = item.fotoUrl || '';
+                    document.getElementById('eventFotoUrl').value = foto;
+                    const box = document.getElementById('previewBoxEvent');
+                    if (foto) {
+                        document.getElementById('imgPreviewEvent').src = foto;
+                        box.style.display = 'block';
+                    } else {
+                        box.style.display = 'none';
+                    }
+                    document.getElementById('eventFormTitle').textContent = 'Edit Event';
+                    document.getElementById('editIdEvent').textContent = item.id;
+                    document.getElementById('editBannerEvent').style.display = 'flex';
+                    const btn = document.getElementById('btnSubmitEvent');
+                    btn.innerHTML = '<i class="fas fa-floppy-disk"></i> Simpan Perubahan';
+                    btn.className = 'btn-edit-submit';
+                    document.querySelector('.tab-btn[data-target="tabAddEvent"]').click();
+                } else {
+                    editingUltahId = item.id;
+                    document.getElementById('ultahNama').value = item.nama || '';
+                    document.getElementById('ultahId').value = item.noId || '';
+                    document.getElementById('ultahTanggal').value = fixTanggalInput(item.tanggal);
+                    const foto = item.fotoUrl || '';
+                    document.getElementById('ultahFotoUrl').value = foto;
+                    const box = document.getElementById('previewBoxUltah');
+                    if (foto) {
+                        document.getElementById('imgPreviewUltah').src = foto;
+                        box.style.display = 'block';
+                    } else {
+                        box.style.display = 'none';
+                    }
+                    document.getElementById('ultahFormTitle').textContent = 'Edit Ulang Tahun';
+                    document.getElementById('editIdUltah').textContent = item.id;
+                    document.getElementById('editBannerUltah').style.display = 'flex';
+                    const btn = document.getElementById('btnSubmitUltah');
+                    btn.innerHTML = '<i class="fas fa-floppy-disk"></i> Simpan Perubahan';
+                    btn.className = 'btn-edit-submit';
+                    document.getElementById('ultahTanggal').dispatchEvent(new Event('change'));
+                    document.querySelector('.tab-btn[data-target="tabAddUltah"]').click();
+                }
+            }
+
+            window.cancelEdit = function(tipe) {
+                if (tipe === 'event') {
+                    editingEventId = null;
+                    document.getElementById('formAddEvent').reset();
+                    document.getElementById('previewBoxEvent').style.display = 'none';
+                    document.getElementById('eventFormTitle').textContent = 'Tambah Event Baru';
+                    document.getElementById('editBannerEvent').style.display = 'none';
+                    const btn = document.getElementById('btnSubmitEvent');
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Simpan Event ke Database';
+                    btn.className = 'btn-submit';
+                } else {
+                    editingUltahId = null;
+                    document.getElementById('formAddUltah').reset();
+                    document.getElementById('previewBoxUltah').style.display = 'none';
+                    document.getElementById('liveAgePreview').style.display = 'none';
+                    document.getElementById('ultahFormTitle').textContent = 'Tambah Ulang Tahun Anggota';
+                    document.getElementById('editBannerUltah').style.display = 'none';
+                    const btn = document.getElementById('btnSubmitUltah');
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Simpan Ulang Tahun';
+                    btn.className = 'btn-submit';
+                }
+            };
             
             checkAuth();
         })();

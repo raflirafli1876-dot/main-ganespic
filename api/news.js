@@ -122,7 +122,53 @@ export default async function handler(req, res) {
     }
   }
 
-  // ── 3. DELETE: Hapus Event / Ulang Tahun dari database ──
+  // ── 3. PUT/PATCH: Ubah (Edit) Event / Ulang Tahun ──
+  if (req.method === 'PUT' || req.method === 'PATCH') {
+    if (!isAuthorized()) {
+      return res.status(401).json({ error: 'Unauthorized: Password admin salah' });
+    }
+
+    try {
+      await initTable();
+      const { id } = req.query;
+      if (!id) {
+        return res.status(400).json({ error: 'Parameter ID diperlukan' });
+      }
+
+      let body = req.body;
+      if (typeof body === 'string') {
+        try { body = JSON.parse(body); } catch(e) {}
+      }
+      body = body || {};
+
+      const tipe = body.tipe || 'event';
+      const namaJudul = (tipe === 'event' ? body.judul : body.nama) || '';
+      const deskripsiNis = (tipe === 'event' ? body.deskripsi : (body.id || body.noId)) || '';
+      const tanggal = body.tanggal || '';
+      const fotoCdnUrl = body.fotoUrl || body.foto_cdn_url || '';
+
+      if (!namaJudul || !tanggal) {
+        return res.status(400).json({ error: 'Judul/Nama dan Tanggal wajib diisi' });
+      }
+
+      await sql`
+        UPDATE agendas
+        SET tipe = ${tipe},
+            nama_judul = ${namaJudul},
+            deskripsi_nis = ${deskripsiNis},
+            tanggal = ${tanggal},
+            foto_cdn_url = ${fotoCdnUrl}
+        WHERE id = ${id};
+      `;
+
+      return res.status(200).json({ ok: true, id });
+    } catch (error) {
+      console.error('Database PUT error:', error);
+      return res.status(500).json({ error: 'Gagal memperbarui data: ' + error.message });
+    }
+  }
+
+  // ── 4. DELETE: Hapus Event / Ulang Tahun dari database ──
   if (req.method === 'DELETE') {
     if (!isAuthorized()) {
       return res.status(401).json({ error: 'Unauthorized: Password admin salah' });
