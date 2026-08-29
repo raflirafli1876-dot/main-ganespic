@@ -1096,11 +1096,12 @@
             const modalBerita = document.getElementById('modalBerita');
             document.getElementById('btnTutupBerita').addEventListener('click', () => tutupModalEl(modalBerita));
 
-            [modalBerita, modalLogin, modalDeveloper].forEach(m => {
+            const modalDeveloper = document.getElementById('modalDeveloper');
+            [modalBerita, modalDeveloper].forEach(m => {
                 m.addEventListener('click', e => { if (e.target === m) tutupModalEl(m); });
             });
     
-            // Tombol rahasia: klik tulisan "Developer" 3x cepat untuk membuka login admin
+            // Tombol rahasia: klik tulisan "Developer" 3x cepat untuk masuk ke portal admin
             let klikTitle = 0, timerTitle = null;
             window.devTitleClick = function() {
                 clearTimeout(timerTitle);
@@ -1109,23 +1110,9 @@
                 if (klikTitle >= 3) {
                     klikTitle = 0;
                     tutupModalEl(modalDeveloper);
-                    // bukaModalEl(modalLogin);
-                    window.location.href = 'admin.html'; 
+                    window.location.href = 'admin.html';
                 }
             };
-
-            document.getElementById('formLogin').addEventListener('submit', e => {
-                e.preventDefault();
-                const pass = document.getElementById('adminPass').value;
-                if (pass === ADMIN_PASS) {
-                    sessionStorage.setItem('ganespic_admin_auth', pass);
-                    document.getElementById('adminPass').value = '';
-                    tutupModalEl(modalLogin);
-                    window.location.href = 'admin.html';
-                } else {
-                    alert('Password admin salah!');
-                }
-            });
 
             // ── Modal Developer ──
             const btnDev = document.getElementById('btnDeveloper');
@@ -1147,7 +1134,7 @@
             // Tutup dengan tombol ESC
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
-                    [modalDeveloper, modalBerita, modalLogin].forEach(function(m) {
+                    [modalDeveloper, modalBerita].forEach(function(m) {
                         tutupModalEl(m);
                     });
                 }
