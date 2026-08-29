@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Portal • Ganespic XXV</title>
+    <link rel="shortcut icon" href="Logo_xxvganespic.png" type="image/x-icon" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    
+    <style>
+        :root {
+            --sage: #7CF498;
+            --sage-dark: #5bc97a;
+            --sage-dim: rgba(124, 244, 152, 0.12);
+            --sage-glow: rgba(124, 244, 152, 0.08);
+            
+            --gold: #ffc85a;
+            --gold-dim: rgba(255, 200, 90, 0.15);
+            --danger: #ef4444;
+            --danger-dim: rgba(239, 68, 68, 0.15);
+            
+            --bg: #0a0d0b;
+            --bg-card: #111816;
+            --bg-card-hover: #18221c;
+            --bg-elevated: #151e19;
+            --border: #1e2c24;
+            --border-hover: #2d4a38;
+            
+            --text: #e8f2ec;
+            --text-dim: #8aaa9a;
+            --text-muted: #5a7a6a;
+            
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            --radius: 18px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        [data-theme="light"] {
+            --bg: #f4f8f6;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f0f5f2;
+            --bg-elevated: #f8fbf9;
+            --border: #d0ded6;
+            --border-hover: #b0c8bc;
+            
+            --text: #1a2a22;
+            --text-dim: #4a6a5a;
+            --text-muted: #7a9a8a;
+            
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        }
+        
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+            transition: background var(--transition), color var(--transition);
+            overflow-x: hidden;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--sage); border-radius: 20px; }
+        
+        /* ─── Ambient Glow ─── */
+        .glow {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glow.one {
+            width: 500px;
+            height: 500px;
+            top: -150px;
+            right: -100px;
+            background: radial-gradient(circle, var(--sage-glow), transparent 70%);
+        }
+        .glow.two {
+            width: 450px;
+            height: 450px;
+            bottom: -100px;
+            left: -80px;
+            background: radial-gradient(circle, var(--sage-glow), transparent 70%);
+        }
+        
+        .app-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        /* ─── Top Navbar ─── */
+        .admin-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 13, 11, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        [data-theme="light"] .admin-nav {
+            background: rgba(244, 248, 246, 0.85);
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .nav-brand img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--sage);
+        }
+        .nav-brand .brand-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .nav-brand .brand-badge {
+            background: var(--sage-dim);
+            color: var(--sage);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(124,244,152,0.3);
+            text-transform: uppercase;
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .nav-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 8px 16px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all var(--transition);
+        }
+        .nav-btn:hover {
+            border-color: var(--sage);
+            color: var(--sage);
+            transform: translateY(-1px);
+        }
+        .nav-btn.danger {
+            border-color: var(--danger-dim);
+            color: var(--danger);
+        }
+        .nav-btn.danger:hover {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+        
+        /* ─── Login Screen ─── */
+        .login-view {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+        .login-card img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            margin-bottom: 16px;
+            border: 2px solid var(--sage);
+            padding: 2px;
+        }
+        .login-card h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .login-card p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+        .login-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+        }
+        .login-input-group input {
+            width: 100%;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all var(--transition);
+        }
+        .login-input-group input:focus {
+            border-color: var(--sage);
+            box-shadow: 0 0 0 3px var(--sage-dim);
+        }
+        
+        /* ─── Dashboard Main Layout ─── */
+        .dashboard-view {
+            flex: 1;
+            max-width: 1300px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 28px 24px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+        
+        /* ─── Top Stats Bar ─── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: var(--shadow);
+            transition: transform var(--transition), border-color var(--transition);
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-hover);
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .stat-icon.event { background: var(--sage-dim); color: var(--sage); }
+        .stat-icon.ultah { background: var(--gold-dim); color: var(--gold); }
+        .stat-icon.today { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .stat-val { font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
+        .stat-label { font-size: 0.8rem; color: var(--text-dim); }
+        
+        /* ─── Navigation Tabs Bar ─── */
+        .admin-nav-tabs {
+            display: flex;
+            gap: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px;
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            color: var(--text-dim);
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: all var(--transition);
+        }
+        .tab-btn:hover {
+            color: var(--text);
+            background: var(--bg-elevated);
+        }
+        .tab-btn.active {
+            background: var(--sage);
+            color: #0a0d0b;
+            box-shadow: 0 4px 16px var(--sage-glow);
+        }
+        
+        .tab-section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .tab-section.active {
+            display: block;
+        }
+        
+        /* ─── 📅 CALENDAR STYLES ─── */
+        .calendar-layout {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        
+        .calendar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+        
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .calendar-title-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .calendar-month-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .calendar-year-title {
+            font-size: 1rem;
+            color: var(--text-dim);
+        }
+        .calendar-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cal-btn {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 14px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .cal-btn:hover {
+            border-color: var(--sage);
+            color: var(--sage);
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        .cal-day-header {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 8px 0;
+        }
+        
+        .cal-cell {
+            min-height: 82px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 6px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            user-select: none;
+        }
+        .cal-cell:hover {
+            border-color: var(--sage);
+            background: var(--bg-card-hover);
+            transform: scale(1.02);
+            z-index: 2;
+        }
+        .cal-cell.other-month {
+            opacity: 0.3;
+            background: transparent;
+        }
+        .cal-cell.today {
+            border-color: var(--sage);
+            box-shadow: inset 0 0 0 1px var(--sage);
+        }
+        .cal-cell.selected {
+            background: var(--sage-dim);
+            border-color: var(--sage);
+            box-shadow: 0 0 12px var(--sage-dim);
+        }
+        .cal-cell-num {
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 50%;
+        }
+        .cal-cell.today .cal-cell-num {
+            background: var(--sage);
+            color: #0a0d0b;
+            font-weight: 700;
+        }
+        
+        .cal-markers {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-top: 4px;
+        }
+        .cal-tag {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+        .cal-tag.event {
+            background: rgba(124, 244, 152, 0.2);
+            color: var(--sage);
+            border-left: 2px solid var(--sage);
+        }
+        .cal-tag.ultah {
+            background: rgba(255, 200, 90, 0.2);
+            color: var(--gold);
+            border-left: 2px solid var(--gold);
+        }
+        
+        /* ─── Side Agenda Panel ─── */
+        .agenda-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 90px;
+        }
+        .agenda-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+        }
+        .agenda-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .agenda-date-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--sage-dim);
+            color: var(--sage);
+            padding: 4px 10px;
+            border-radius: 100px;
+        }
+        
+        .agenda-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 440px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .agenda-empty {
+            text-align: center;
+            padding: 40px 10px;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+        .agenda-empty i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--text-dim);
+            opacity: 0.5;
+        }
+        
+        .agenda-item {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            transition: all var(--transition);
+        }
+        .agenda-item:hover {
+            border-color: var(--border-hover);
+        }
+        .agenda-item img {
+            width: 52px;
+            height: 52px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+        .agenda-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .agenda-item-badge {
+            display: inline-block;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 100px;
+            margin-bottom: 4px;
+        }
+        .agenda-item-badge.event { background: var(--sage-dim); color: var(--sage); }
+        .agenda-item-badge.ultah { background: var(--gold-dim); color: var(--gold); }
+        .agenda-item-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .agenda-item-desc {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+        .age-highlight {
+            color: var(--gold);
+            font-weight: 700;
+        }
+        
+        .agenda-quick-add {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* ─── FORM STYLES ─── */
+        .form-card {
+            max-width: 680px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+        }
+        .form-card-header {
+            margin-bottom: 24px;
+        }
+        .form-card-header h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .form-card-header p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+        
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-dim);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .form-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            text-transform: none;
+        }
+        .form-hint a {
+            color: var(--sage);
+            text-decoration: none;
+        }
+        .form-hint a:hover {
+            text-decoration: underline;
+        }
+        
+        .admin-form input[type="text"],
+        .admin-form input[type="url"],
+        .admin-form input[type="date"],
+        .admin-form textarea {
+            width: 100%;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all var(--transition);
+        }
+        .admin-form input:focus,
+        .admin-form textarea:focus {
+            border-color: var(--sage);
+            box-shadow: 0 0 0 3px var(--sage-dim);
+        }
+        .admin-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .age-calculator-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--gold-dim);
+            color: var(--gold);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+        
+        .cdn-preview-box {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-top: 8px;
+            background: var(--bg-elevated);
+            text-align: center;
+        }
+        .cdn-preview-box img {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--sage), var(--sage-dark));
+            color: #0a0d0b;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all var(--transition);
+            box-shadow: 0 4px 16px var(--sage-glow);
+            margin-top: 8px;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(124,244,152,0.3);
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* ─── KELOLA DATA TAB ─── */
+        .kelola-wrapper {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+        .kelola-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .kelola-search {
+            position: relative;
+            flex: 1;
+            min-width: 240px;
+        }
+        .kelola-search i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .kelola-search input {
+            width: 100%;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 10px 16px 10px 38px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color var(--transition);
+        }
+        .kelola-search input:focus {
+            border-color: var(--sage);
+        }
+        
+        .filter-pills {
+            display: flex;
+            gap: 8px;
+        }
+        .pill-btn {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 6px 14px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-family: inherit;
+            transition: all var(--transition);
+        }
+        .pill-btn:hover { color: var(--text); }
+        .pill-btn.active {
+            background: var(--sage);
+            color: #0a0d0b;
+            border-color: var(--sage);
+        }
+        
+        .kelola-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        .kelola-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            transition: all var(--transition);
+        }
+        .kelola-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+        .kelola-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .kelola-card-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .kelola-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+        .kelola-card-meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .kelola-delete-btn {
+            background: transparent;
+            border: 1px solid var(--danger-dim);
+            color: var(--danger);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+        .kelola-delete-btn:hover {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+        
+        /* ─── Toast Notifications ─── */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text);
+            animation: slideUp 0.3s ease-out;
+            min-width: 260px;
+        }
+        .toast.success { border-left: 4px solid var(--sage); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast i { font-size: 1.1rem; }
+        .toast.success i { color: var(--sage); }
+        .toast.error i { color: var(--danger); }
+        
+        /* ─── Animations ─── */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* ─── Responsive ─── */
+        @media (max-width: 900px) {
+            .calendar-layout {
+                grid-template-columns: 1fr;
+            }
+            .agenda-panel {
+                position: static;
+            }
+        }
+        @media (max-width: 640px) {
+            .admin-nav {
+                padding: 12px 16px;
+            }
+            .nav-brand .brand-title {
+                font-size: 0.95rem;
+            }
+            .dashboard-view {
+                padding: 16px 12px 40px;
+            }
+            .cal-cell {
+                min-height: 54px;
+                padding: 4px 2px;
+            }
+            .cal-cell-num {
+                font-size: 0.75rem;
+                width: 20px;
+                height: 20px;
+                line-height: 20px;
+            }
+            .cal-tag {
+                font-size: 0.55rem;
+                padding: 1px 3px;
+            }
+            .form-card {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow one"></div>
+    <div class="glow two"></div>
+    
+    <div class="app-wrapper">
+        <!-- ─── Top Navbar ─── -->
+        <header class="admin-nav">
+            <a href="index.html" class="nav-brand">
+                <img src="Logo_xxvganespic.png" alt="Logo Ganespic" />
+                <span class="brand-title">Ganespic XXV</span>
+                <span class="brand-badge">Admin Portal</span>
+            </a>
+            
+            <div class="nav-actions">
+                <button class="nav-btn" id="themeToggle" title="Ganti Tema">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <a href="index.html" class="nav-btn">
+                    <i class="fas fa-home"></i>
+                    <span>Web Utama</span>
+                </a>
+                <button class="nav-btn danger" id="btnLogout" style="display:none;">
+                    <i class="fas fa-right-from-bracket"></i>
+                    <span>Keluar</span>
+                </button>
+            </div>
+        </header>
+        
+        <!-- ─── 1. Login View ─── -->
+        <main class="login-view" id="loginView">
+            <div class="login-card">
+                <img src="Logo_xxvganespic.png" alt="Ganespic" />
+                <h2>Panel Kontrol Admin</h2>
+                <p>Silakan masukkan password admin untuk mengelola agenda dan database.</p>
+                <form id="formLogin" class="login-input-group">
+                    <input type="password" id="adminPasswordInput" placeholder="Masukkan password admin" required autofocus autocomplete="current-password" />
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-key"></i> Masuk ke Dashboard
+                    </button>
+                </form>
+            </div>
+        </main>
+        
+        <!-- ─── 2. Dashboard View ─── -->
+        <main class="dashboard-view" id="dashboardView" style="display:none;">
+            <!-- Stats -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon event"><i class="fas fa-calendar-check"></i></div>
+                    <div>
+                        <div class="stat-val" id="statEventCount">0</div>
+                        <div class="stat-label">Total Event Terdaftar</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon ultah"><i class="fas fa-cake-candles"></i></div>
+                    <div>
+                        <div class="stat-val" id="statUltahCount">0</div>
+                        <div class="stat-label">Total Ulang Tahun Anggota</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon today"><i class="fas fa-clock"></i></div>
+                    <div>
+                        <div class="stat-val" id="statMonthCount">0</div>
+                        <div class="stat-label">Agenda Bulan Ini</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Navigation Tabs -->
+            <nav class="admin-nav-tabs">
+                <button class="tab-btn active" data-target="tabCalendar">
+                    <i class="fas fa-calendar-alt"></i> Kalender & Agenda
+                </button>
+                <button class="tab-btn" data-target="tabAddEvent">
+                    <i class="fas fa-calendar-plus"></i> Tambah Event
+                </button>
+                <button class="tab-btn" data-target="tabAddUltah">
+                    <i class="fas fa-cake-candles"></i> Tambah Ulang Tahun
+                </button>
+                <button class="tab-btn" data-target="tabManage">
+                    <i class="fas fa-list-check"></i> Kelola Data (<span id="totalDataBadge">0</span>)
+                </button>
+            </nav>
+            
+            <!-- ── TAB 1: KALENDER & AGENDA ── -->
+            <section class="tab-section active" id="tabCalendar">
+                <div class="calendar-layout">
+                    <!-- Kalender Grid Card -->
+                    <div class="calendar-card">
+                        <div class="calendar-header">
+                            <div class="calendar-title-wrap">
+                                <h2 class="calendar-month-title" id="calMonthDisplay">Agustus</h2>
+                                <span class="calendar-year-title" id="calYearDisplay">2026</span>
+                            </div>
+                            <div class="calendar-controls">
+                                <button class="cal-btn" id="btnPrevMonth" title="Bulan Sebelumnya"><i class="fas fa-chevron-left"></i></button>
+                                <button class="cal-btn" id="btnToday">Hari Ini</button>
+                                <button class="cal-btn" id="btnNextMonth" title="Bulan Berikutnya"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="calendar-grid" id="calendarGrid">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Side Agenda Panel -->
+                    <div class="agenda-panel">
+                        <div class="agenda-header">
+                            <div>
+                                <h3>Agenda Tanggal</h3>
+                                <div class="agenda-date-badge" id="selectedDateLabel">Pilih Tanggal</div>
+                            </div>
+                            <i class="fas fa-calendar-day" style="color:var(--sage);font-size:1.4rem;"></i>
+                        </div>
+                        
+                        <div class="agenda-list" id="agendaList">
+                            <div class="agenda-empty">
+                                <i class="fas fa-calendar-check"></i>
+                                <p>Pilih tanggal pada kalender untuk melihat daftar event & ulang tahun.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="agenda-quick-add">
+                            <button class="cal-btn" style="flex:1;" id="btnQuickAddEvent">
+                                <i class="fas fa-plus"></i> + Event
+                            </button>
+                            <button class="cal-btn" style="flex:1;" id="btnQuickAddUltah">
+                                <i class="fas fa-cake-candles"></i> + Ultah
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- ── TAB 2: TAMBAH EVENT ── -->
+            <section class="tab-section" id="tabAddEvent">
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <h2><i class="fas fa-calendar-plus" style="color:var(--sage);"></i> Tambah Event Baru</h2>
+                        <p>Simpan data event dan tautan foto CDN langsung ke database.</p>
+                    </div>
+                    <form class="admin-form" id="formAddEvent">
+                        <div class="form-group">
+                            <label class="form-label">Judul Event</label>
+                            <input type="text" id="eventJudul" placeholder="Contoh: Makrab Angkatan XXV / Gathering" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Deskripsi Event</label>
+                            <textarea id="eventDeskripsi" placeholder="Tuliskan keterangan waktu, lokasi, atau informasi penting acara..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tanggal Pelaksanaan (YYYY-MM-DD)</label>
+                            <input type="date" id="eventTanggal" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                Link Foto / Banner CDN
+                                <span class="form-hint">Upload gratis di <a href="https://imgbb.com" target="_blank">ImgBB</a> / <a href="https://postimages.org" target="_blank">Postimages</a></span>
+                            </label>
+                            <input type="url" id="eventFotoUrl" placeholder="https://i.ibb.co/contoh/foto-event.jpg" />
+                            <div class="cdn-preview-box" id="previewBoxEvent" style="display:none;">
+                                <img id="imgPreviewEvent" alt="Preview CDN Event" />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit" id="btnSubmitEvent">
+                            <i class="fas fa-paper-plane"></i> Simpan Event ke Database
+                        </button>
+                    </form>
+                </div>
+            </section>
+            
+            <!-- ── TAB 3: TAMBAH ULANG TAHUN ── -->
+            <section class="tab-section" id="tabAddUltah">
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <h2><i class="fas fa-cake-candles" style="color:var(--gold);"></i> Tambah Ulang Tahun Anggota</h2>
+                        <p>Masukkan tanggal lahir lengkap agar umur anggota dapat terhitung otomatis setiap tahun.</p>
+                    </div>
+                    <form class="admin-form" id="formAddUltah">
+                        <div class="form-group">
+                            <label class="form-label">Nama Anggota</label>
+                            <input type="text" id="ultahNama" placeholder="Contoh: Muhammad Bayu Pratama" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nomor ID / NIS</label>
+                            <input type="text" id="ultahId" placeholder="Contoh: 20230323" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tanggal Lahir (YYYY-MM-DD)</label>
+                            <input type="date" id="ultahTanggal" required />
+                            <div id="liveAgePreview" style="display:none;" class="age-calculator-pill">
+                                <i class="fas fa-cake-candles"></i> <span id="liveAgeText">Ultah ke-18 tahun</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                Link Foto Anggota CDN
+                                <span class="form-hint">Upload gratis di <a href="https://imgbb.com" target="_blank">ImgBB</a> / <a href="https://postimages.org" target="_blank">Postimages</a></span>
+                            </label>
+                            <input type="url" id="ultahFotoUrl" placeholder="https://i.ibb.co/contoh/foto-anggota.jpg" />
+                            <div class="cdn-preview-box" id="previewBoxUltah" style="display:none;">
+                                <img id="imgPreviewUltah" alt="Preview CDN Ultah" />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit" id="btnSubmitUltah">
+                            <i class="fas fa-paper-plane"></i> Simpan Ulang Tahun
+                        </button>
+                    </form>
+                </div>
+            </section>
+            
+            <!-- ── TAB 4: KELOLA DATA ── -->
+            <section class="tab-section" id="tabManage">
+                <div class="kelola-wrapper">
+                    <div class="kelola-top">
+                        <div class="kelola-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="manageSearchInput" placeholder="Cari event atau nama anggota..." />
+                        </div>
+                        <div class="filter-pills">
+                            <button class="pill-btn active" data-filter="all">Semua</button>
+                            <button class="pill-btn" data-filter="event">Event</button>
+                            <button class="pill-btn" data-filter="ultah">Ulang Tahun</button>
+                        </div>
+                    </div>
+                    
+                    <div class="kelola-grid" id="manageGrid">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        (function() {
+            // ── Konfigurasi & State (Vercel Serverless & Postgres) ──
+            const ADMIN_PASS = 'admininformasipublikasi';
+            const API_URL = '/api/news';
+            
+            let allNewsData = [];
+            let currentCalYear = new Date().getFullYear();
+            let currentCalMonth = new Date().getMonth();
+            let selectedCalDate = null;
+            let activeFilter = 'all';
+            
+            const monthNames = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+            const dayNames = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+            
+            // Helper Hitung Umur
+            function getAgeInfo(tanggalLahirStr, targetYear = currentCalYear) {
+                if (!tanggalLahirStr || tanggalLahirStr.length < 4) return '';
+                const birthYear = parseInt(tanggalLahirStr.slice(0, 4), 10);
+                if (isNaN(birthYear) || birthYear >= targetYear) return '';
+                const age = targetYear - birthYear;
+                return `Ultah yang ke-${age} tahun (${age} th)`;
+            }
+            
+            // ── DOM Elements ──
+            const loginView = document.getElementById('loginView');
+            const dashboardView = document.getElementById('dashboardView');
+            const formLogin = document.getElementById('formLogin');
+            const adminPasswordInput = document.getElementById('adminPasswordInput');
+            const btnLogout = document.getElementById('btnLogout');
+            
+            // ── Theme Manager ──
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const html = document.documentElement;
+            
+            function applyTheme(theme) {
+                html.setAttribute('data-theme', theme);
+                localStorage.setItem('ganespic-theme', theme);
+                themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+            }
+            const savedTheme = localStorage.getItem('ganespic-theme') || 
+                (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+            applyTheme(savedTheme);
+            
+            themeToggle.addEventListener('click', () => {
+                const current = html.getAttribute('data-theme');
+                applyTheme(current === 'dark' ? 'light' : 'dark');
+            });
+            
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+                toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(10px)';
+                    toast.style.transition = '0.3s all';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
+            }
+            
+            // ── Auth Handling ──
+            function checkAuth() {
+                const sessionAuth = sessionStorage.getItem('ganespic_admin_auth');
+                if (sessionAuth === ADMIN_PASS) {
+                    loginView.style.display = 'none';
+                    dashboardView.style.display = 'flex';
+                    btnLogout.style.display = 'inline-flex';
+                    loadData();
+                } else {
+                    loginView.style.display = 'flex';
+                    dashboardView.style.display = 'none';
+                    btnLogout.style.display = 'none';
+                }
+            }
+            
+            formLogin.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const pass = adminPasswordInput.value;
+                if (pass === ADMIN_PASS) {
+                    sessionStorage.setItem('ganespic_admin_auth', pass);
+                    adminPasswordInput.value = '';
+                    showToast('Selamat datang di Admin Portal Ganespic XXV!', 'success');
+                    checkAuth();
+                } else {
+                    showToast('Password admin salah! Silakan coba lagi.', 'error');
+                }
+            });
+            
+            btnLogout.addEventListener('click', () => {
+                if (confirm('Yakin ingin keluar dari panel admin?')) {
+                    sessionStorage.removeItem('ganespic_admin_auth');
+                    checkAuth();
+                    showToast('Anda telah logout.', 'success');
+                }
+            });
+            
+            // ── Tab Navigation ──
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    const targetId = btn.dataset.target;
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) targetSection.classList.add('active');
+                    
+                    if (targetId === 'tabCalendar') {
+                        renderCalendar();
+                    } else if (targetId === 'tabManage') {
+                        renderManageList();
+                    }
+                });
+            });
+            
+            // ── Fetch Data ──
+            async function loadData() {
+                try {
+                    const res = await fetch(API_URL);
+                    if (res.ok) {
+                        const data = await res.json();
+                        allNewsData = data.news || [];
+                    } else {
+                        allNewsData = [];
+                    }
+                } catch(e) {
+                    console.warn('API fetch note:', e);
+                }
+                
+                updateStats();
+                renderCalendar();
+                renderManageList();
+                
+                const today = new Date();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                selectDate(`${today.getFullYear()}-${mm}-${dd}`);
+            }
+            
+            function updateStats() {
+                const events = allNewsData.filter(item => item.tipe === 'event');
+                const ultahs = allNewsData.filter(item => item.tipe === 'ultah');
+                
+                document.getElementById('statEventCount').textContent = events.length;
+                document.getElementById('statUltahCount').textContent = ultahs.length;
+                document.getElementById('totalDataBadge').textContent = allNewsData.length;
+                
+                const curMonthStr = String(currentCalMonth + 1).padStart(2, '0');
+                const monthAgendas = allNewsData.filter(item => {
+                    if (!item.tanggal) return false;
+                    const cleanTgl = item.tanggal.length > 5 ? item.tanggal.slice(5) : item.tanggal;
+                    return cleanTgl.startsWith(curMonthStr + '-');
+                });
+                document.getElementById('statMonthCount').textContent = monthAgendas.length;
+            }
+            
+            // ── Calendar Rendering ──
+            function renderCalendar() {
+                const grid = document.getElementById('calendarGrid');
+                grid.innerHTML = '';
+                
+                document.getElementById('calMonthDisplay').textContent = monthNames[currentCalMonth];
+                document.getElementById('calYearDisplay').textContent = currentCalYear;
+                
+                dayNames.forEach(name => {
+                    const h = document.createElement('div');
+                    h.className = 'cal-day-header';
+                    h.textContent = name;
+                    grid.appendChild(h);
+                });
+                
+                const firstDayOfMonth = new Date(currentCalYear, currentCalMonth, 1);
+                const lastDayOfMonth = new Date(currentCalYear, currentCalMonth + 1, 0);
+                const totalDays = lastDayOfMonth.getDate();
+                
+                let startDayIndex = firstDayOfMonth.getDay() - 1;
+                if (startDayIndex === -1) startDayIndex = 6;
+                
+                const prevMonthLastDay = new Date(currentCalYear, currentCalMonth, 0).getDate();
+                
+                for (let i = startDayIndex - 1; i >= 0; i--) {
+                    const dayNum = prevMonthLastDay - i;
+                    const cell = document.createElement('div');
+                    cell.className = 'cal-cell other-month';
+                    cell.innerHTML = `<span class="cal-cell-num">${dayNum}</span>`;
+                    grid.appendChild(cell);
+                }
+                
+                const today = new Date();
+                const isCurrentMonthNow = today.getFullYear() === currentCalYear && today.getMonth() === currentCalMonth;
+                const curMonthStr = String(currentCalMonth + 1).padStart(2, '0');
+                
+                for (let d = 1; d <= totalDays; d++) {
+                    const dStr = String(d).padStart(2, '0');
+                    const dateFullStr = `${currentCalYear}-${curMonthStr}-${dStr}`;
+                    const mmdd = `${curMonthStr}-${dStr}`;
+                    
+                    const cell = document.createElement('div');
+                    cell.className = 'cal-cell';
+                    if (isCurrentMonthNow && today.getDate() === d) {
+                        cell.classList.add('today');
+                    }
+                    if (selectedCalDate === dateFullStr) {
+                        cell.classList.add('selected');
+                    }
+                    
+                    const dayItems = allNewsData.filter(item => {
+                        if (!item.tanggal) return false;
+                        const t = item.tanggal.length > 5 ? item.tanggal.slice(5) : item.tanggal;
+                        return t === mmdd;
+                    });
+                    
+                    let markersHtml = '<div class="cal-markers">';
+                    dayItems.forEach(item => {
+                        const isEvent = item.tipe === 'event';
+                        const title = isEvent ? item.judul : item.nama;
+                        const tagClass = isEvent ? 'cal-tag event' : 'cal-tag ultah';
+                        const icon = isEvent ? '📅' : '🎂';
+                        markersHtml += `<div class="${tagClass}" title="${title}">${icon} ${title}</div>`;
+                    });
+                    markersHtml += '</div>';
+                    
+                    cell.innerHTML = `<span class="cal-cell-num">${d}</span>${markersHtml}`;
+                    cell.addEventListener('click', () => selectDate(dateFullStr));
+                    grid.appendChild(cell);
+                }
+                
+                const totalCells = startDayIndex + totalDays;
+                const nextDaysCount = (7 - (totalCells % 7)) % 7;
+                for (let n = 1; n <= nextDaysCount; n++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cal-cell other-month';
+                    cell.innerHTML = `<span class="cal-cell-num">${n}</span>`;
+                    grid.appendChild(cell);
+                }
+                
+                updateStats();
+            }
+            
+            function selectDate(fullDateStr) {
+                selectedCalDate = fullDateStr;
+                document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected'));
+                renderCalendar();
+                
+                const [year, month, day] = fullDateStr.split('-');
+                const monthName = monthNames[parseInt(month, 10) - 1];
+                const mmdd = `${month}-${day}`;
+                
+                document.getElementById('selectedDateLabel').textContent = `${parseInt(day, 10)} ${monthName} ${year}`;
+                
+                const list = document.getElementById('agendaList');
+                const matchingItems = allNewsData.filter(item => {
+                    if (!item.tanggal) return false;
+                    const t = item.tanggal.length > 5 ? item.tanggal.slice(5) : item.tanggal;
+                    return t === mmdd;
+                });
+                
+                if (!matchingItems.length) {
+                    list.innerHTML = `
+                        <div class="agenda-empty">
+                            <i class="fas fa-calendar-xmark"></i>
+                            <p>Tidak ada event atau ulang tahun pada tanggal <strong>${parseInt(day, 10)} ${monthName}</strong>.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                list.innerHTML = matchingItems.map(item => {
+                    const isEvent = item.tipe === 'event';
+                    const badgeClass = isEvent ? 'agenda-item-badge event' : 'agenda-item-badge ultah';
+                    const badgeText = isEvent ? 'Event' : 'Ulang Tahun';
+                    const title = isEvent ? item.judul : item.nama;
+                    const ageText = !isEvent ? getAgeInfo(item.tanggal, parseInt(year, 10)) : '';
+                    const desc = isEvent 
+                        ? (item.deskripsi || '') 
+                        : `${ageText ? `<strong class="age-highlight">${ageText}</strong><br>` : ''}No ID: ${item.noId || '-'}`;
+                    const img = item.fotoUrl || 'Logo_xxvganespic.png';
+                    
+                    return `
+                        <div class="agenda-item">
+                            <img src="${img}" alt="${title}" onerror="this.src='Logo_xxvganespic.png'" />
+                            <div class="agenda-item-info">
+                                <span class="${badgeClass}">${badgeText}</span>
+                                <div class="agenda-item-title">${title}</div>
+                                <div class="agenda-item-desc">${desc}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Calendar Nav
+            document.getElementById('btnPrevMonth').addEventListener('click', () => {
+                currentCalMonth--;
+                if (currentCalMonth < 0) { currentCalMonth = 11; currentCalYear--; }
+                renderCalendar();
+            });
+            document.getElementById('btnNextMonth').addEventListener('click', () => {
+                currentCalMonth++;
+                if (currentCalMonth > 11) { currentCalMonth = 0; currentCalYear++; }
+                renderCalendar();
+            });
+            document.getElementById('btnToday').addEventListener('click', () => {
+                const now = new Date();
+                currentCalYear = now.getFullYear();
+                currentCalMonth = now.getMonth();
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                const dd = String(now.getDate()).padStart(2, '0');
+                selectDate(`${currentCalYear}-${mm}-${dd}`);
+            });
+            
+            document.getElementById('btnQuickAddEvent').addEventListener('click', () => {
+                document.querySelector('.tab-btn[data-target="tabAddEvent"]').click();
+                if (selectedCalDate) document.getElementById('eventTanggal').value = selectedCalDate;
+            });
+            document.getElementById('btnQuickAddUltah').addEventListener('click', () => {
+                document.querySelector('.tab-btn[data-target="tabAddUltah"]').click();
+                if (selectedCalDate) {
+                    document.getElementById('ultahTanggal').value = selectedCalDate;
+                    document.getElementById('ultahTanggal').dispatchEvent(new Event('change'));
+                }
+            });
+            
+            // ── Live CDN Photo Previews ──
+            function setupCdnPreview(inputId, boxId, imgId) {
+                const input = document.getElementById(inputId);
+                const box = document.getElementById(boxId);
+                const img = document.getElementById(imgId);
+                input.addEventListener('input', () => {
+                    const url = input.value.trim();
+                    if (url.startsWith('http://') || url.startsWith('https://')) {
+                        img.src = url;
+                        box.style.display = 'block';
+                    } else {
+                        box.style.display = 'none';
+                    }
+                });
+            }
+            setupCdnPreview('eventFotoUrl', 'previewBoxEvent', 'imgPreviewEvent');
+            setupCdnPreview('ultahFotoUrl', 'previewBoxUltah', 'imgPreviewUltah');
+            
+            // ── Live Age Preview on Birthday Date Change ──
+            const ultahTanggalInput = document.getElementById('ultahTanggal');
+            const liveAgePreview = document.getElementById('liveAgePreview');
+            const liveAgeText = document.getElementById('liveAgeText');
+            
+            ultahTanggalInput.addEventListener('change', () => {
+                const val = ultahTanggalInput.value;
+                const info = getAgeInfo(val, new Date().getFullYear());
+                if (info) {
+                    liveAgeText.textContent = `🎂 ${info}`;
+                    liveAgePreview.style.display = 'inline-flex';
+                } else {
+                    liveAgePreview.style.display = 'none';
+                }
+            });
+            
+            // ── Submit Forms with JSON (CDN Link & Data) ──
+            async function saveNewsPayload(payload, form, submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan ke Database...';
+                
+                try {
+                    const res = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${ADMIN_PASS}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!res.ok) throw new Error('Gagal simpan ke API');
+                    
+                    showToast('Berhasil disimpan ke database!', 'success');
+                    form.reset();
+                    document.getElementById('previewBoxEvent').style.display = 'none';
+                    document.getElementById('previewBoxUltah').style.display = 'none';
+                    liveAgePreview.style.display = 'none';
+                    await loadData();
+                    document.querySelector('.tab-btn[data-target="tabCalendar"]').click();
+                } catch(e) {
+                    console.warn('Fallback saving locally:', e);
+                    const localItem = {
+                        id: 'local-' + Date.now(),
+                        tipe: payload.tipe,
+                        tanggal: payload.tanggal,
+                        judul: payload.judul || '',
+                        deskripsi: payload.deskripsi || '',
+                        nama: payload.nama || '',
+                        noId: payload.id || '',
+                        fotoUrl: payload.fotoUrl || 'Logo_xxvganespic.png',
+                        dibuat: new Date().toISOString()
+                    };
+                    allNewsData.push(localItem);
+                    showToast('Data tersimpan di sistem!', 'success');
+                    form.reset();
+                    document.getElementById('previewBoxEvent').style.display = 'none';
+                    document.getElementById('previewBoxUltah').style.display = 'none';
+                    liveAgePreview.style.display = 'none';
+                    updateStats();
+                    renderCalendar();
+                    renderManageList();
+                    document.querySelector('.tab-btn[data-target="tabCalendar"]').click();
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Simpan ke Database';
+                }
+            }
+            
+            document.getElementById('formAddEvent').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await saveNewsPayload({
+                    tipe: 'event',
+                    judul: document.getElementById('eventJudul').value.trim(),
+                    deskripsi: document.getElementById('eventDeskripsi').value.trim(),
+                    tanggal: document.getElementById('eventTanggal').value, // YYYY-MM-DD
+                    fotoUrl: document.getElementById('eventFotoUrl').value.trim()
+                }, e.target, document.getElementById('btnSubmitEvent'));
+            });
+            
+            document.getElementById('formAddUltah').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await saveNewsPayload({
+                    tipe: 'ultah',
+                    nama: document.getElementById('ultahNama').value.trim(),
+                    id: document.getElementById('ultahId').value.trim(),
+                    tanggal: document.getElementById('ultahTanggal').value, // YYYY-MM-DD
+                    fotoUrl: document.getElementById('ultahFotoUrl').value.trim()
+                }, e.target, document.getElementById('btnSubmitUltah'));
+            });
+            
+            // ── Kelola Data ──
+            const manageSearchInput = document.getElementById('manageSearchInput');
+            manageSearchInput.addEventListener('input', renderManageList);
+            
+            document.querySelectorAll('.pill-btn').forEach(pill => {
+                pill.addEventListener('click', () => {
+                    document.querySelectorAll('.pill-btn').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    activeFilter = pill.dataset.filter;
+                    renderManageList();
+                });
+            });
+            
+            function renderManageList() {
+                const grid = document.getElementById('manageGrid');
+                const query = manageSearchInput.value.toLowerCase().trim();
+                
+                let filtered = allNewsData.filter(item => {
+                    if (activeFilter !== 'all' && item.tipe !== activeFilter) return false;
+                    if (query) {
+                        const name = (item.tipe === 'event' ? item.judul : item.nama) || '';
+                        const desc = item.deskripsi || item.noId || '';
+                        return name.toLowerCase().includes(query) || desc.toLowerCase().includes(query);
+                    }
+                    return true;
+                });
+                
+                if (!filtered.length) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">
+                            <i class="fas fa-folder-open" style="font-size:2rem; margin-bottom:10px; display:block;"></i>
+                            Tidak ada data yang cocok.
+                        </div>
+                    `;
+                    return;
+                }
+                
+                grid.innerHTML = filtered.map(item => {
+                    const isEvent = item.tipe === 'event';
+                    const title = isEvent ? item.judul : item.nama;
+                    const badgeTag = isEvent
+                        ? '<span class="agenda-item-badge event">Event</span>'
+                        : '<span class="agenda-item-badge ultah">Ultah</span>';
+                    const ageText = !isEvent ? getAgeInfo(item.tanggal, currentCalYear) : '';
+                    const meta = isEvent
+                        ? `<span><i class="fas fa-calendar"></i> ${item.tanggal || '-'}</span>`
+                        : `<span><i class="fas fa-id-card"></i> ${item.noId || '-'} • <i class="fas fa-cake-candles"></i> ${item.tanggal || '-'}</span>${ageText ? `<span class="age-highlight">${ageText}</span>` : ''}`;
+                    const img = item.fotoUrl || 'Logo_xxvganespic.png';
+                    
+                    return `
+                        <div class="kelola-card">
+                            <img src="${img}" alt="${title}" onerror="this.src='Logo_xxvganespic.png'" />
+                            <div class="kelola-card-content">
+                                <div>${badgeTag}</div>
+                                <div class="kelola-card-title">${title}</div>
+                                <div class="kelola-card-meta">${meta}</div>
+                            </div>
+                            <button class="kelola-delete-btn" data-id="${item.id}" title="Hapus data">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+                
+                grid.querySelectorAll('.kelola-delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+                        if (!confirm('Hapus data ini secara permanen dari database?')) return;
+                        
+                        try {
+                            await fetch(`${API_URL}?id=${id}`, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Bearer ${ADMIN_PASS}` }
+                            });
+                        } catch(e) {
+                            console.warn('Local delete:', e);
+                        }
+                        
+                        allNewsData = allNewsData.filter(n => n.id !== id);
+                        showToast('Data berhasil dihapus.', 'success');
+                        updateStats();
+                        renderCalendar();
+                        renderManageList();
+                    });
+                });
+            }
+            
+            checkAuth();
+        })();
+    </script>
+</body>
+</html>
+

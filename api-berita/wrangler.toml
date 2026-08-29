@@ -1,0 +1,21 @@
+name = "api-berita-ganespic"
+main = "src/index.js"
+compatibility_date = "2024-09-01"
+
+# ─── DATABASE CLOUDFLARE D1 (SQL) ───
+# Untuk mengaktifkan D1:
+# 1. Jalankan di terminal: npx wrangler d1 create ganespic-db
+# 2. Buka komentar di bawah dan masukkan database_id yang didapat:
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "ganespic-db"
+# database_id = "MASUKKAN_DATABASE_ID_DARI_WRANGLER"
+
+# ─── (Opsional) R2 BUCKET FALLBACK ───
+[[r2_buckets]]
+binding = "FOTOS"
+bucket_name = "ganespic-berita"
+
+[vars]
+ADMIN_PASSWORD = "admininformasipublikasi"
+ALLOWED_ORIGIN = "*"

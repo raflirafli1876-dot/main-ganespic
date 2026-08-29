@@ -1,0 +1,13 @@
+{
+  "name": "ganespic-xxv",
+  "version": "1.0.0",
+  "description": "Website Resmi & Portal Admin Ganespic Angkatan XXV",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0"
+  }
+}
+

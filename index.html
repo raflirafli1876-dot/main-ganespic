@@ -686,6 +686,79 @@
             font-size: 0.8rem;
         }
         
+        /* ─── Modal Berita / Admin ─── */
+        .news-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: var(--bg-elevated);
+            margin-bottom: 14px;
+            transition: all var(--transition);
+        }
+        .news-item:hover { border-color: var(--border-hover); }
+        .news-item img {
+            width: 84px;
+            height: 84px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid var(--sage);
+            flex-shrink: 0;
+        }
+        .news-item .badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 3px 10px;
+            border-radius: 100px;
+            margin-bottom: 6px;
+        }
+        .news-item .badge.event { background: rgba(124,244,152,.15); color: var(--sage); }
+        .news-item .badge.ultah { background: rgba(255,200,90,.15); color: #ffc85a; }
+        .news-item h3 { font-size: 1rem; font-weight: 700; color: var(--text); }
+        .news-item p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+        .news-empty {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px 10px;
+            font-size: 0.9rem;
+        }
+        .admin-submit {
+            margin-top: 10px;
+            background: linear-gradient(135deg, var(--sage), var(--sage-dark));
+            color: #0a0d0b;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all var(--transition);
+            box-shadow: 0 4px 16px var(--sage-glow);
+        }
+        .admin-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,244,152,0.25); }
+        .login-box {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .login-box input {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .login-box input:focus { border-color: var(--sage); }
+
         /* ─── Responsive ─── */
         @media (max-width: 768px) {
             .dev-button-wrap {
@@ -734,6 +807,11 @@
                 right: 14px;
                 padding: 6px 12px;
                 font-size: 0.7rem;
+            }
+            .dev-button-wrap {
+                top: auto;
+                bottom: 20px;
+                right: 20px;
             }
             .theme-toggle .toggle-track {
                 width: 34px;
@@ -811,6 +889,13 @@
         
         <!-- ─── Cards ─── -->
         <section class="cards" id="nav">
+            <article class="card" id="btnBerita" onclick="openBerita()" style="cursor:pointer;">
+                <div class="icon-big"><i class="fas fa-newspaper"></i></div>
+                <strong>Berita</strong>
+                <p>Berita hari ini: event terbaru dan ulang tahun anggota angkatan. Jangan sampai ketinggalan momen penting.</p>
+                <a>Baca Berita →</a>
+            </article>
+
             <article class="card">
                 <div class="icon-big"><i class="fas fa-wallet"></i></div>
                 <strong>Kas Angkatan</strong>
@@ -865,11 +950,36 @@
         </div>
     </footer>
     
+    <!-- ─── MODAL BERITA ─── -->
+    <div id="modalBerita" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 class="modal-title">Berita Hari Ini</h2>
+                <button id="btnTutupBerita" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
+            </div>
+            <div id="beritaList"></div>
+        </div>
+    </div>
+
+    <!-- ─── MODAL LOGIN ADMIN ─── -->
+    <div id="modalLogin" class="modal-overlay">
+        <div class="modal-box" style="width:min(100%,380px);">
+            <div class="modal-header">
+                <h2 class="modal-title" style="font-size:1.3rem;">Login Admin Portal</h2>
+                <button id="btnTutupLogin" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
+            </div>
+            <form class="login-box" id="formLogin">
+                <input type="password" id="adminPass" placeholder="Masukkan password admin" required />
+                <button type="submit" class="admin-submit">Buka Dashboard Admin →</button>
+            </form>
+        </div>
+    </div>
+
     <!-- ─── MODAL DEVELOPER ─── -->
     <div id="modalDeveloper" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
-                <h2 class="modal-title">Developer</h2>
+                <h2 class="modal-title" onclick="devTitleClick()" style="cursor:pointer;-webkit-user-select:none;user-select:none;">Developer</h2>
                 <button id="btnTutupModal" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
             </div>
             <div class="tim-pengembang-grid">
@@ -880,6 +990,9 @@
                     <div class="tim-card-id">20230323</div>
                     <a href="https://rafliadzanurramadhan.vercel.app/" target="_blank" class="tim-card-porto-btn">
                         <i class="fas fa-folder-open"></i> Portfolio
+                    </a>
+                    <a href="admin.html" class="tim-card-porto-btn" style="background:var(--bg-elevated);margin-top:8px;border:1px solid var(--border);color:var(--text-dim);">
+                        <i class="fas fa-shield-halved" style="color:var(--sage);"></i> Portal Admin
                     </a>
                 </div>
             </div>
@@ -907,35 +1020,139 @@
                 localStorage.setItem('ganespic-theme', next);
             });
             
+            // ── Data Berita & Agenda (Vercel API + Database) ──
+            const ADMIN_PASS = 'admininformasipublikasi';
+            const API_URL = window.location.hostname === 'localhost' || window.location.origin.includes('vercel.app')
+                ? '/api/news'
+                : '/api/news';
+
+            function bukaModalEl(m) { m.classList.add('active'); document.body.style.overflow = 'hidden'; }
+            function tutupModalEl(m) { m.classList.remove('active'); document.body.style.overflow = ''; }
+
+            window.openBerita = function() {
+                renderBerita();
+                bukaModalEl(document.getElementById('modalBerita'));
+            };
+
+            async function renderBerita() {
+                const list = document.getElementById('beritaList');
+                list.innerHTML = '<div class="news-empty"><i class="fas fa-spinner fa-spin"></i><br>Memuat berita...</div>';
+                try {
+                    const res = await fetch(API_URL);
+                    if (!res.ok) throw new Error();
+                    const { news } = await res.json();
+
+                    const now = new Date();
+                    const mmdd = String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+                    const hariIni = news.filter(n => {
+                        if (!n.tanggal) return false;
+                        const tgl = n.tanggal.length > 5 ? n.tanggal.slice(5) : n.tanggal;
+                        return tgl === mmdd;
+                    });
+
+                    if (!hariIni.length) {
+                        list.innerHTML = '<div class="news-empty"><i class="fas fa-inbox"></i><br>Tidak ada berita untuk hari ini.</div>';
+                        return;
+                    }
+
+                    list.innerHTML = hariIni.map(n => {
+                        const badge = n.tipe === 'event'
+                            ? '<span class="badge event">Event</span>'
+                            : '<span class="badge ultah">Ulang Tahun</span>';
+                        if (n.tipe === 'event') {
+                            return `<div class="news-item">
+                                ${n.fotoUrl ? `<img src="${n.fotoUrl}" alt="Foto Event" onerror="this.src='Logo_xxvganespic.png'" />` : ''}
+                                <div>${badge}<h3>${n.judul}</h3><p>${n.deskripsi || ''}</p></div>
+                            </div>`;
+                        }
+
+                        // Hitung umur ulang tahun
+                        let umurInfo = '';
+                        if (n.tanggal && n.tanggal.length >= 10) {
+                            const birthYear = parseInt(n.tanggal.slice(0, 4), 10);
+                            const currentYear = now.getFullYear();
+                            if (!isNaN(birthYear) && birthYear < currentYear) {
+                                const umur = currentYear - birthYear;
+                                umurInfo = `Ultah yang ke-${umur} tahun (${umur} th)`;
+                            }
+                        }
+
+                        return `<div class="news-item">
+                            ${n.fotoUrl ? `<img src="${n.fotoUrl}" alt="Foto ${n.nama}" onerror="this.src='Logo_xxvganespic.png'" />` : ''}
+                            <div>
+                                ${badge}
+                                <h3>Selamat Ulang Tahun, ${n.nama}!</h3>
+                                <p>${umurInfo ? `<strong><i class="fas fa-cake-candles" style="color:#ffc85a;"></i> ${umurInfo}</strong><br>` : ''}No ID: ${n.noId || '-'}</p>
+                            </div>
+                        </div>`;
+                    }).join('');
+                } catch(e) {
+                    list.innerHTML = '<div class="news-empty"><i class="fas fa-triangle-exclamation"></i><br>Gagal memuat berita. Cek koneksi atau URL API.</div>';
+                }
+            }
+
+            // ── Modal Berita ──
+            const modalBerita = document.getElementById('modalBerita');
+            document.getElementById('btnTutupBerita').addEventListener('click', () => tutupModalEl(modalBerita));
+
+            // ── Login Modal & Akses Admin ──
+            const modalLogin = document.getElementById('modalLogin');
+            const modalDeveloper = document.getElementById('modalDeveloper');
+
+            [modalBerita, modalLogin, modalDeveloper].forEach(m => {
+                m.addEventListener('click', e => { if (e.target === m) tutupModalEl(m); });
+            });
+            document.getElementById('btnTutupLogin').addEventListener('click', () => tutupModalEl(modalLogin));
+
+            // Tombol rahasia: klik tulisan "Developer" 3x cepat untuk membuka login admin
+            let klikTitle = 0, timerTitle = null;
+            window.devTitleClick = function() {
+                clearTimeout(timerTitle);
+                klikTitle++;
+                timerTitle = setTimeout(() => klikTitle = 0, 1500);
+                if (klikTitle >= 3) {
+                    klikTitle = 0;
+                    tutupModalEl(modalDeveloper);
+                    bukaModalEl(modalLogin);
+                }
+            };
+
+            document.getElementById('formLogin').addEventListener('submit', e => {
+                e.preventDefault();
+                const pass = document.getElementById('adminPass').value;
+                if (pass === ADMIN_PASS) {
+                    sessionStorage.setItem('ganespic_admin_auth', pass);
+                    document.getElementById('adminPass').value = '';
+                    tutupModalEl(modalLogin);
+                    window.location.href = 'admin.html';
+                } else {
+                    alert('Password admin salah!');
+                }
+            });
+
             // ── Modal Developer ──
             const btnDev = document.getElementById('btnDeveloper');
-            const modal = document.getElementById('modalDeveloper');
             const btnTutup = document.getElementById('btnTutupModal');
             
             function bukaModal() {
-                modal.classList.add('active');
+                modalDeveloper.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
             
             function tutupModal() {
-                modal.classList.remove('active');
+                modalDeveloper.classList.remove('active');
                 document.body.style.overflow = '';
             }
             
             btnDev.addEventListener('click', bukaModal);
             btnTutup.addEventListener('click', tutupModal);
             
-            // Tutup modal kalau klik di luar box
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    tutupModal();
-                }
-            });
-            
             // Tutup dengan tombol ESC
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && modal.classList.contains('active')) {
-                    tutupModal();
+                if (e.key === 'Escape') {
+                    [modalDeveloper, modalBerita, modalLogin].forEach(function(m) {
+                        tutupModalEl(m);
+                    });
                 }
             });
         })();
