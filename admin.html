@@ -997,7 +997,13 @@
                 <h2>Panel Kontrol Admin</h2>
                 <p>Silakan masukkan password admin untuk mengelola agenda dan database.</p>
                 <form id="formLogin" class="login-input-group">
-                    <input type="password" id="adminPasswordInput" placeholder="Masukkan password admin" required autofocus autocomplete="current-password" />
+                    <div style="position:relative;">
+                        <input type="password" id="adminPasswordInput" placeholder="Masukkan password admin" required autofocus autocomplete="current-password" style="padding-right:46px;" />
+                        <button type="button" id="togglePwdBtn" aria-label="Tampilkan password"
+                            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;padding:0;line-height:1;display:flex;align-items:center;">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     <button type="submit" class="btn-submit">
                         <i class="fas fa-key"></i> Masuk ke Dashboard
                     </button>
@@ -1207,6 +1213,18 @@
             const ADMIN_PASS = 'admininformasipublikasi';
             const API_URL = '/api/news';
             
+            // ─── Password Toggle ───
+            const _pwdInput = document.getElementById('adminPasswordInput');
+            const _toggleBtn = document.getElementById('togglePwdBtn');
+            if (_pwdInput && _toggleBtn) {
+                _toggleBtn.addEventListener('click', () => {
+                    const show = _pwdInput.type === 'password';
+                    _pwdInput.type = show ? 'text' : 'password';
+                    _toggleBtn.querySelector('i').className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+                    _toggleBtn.setAttribute('aria-label', show ? 'Sembunyikan password' : 'Tampilkan password');
+                });
+            }
+
             let allNewsData = [];
             let currentCalYear = new Date().getFullYear();
             let currentCalMonth = new Date().getMonth();

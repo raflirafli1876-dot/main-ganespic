@@ -758,6 +758,24 @@
             outline: none;
         }
         .login-box input:focus { border-color: var(--sage); }
+        .pass-wrap { position: relative; display: flex; align-items: center; }
+        .pass-wrap input { flex: 1; padding-right: 46px; }
+        .pass-toggle {
+            position: absolute;
+            right: 6px;
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color var(--transition);
+            border-radius: 8px;
+        }
+        .pass-toggle:hover { color: var(--sage); }
 
         /* ─── Responsive ─── */
         @media (max-width: 768px) {
@@ -969,7 +987,12 @@
                 <button id="btnTutupLogin" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
             </div>
             <form class="login-box" id="formLogin">
-                <input type="password" id="adminPass" placeholder="Masukkan password admin" required />
+                <div class="pass-wrap">
+                    <input type="password" id="adminPass" placeholder="Masukkan password admin" required />
+                    <button type="button" class="pass-toggle" id="passToggle" aria-label="Tampilkan/sembunyikan password">
+                        <i class="fas fa-eye" id="passEye"></i>
+                    </button>
+                </div>
                 <button type="submit" class="admin-submit">Buka Dashboard Admin →</button>
             </form>
         </div>
@@ -990,9 +1013,6 @@
                     <div class="tim-card-id">20230323</div>
                     <a href="https://rafliadzanurramadhan.vercel.app/" target="_blank" class="tim-card-porto-btn">
                         <i class="fas fa-folder-open"></i> Portfolio
-                    </a>
-                    <a href="admin.html" class="tim-card-porto-btn" style="background:var(--bg-elevated);margin-top:8px;border:1px solid var(--border);color:var(--text-dim);">
-                        <i class="fas fa-shield-halved" style="color:var(--sage);"></i> Portal Admin
                     </a>
                 </div>
             </div>
@@ -1113,7 +1133,8 @@
                 if (klikTitle >= 3) {
                     klikTitle = 0;
                     tutupModalEl(modalDeveloper);
-                    bukaModalEl(modalLogin);
+                    // bukaModalEl(modalLogin);
+                    window.location.href = 'admin.html'; 
                 }
             };
 
