@@ -1328,11 +1328,15 @@
             async function loadData() {
                 try {
                     const res = await fetch(API_URL);
+                    const data = await res.json().catch(() => ({}));
                     if (res.ok) {
-                        const data = await res.json();
                         allNewsData = data.news || [];
+                        if (data.error) {
+                            showToast(data.error, 'error');
+                        }
                     } else {
                         allNewsData = [];
+                        showToast(data.error || `HTTP ${res.status}`, 'error');
                     }
                 } catch(e) {
                     console.warn('API fetch note:', e);
@@ -1581,7 +1585,11 @@
                         body: JSON.stringify(payload)
                     });
                     
-                    if (!res.ok) throw new Error('Gagal simpan ke API');
+                    const resData = await res.json().catch(() => ({}));
+                    
+                    if (!res.ok) {
+                        throw new Error(resData.error || `Server error (HTTP ${res.status})`);
+                    }
                     
                     showToast('Berhasil disimpan ke database!', 'success');
                     form.reset();
@@ -1591,28 +1599,9 @@
                     await loadData();
                     document.querySelector('.tab-btn[data-target="tabCalendar"]').click();
                 } catch(e) {
-                    console.warn('Fallback saving locally:', e);
-                    const localItem = {
-                        id: 'local-' + Date.now(),
-                        tipe: payload.tipe,
-                        tanggal: payload.tanggal,
-                        judul: payload.judul || '',
-                        deskripsi: payload.deskripsi || '',
-                        nama: payload.nama || '',
-                        noId: payload.id || '',
-                        fotoUrl: payload.fotoUrl || 'Logo_xxvganespic.png',
-                        dibuat: new Date().toISOString()
-                    };
-                    allNewsData.push(localItem);
-                    showToast('Data tersimpan di sistem!', 'success');
-                    form.reset();
-                    document.getElementById('previewBoxEvent').style.display = 'none';
-                    document.getElementById('previewBoxUltah').style.display = 'none';
-                    liveAgePreview.style.display = 'none';
-                    updateStats();
-                    renderCalendar();
-                    renderManageList();
-                    document.querySelector('.tab-btn[data-target="tabCalendar"]').click();
+                    console.error('Save error:', e);
+                    showToast('Gagal: ' + e.message, 'error');
+                    alert('Gagal menyimpan ke database:\n' + e.message + '\n\nPastikan Vercel sudah di-redeploy setelah Neon terhubung.');
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Simpan ke Database';
