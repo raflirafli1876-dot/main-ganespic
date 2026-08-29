@@ -979,25 +979,6 @@
         </div>
     </div>
 
-    <!-- ─── MODAL LOGIN ADMIN ─── -->
-    <div id="modalLogin" class="modal-overlay">
-        <div class="modal-box" style="width:min(100%,380px);">
-            <div class="modal-header">
-                <h2 class="modal-title" style="font-size:1.3rem;">Login Admin Portal</h2>
-                <button id="btnTutupLogin" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
-            </div>
-            <form class="login-box" id="formLogin">
-                <div class="pass-wrap">
-                    <input type="password" id="adminPass" placeholder="Masukkan password admin" required />
-                    <button type="button" class="pass-toggle" id="passToggle" aria-label="Tampilkan/sembunyikan password">
-                        <i class="fas fa-eye" id="passEye"></i>
-                    </button>
-                </div>
-                <button type="submit" class="admin-submit">Buka Dashboard Admin →</button>
-            </form>
-        </div>
-    </div>
-
     <!-- ─── MODAL DEVELOPER ─── -->
     <div id="modalDeveloper" class="modal-overlay">
         <div class="modal-box">
@@ -1115,15 +1096,10 @@
             const modalBerita = document.getElementById('modalBerita');
             document.getElementById('btnTutupBerita').addEventListener('click', () => tutupModalEl(modalBerita));
 
-            // ── Login Modal & Akses Admin ──
-            const modalLogin = document.getElementById('modalLogin');
-            const modalDeveloper = document.getElementById('modalDeveloper');
-
             [modalBerita, modalLogin, modalDeveloper].forEach(m => {
                 m.addEventListener('click', e => { if (e.target === m) tutupModalEl(m); });
             });
-            document.getElementById('btnTutupLogin').addEventListener('click', () => tutupModalEl(modalLogin));
-
+    
             // Tombol rahasia: klik tulisan "Developer" 3x cepat untuk membuka login admin
             let klikTitle = 0, timerTitle = null;
             window.devTitleClick = function() {
