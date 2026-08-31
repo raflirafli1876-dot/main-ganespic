@@ -1412,7 +1412,7 @@
                     <i class="fas fa-cake-candles"></i> Tambah Ulang Tahun
                 </button>
                 <button class="tab-btn" data-target="tabAnggota">
-                    <i class="fas fa-users"></i> Anggota Angkatan (<span id="totalAnggotaBadge">0</span>)
+                    <i class="fas fa-users"></i> Anggota Angkatan
                 </button>
                 <button class="tab-btn" data-target="tabManage">
                     <i class="fas fa-list-check"></i> Kelola Data (<span id="totalDataBadge">0</span>)
@@ -2315,7 +2315,6 @@
 
                         if (isAnggota) {
                             allAnggotaData = allAnggotaData.filter(n => n.id !== id);
-                            document.getElementById('totalAnggotaBadge').textContent = allAnggotaData.length;
                         } else {
                             allNewsData = allNewsData.filter(n => n.id !== id);
                         }
@@ -2443,12 +2442,14 @@
                 try {
                     const res = await fetch(ANGGOTA_API);
                     const data = await res.json().catch(() => ({}));
-                    allAnggotaData = res.ok ? (data.anggota || []) : [];
+                    // Normalisasi: pastikan tiap anggota punya tipe 'anggota',
+                    // agar terpisah dari 'event'/'ultah' di tab Kelola Data
+                    // (badge, filter, tombol edit, dan hapus jadi benar).
+                    allAnggotaData = (res.ok ? (data.anggota || []) : []).map(a => ({ ...a, tipe: 'anggota' }));
                 } catch (e) {
                     console.warn('Anggota fetch note:', e);
                     allAnggotaData = [];
                 }
-                document.getElementById('totalAnggotaBadge').textContent = allAnggotaData.length;
                 renderAnggotaList();
             }
 

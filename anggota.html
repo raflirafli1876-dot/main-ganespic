@@ -726,9 +726,6 @@
             <!-- Stats Chips -->
             <div class="chips">
                 <span class="chip"><i class="fas fa-users"></i> Total <b id="chipTotal">0</b> Anggota</span>
-                <span class="chip"><i class="fab fa-instagram"></i> IG <b id="chipIg">0</b></span>
-                <span class="chip"><i class="fab fa-whatsapp"></i> WA <b id="chipWa">0</b></span>
-                <span class="chip"><i class="fas fa-envelope"></i> Email <b id="chipEmail">0</b></span>
             </div>
 
             <!-- Search -->
@@ -980,10 +977,6 @@
                     if (!res.ok) throw new Error('HTTP ' + res.status);
                     const data = await res.json();
                     all = Array.isArray(data.anggota) ? data.anggota : [];
-
-                    $('chipIg').textContent = all.filter(a => pick(a, 'igUsername', 'ig_username')).length;
-                    $('chipWa').textContent = all.filter(a => pick(a, 'whatsapp', 'whatsapp')).length;
-                    $('chipEmail').textContent = all.filter(a => pick(a, 'email', 'email')).length;
 
                     render('');
                 } catch (err) {
