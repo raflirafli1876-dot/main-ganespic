@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anggota Angkatan • Ganespic XXV</title>
+    <meta name="description"
+        content="Daftar lengkap anggota Angkatan XXV Ganespic. Lihat foto, no ID, dan detail kontak tiap anggota: media sosial, WhatsApp, email, dan alamat." />
+    <meta name="keywords"
+        content="Ganespic, Ganespic XXV, Angkatan XXV, anggota Ganespic, daftar anggota, anggota angkatan" />
+    <meta name="author" content="Ganespic XXV" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a0d0b" />
+    <link rel="canonical" href="https://ganespic.vercel.app/anggota" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Ganespic XXV" />
+    <meta property="og:title" content="Anggota Angkatan • Ganespic XXV" />
+    <meta property="og:description"
+        content="Kenali seluruh anggota Angkatan XXV Ganespic: foto, no ID, media sosial, WhatsApp, email, dan alamat." />
+    <meta property="og:url" content="https://ganespic.vercel.app/anggota" />
+    <meta property="og:image" content="https://ganespic.vercel.app/Logo_xxvganespic.png" />
+    <meta property="og:locale" content="id_ID" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Anggota Angkatan • Ganespic XXV" />
+    <meta name="twitter:description" content="Daftar lengkap anggota Angkatan XXV Ganespic." />
+    <meta name="twitter:image" content="https://ganespic.vercel.app/Logo_xxvganespic.png" />
+
+    <link rel="shortcut icon" href="Logo_xxvganespic.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --sage: #7CF498;
+            --sage-dark: #5bc97a;
+            --sage-dim: rgba(124, 244, 152, 0.12);
+            --sage-glow: rgba(124, 244, 152, 0.08);
+
+            --bg: #0a0d0b;
+            --bg-card: #111816;
+            --bg-card-hover: #18221c;
+            --bg-elevated: #151e19;
+            --border: #1e2c24;
+            --border-hover: #2d4a38;
+
+            --text: #e8f2ec;
+            --text-dim: #8aaa9a;
+            --text-muted: #5a7a6a;
+
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            --radius: 18px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg: #f4f8f6;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f0f5f2;
+            --bg-elevated: #f8fbf9;
+            --border: #d0ded6;
+            --border-hover: #b0c8bc;
+
+            --text: #1a2a22;
+            --text-dim: #4a6a5a;
+            --text-muted: #7a9a8a;
+
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+            transition: background var(--transition), color var(--transition);
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--sage);
+            border-radius: 20px;
+        }
+
+        .glow {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow.one {
+            width: 500px;
+            height: 500px;
+            top: -150px;
+            right: -100px;
+            background: radial-gradient(circle, var(--sage-glow), transparent 70%);
+        }
+
+        .glow.two {
+            width: 450px;
+            height: 450px;
+            bottom: -100px;
+            left: -80px;
+            background: radial-gradient(circle, var(--sage-glow), transparent 70%);
+        }
+
+        .app-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+/* ─── Top Navbar ─── */
+        .admin-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 13, 11, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        [data-theme="light"] .admin-nav {
+            background: rgba(244, 248, 246, 0.85);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .nav-brand img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--sage);
+        }
+
+        .nav-brand .brand-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-brand .brand-badge {
+            background: var(--sage-dim);
+            color: var(--sage);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(124, 244, 152, 0.3);
+            text-transform: uppercase;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 8px 16px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all var(--transition);
+        }
+
+        .nav-btn:hover {
+            border-color: var(--sage);
+            color: var(--sage);
+            transform: translateY(-1px);
+        }
+
+        /* ─── Hero ─── */
+        .hero {
+            text-align: center;
+            padding: 52px 20px 8px;
+        }
+
+        .overline {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            color: var(--sage);
+            margin-bottom: 10px;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.9rem, 5vw, 2.7rem);
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 1.15;
+        }
+
+        .hero .highlight {
+            color: var(--sage);
+        }
+
+        .hero .subtitle {
+            max-width: 640px;
+            margin: 14px auto 0;
+            color: var(--text-dim);
+            font-size: 0.98rem;
+        }
+
+        .chips {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 8px 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .chip i {
+            color: var(--sage);
+        }
+
+        .chip b {
+            color: var(--sage);
+            font-size: 1rem;
+        }
+/* ─── Search ─── */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .search-wrap {
+            max-width: 480px;
+            margin: 26px auto 0;
+            position: relative;
+        }
+
+        .search-wrap i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 13px 20px 13px 46px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.92rem;
+            outline: none;
+            transition: all var(--transition);
+        }
+
+        .search-wrap input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--sage);
+            box-shadow: 0 0 0 3px var(--sage-dim);
+        }
+
+        /* ─── List Header ─── */
+        .list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 30px 0 16px;
+        }
+
+        .list-header h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .count-badge {
+            background: var(--sage-dim);
+            color: var(--sage);
+            border: 1px solid rgba(124, 244, 152, 0.3);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 100px;
+        }
+
+        /* ─── Anggota Grid & Card ─── */
+        .anggota-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 18px;
+            padding-bottom: 60px;
+        }
+
+        .anggota-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px 14px 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all var(--transition);
+        }
+
+        .anggota-card:hover {
+            border-color: var(--sage);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .anggota-card img {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--sage);
+            margin-bottom: 12px;
+            background: var(--bg-elevated);
+            box-shadow: 0 5px 14px rgba(18, 61, 42, 0.18);
+        }
+
+        .anggota-card .ang-no {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--sage);
+            letter-spacing: 0.08em;
+        }
+
+        .anggota-card .ang-nama {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.35;
+            margin: 4px 0 2px;
+            word-break: break-word;
+        }
+
+        .anggota-card .ang-panggil {
+            font-size: 0.76rem;
+            color: var(--text-dim);
+            margin-bottom: 14px;
+        }
+
+        .anggota-card .ang-detail-btn {
+            margin-top: auto;
+            background: var(--sage);
+            color: #0a0d0b;
+            border: none;
+            border-radius: 100px;
+            padding: 8px 18px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .anggota-card .ang-detail-btn:hover {
+            background: var(--sage-dark);
+            transform: scale(1.04);
+            box-shadow: 0 4px 14px var(--sage-glow);
+        }
+/* ─── Empty / Loading ─── */
+        .list-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 64px 16px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+        }
+
+        .list-state i {
+            font-size: 2.4rem;
+            margin-bottom: 12px;
+            color: var(--text-dim);
+            opacity: 0.6;
+            display: block;
+        }
+
+        /* ─── Modal Detail ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(5, 23, 15, 0.58);
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: overlayIn 220ms ease-out both;
+        }
+
+        @keyframes overlayIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-box {
+            width: min(100%, 480px);
+            max-height: min(82vh, 640px);
+            padding: 26px;
+            overflow-y: auto;
+            border: 1px solid rgba(167, 213, 183, 0.64);
+            border-radius: 24px;
+            background: var(--bg-card);
+            box-shadow: 0 32px 90px rgba(0, 0, 0, 0.3);
+            animation: modalIn 330ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px) scale(0.975);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.035em;
+            color: var(--text);
+        }
+
+        .modal-close-btn {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            flex: 0 0 auto;
+            place-items: center;
+            color: var(--text-dim);
+            font-size: 1.4rem;
+            line-height: 1;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-elevated);
+            transition: all var(--transition);
+        }
+
+        .modal-close-btn:hover {
+            color: #fff;
+            border-color: var(--sage);
+            background: var(--sage);
+            transform: rotate(3deg);
+        }
+/* ─── Detail Hero & Info ─── */
+        .anggota-detail-hero {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .anggota-detail-hero img {
+            width: 118px;
+            height: 118px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--sage);
+            box-shadow: 0 0 30px var(--sage-glow);
+            margin-bottom: 12px;
+            background: var(--bg-elevated);
+        }
+
+        .anggota-detail-hero .ang-detail-no {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--sage);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .anggota-detail-hero .ang-detail-nama {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.3;
+            margin: 4px 0 2px;
+            word-break: break-word;
+        }
+
+        .anggota-detail-hero .ang-detail-panggil {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .anggota-detail-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .anggota-detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 0.88rem;
+            color: var(--text);
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        .anggota-detail-item i {
+            color: var(--sage);
+            width: 18px;
+            text-align: center;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .anggota-detail-item a {
+            color: var(--sage);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .anggota-detail-item a:hover {
+            text-decoration: underline;
+        }
+
+        .anggota-detail-item .ang-label {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .ang-belum {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+/* ─── Footer ─── */
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 32px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+
+        .social-footer {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-bottom: 14px;
+        }
+
+        .social-footer a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color var(--transition);
+        }
+
+        .social-footer a:hover {
+            color: var(--sage);
+        }
+
+        .credit {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 640px) {
+            .admin-nav {
+                padding: 12px 16px;
+            }
+
+            .nav-brand .brand-title {
+                font-size: 0.95rem;
+            }
+
+            .nav-btn span {
+                display: none;
+            }
+
+            .anggota-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glow one"></div>
+    <div class="glow two"></div>
+<div class="app-wrapper">
+        <!-- ─── Top Navbar ─── -->
+        <header class="admin-nav">
+            <a href="/" class="nav-brand">
+                <img src="Logo_xxvganespic.png" alt="Logo Ganespic" />
+                <span class="brand-title">Ganespic XXV</span>
+                <span class="brand-badge">Anggota</span>
+            </a>
+
+            <div class="nav-actions">
+                <button class="nav-btn" id="themeToggle" title="Ganti Tema">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <a href="/" class="nav-btn">
+                    <i class="fas fa-home"></i>
+                    <span>Web Utama</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- ─── Hero ─── -->
+        <section class="hero">
+            <div class="overline">Angkatan XXV Ganespic</div>
+            <h1>Anggota <span class="highlight">Angkatan</span></h1>
+            <p class="subtitle">
+                Kenali seluruh anggota angkatan XXV. Klik <strong>Lihat Detail</strong> pada kartu untuk melihat
+                akun media sosial, WhatsApp, email, dan alamat tiap anggota.
+            </p>
+        </section>
+
+        <div class="container">
+            <!-- Stats Chips -->
+            <div class="chips">
+                <span class="chip"><i class="fas fa-users"></i> Total <b id="chipTotal">0</b> Anggota</span>
+                <span class="chip"><i class="fab fa-instagram"></i> IG <b id="chipIg">0</b></span>
+                <span class="chip"><i class="fab fa-whatsapp"></i> WA <b id="chipWa">0</b></span>
+                <span class="chip"><i class="fas fa-envelope"></i> Email <b id="chipEmail">0</b></span>
+            </div>
+
+            <!-- Search -->
+            <div class="search-wrap">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="search" id="searchInput" placeholder="Cari nama / panggilan / no ID..." autocomplete="off" />
+            </div>
+
+            <!-- List Header -->
+            <div class="list-header">
+                <h2><i class="fas fa-id-card" style="color:var(--sage);margin-right:8px;"></i>Daftar Anggota</h2>
+                <span class="count-badge" id="countBadge">0 anggota</span>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="anggota-grid" id="anggotaGrid">
+                <div class="list-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Memuat data anggota...
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Footer ─── -->
+        <footer class="footer">
+            <div class="social-footer">
+                <a href="https://www.instagram.com/official.ganespic_/" target="_blank">
+                    <i class="fab fa-instagram"></i> @official.ganespic_
+                </a>
+                <a href="https://www.instagram.com/menfess.ganespic_/" target="_blank">
+                    <i class="fab fa-instagram"></i> @menfess.ganespic_
+                </a>
+                <a href="https://www.instagram.com/galeri.angkatan25/" target="_blank">
+                    <i class="fab fa-instagram"></i> @galeri.angkatan25
+                </a>
+            </div>
+            <div class="credit">
+                Dirancang khusus untuk Angkatan XXV Ganespic • <i class="fas fa-leaf"></i> Mari bangun sejarah bersama.
+            </div>
+        </footer>
+    </div>
+
+    <!-- ─── MODAL DETAIL ANGGOTA ─── -->
+    <div id="modalDetail" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 class="modal-title">Detail Anggota</h2>
+                <button id="btnTutupDetail" class="modal-close-btn" aria-label="Tutup detail">&times;</button>
+            </div>
+
+            <div class="anggota-detail-hero">
+                <img src="Logo_xxvganespic.png" id="detailFoto" alt="Foto Anggota" />
+                <div class="ang-detail-no" id="detailNo">No. ID</div>
+                <h3 class="ang-detail-nama" id="detailNama">—</h3>
+                <div class="ang-detail-panggil" id="detailPanggil">—</div>
+            </div>
+
+            <div class="anggota-detail-info" id="detailInfo">
+                <!-- diisi via JS -->
+            </div>
+        </div>
+    </div>
+<script>
+        (function () {
+            // ── Theme Manager ──
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const html = document.documentElement;
+
+            function applyTheme(theme) {
+                html.setAttribute('data-theme', theme);
+                localStorage.setItem('ganespic-theme', theme);
+                themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+            }
+            const savedTheme = localStorage.getItem('ganespic-theme') ||
+                (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+            applyTheme(savedTheme);
+
+            themeToggle.addEventListener('click', () => {
+                const current = html.getAttribute('data-theme');
+                applyTheme(current === 'dark' ? 'light' : 'dark');
+            });
+
+            // ── Data Anggota ──
+            const API = '/api/anggota';
+            const FALLBACK_FOTO = 'Logo_xxvganespic.png';
+            let all = [];
+
+            const $ = (id) => document.getElementById(id);
+            const grid = $('anggotaGrid');
+            const searchInput = $('searchInput');
+            const countBadge = $('countBadge');
+            const modal = $('modalDetail');
+
+            function escHtml(s) {
+                return String(s ?? '').replace(/[&<>"']/g, m => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                }[m]));
+            }
+
+            function pick(a, camel, snake) {
+                const v = a[camel];
+                return (v !== undefined && v !== null) ? v : a[snake];
+            }
+
+            // normalisasi nomor WhatsApp: "0812..." → "62812..."
+            function waUrl(raw) {
+                let v = String(raw || '').replace(/[^0-9]/g, '');
+                if (v.startsWith('0')) v = '62' + v.slice(1);
+                return v ? 'https://wa.me/' + v : '';
+            }
+
+            function gaUrl(username, platform) {
+                const u = String(username || '').trim().replace(/^@/, '');
+                return u ? (platform === 'tt' ? 'https://tiktok.com/@' : 'https://instagram.com/') + encodeURIComponent(u) : '';
+            }
+
+            // ── Render Cards ──
+            function cardHTML(a) {
+                const foto = escHtml(pick(a, 'fotoUrl', 'foto_url') || FALLBACK_FOTO);
+                const no = escHtml(pick(a, 'noInduk', 'no_induk') || '—');
+                const nama = escHtml(pick(a, 'namaLengkap', 'nama_lengkap') || '—');
+                const pang = escHtml(pick(a, 'namaPanggilan', 'nama_panggilan') || '');
+                const id = escHtml(a.id);
+
+                return `<article class="anggota-card">
+                    <img src="${foto}" alt="Foto ${nama}" loading="lazy"
+                        onerror="this.onerror=null;this.src='${FALLBACK_FOTO}';" />
+                    <div class="ang-no">No. ID ${no}</div>
+                    <div class="ang-nama">${nama}</div>
+                    <div class="ang-panggil">${pang || '—'}</div>
+                    <button class="ang-detail-btn" data-id="${id}">
+                        <i class="fas fa-id-card"></i> Lihat Detail
+                    </button>
+                </article>`;
+            }
+
+            function render(query) {
+                const q = (query || '').trim().toLowerCase();
+                const list = q
+                    ? all.filter(a => {
+                        const hay = [
+                            pick(a, 'noInduk', 'no_induk'),
+                            pick(a, 'namaLengkap', 'nama_lengkap'),
+                            pick(a, 'namaPanggilan', 'nama_panggilan')
+                        ].join(' ').toLowerCase();
+                        return hay.includes(q);
+                    })
+                    : all.slice();
+
+                countBadge.textContent = `${list.length} anggota`;
+                $('chipTotal').textContent = all.length;
+
+                if (!all.length) {
+                    grid.innerHTML = `<div class="list-state">
+                        <i class="fas fa-users-slash"></i>
+                        Belum ada data anggota. Tambahkan lewat portal admin.
+                    </div>`;
+                    return;
+                }
+
+                if (!list.length) {
+                    grid.innerHTML = `<div class="list-state">
+                        <i class="fas fa-magnifying-glass"></i>
+                        Tidak ada anggota yang cocok dengan pencarian "<b>${escHtml(query)}</b>".
+                    </div>`;
+                    return;
+                }
+
+                grid.innerHTML = list.map(cardHTML).join('');
+            }
+// ── Detail Modal ──
+            function detailItem(icon, label, content) {
+                return `<div class="anggota-detail-item">
+                    <i class="${icon}"></i>
+                    <div>
+                        <span class="ang-label">${label}</span>
+                        ${content}
+                    </div>
+                </div>`;
+            }
+
+            function openDetail(id) {
+                const a = all.find(x => String(x.id) === String(id));
+                if (!a) return;
+
+                const foto = escHtml(pick(a, 'fotoUrl', 'foto_url') || FALLBACK_FOTO);
+                $('detailFoto').src = foto;
+                $('detailFoto').onerror = function () { this.onerror = null; this.src = FALLBACK_FOTO; };
+                $('detailNo').textContent = 'No. ID ' + escHtml(pick(a, 'noInduk', 'no_induk') || '—');
+                $('detailNama').textContent = escHtml(pick(a, 'namaLengkap', 'nama_lengkap') || '—');
+                $('detailPanggil').textContent = escHtml(pick(a, 'namaPanggilan', 'nama_panggilan') || '—');
+
+                const ig = pick(a, 'igUsername', 'ig_username');
+                const tt = pick(a, 'tiktokUsername', 'tiktok_username');
+                const wa = pick(a, 'whatsapp', 'whatsapp');
+                const email = pick(a, 'email', 'email');
+                const alamat = pick(a, 'alamatRumah', 'alamat_rumah');
+
+                const items = [
+                    detailItem('fab fa-instagram', 'Instagram',
+                        ig
+                            ? `<a href="${gaUrl(ig, 'ig')}" target="_blank" rel="noopener">@${escHtml(String(ig).replace(/^@/, ''))}</a>`
+                            : '<span class="ang-belum">Belum diisi</span>'),
+                    detailItem('fab fa-tiktok', 'TikTok',
+                        tt
+                            ? `<a href="${gaUrl(tt, 'tt')}" target="_blank" rel="noopener">@${escHtml(String(tt).replace(/^@/, ''))}</a>`
+                            : '<span class="ang-belum">Belum diisi</span>'),
+                    detailItem('fab fa-whatsapp', 'WhatsApp',
+                        wa
+                            ? `<a href="${waUrl(wa)}" target="_blank" rel="noopener">${escHtml(String(wa).trim())} <i class="fas fa-arrow-up-right-from-square" style="font-size:0.7rem;"></i></a>`
+                            : '<span class="ang-belum">Belum diisi</span>'),
+                    detailItem('fas fa-envelope', 'Email',
+                        email
+                            ? `<a href="mailto:${escHtml(String(email).trim())}">${escHtml(String(email).trim())}</a>`
+                            : '<span class="ang-belum">Belum diisi</span>'),
+                    detailItem('fas fa-location-dot', 'Alamat',
+                        alamat
+                            ? escHtml(String(alamat).trim())
+                            : '<span class="ang-belum">Belum diisi</span>')
+                ];
+
+                $('detailInfo').innerHTML = items.join('');
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeDetail() {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            // ── Events ──
+            grid.addEventListener('click', (e) => {
+                const btn = e.target.closest('.ang-detail-btn');
+                if (btn) openDetail(btn.dataset.id);
+            });
+
+            $('btnTutupDetail').addEventListener('click', closeDetail);
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeDetail(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDetail(); });
+
+            searchInput.addEventListener('input', () => render(searchInput.value));
+
+            // ── Load Data ──
+            (async function load() {
+                try {
+                    const res = await fetch(API);
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const data = await res.json();
+                    all = Array.isArray(data.anggota) ? data.anggota : [];
+
+                    $('chipIg').textContent = all.filter(a => pick(a, 'igUsername', 'ig_username')).length;
+                    $('chipWa').textContent = all.filter(a => pick(a, 'whatsapp', 'whatsapp')).length;
+                    $('chipEmail').textContent = all.filter(a => pick(a, 'email', 'email')).length;
+
+                    render('');
+                } catch (err) {
+                    grid.innerHTML = `<div class="list-state">
+                        <i class="fas fa-triangle-exclamation"></i>
+                        Gagal memuat data anggota. Periksa koneksi internet atau hubungi pengurus.
+                    </div>`;
+                }
+            })();
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,44 +1,46 @@
 <!DOCTYPE html>
 <html lang="id" data-theme="dark">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Portal • Ganespic XXV</title>
     <link rel="shortcut icon" href="Logo_xxvganespic.png" type="image/x-icon" />
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    
+
     <style>
         :root {
             --sage: #7CF498;
             --sage-dark: #5bc97a;
             --sage-dim: rgba(124, 244, 152, 0.12);
             --sage-glow: rgba(124, 244, 152, 0.08);
-            
+
             --gold: #ffc85a;
             --gold-dim: rgba(255, 200, 90, 0.15);
             --danger: #ef4444;
             --danger-dim: rgba(239, 68, 68, 0.15);
-            
+
             --bg: #0a0d0b;
             --bg-card: #111816;
             --bg-card-hover: #18221c;
             --bg-elevated: #151e19;
             --border: #1e2c24;
             --border-hover: #2d4a38;
-            
+
             --text: #e8f2ec;
             --text-dim: #8aaa9a;
             --text-muted: #5a7a6a;
-            
+
             --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
             --radius: 18px;
             --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         [data-theme="light"] {
             --bg: #f4f8f6;
             --bg-card: #ffffff;
@@ -46,20 +48,22 @@
             --bg-elevated: #f8fbf9;
             --border: #d0ded6;
             --border-hover: #b0c8bc;
-            
+
             --text: #1a2a22;
             --text-dim: #4a6a5a;
             --text-muted: #7a9a8a;
-            
+
             --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
         }
-        
-        *, *::before, *::after {
+
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Space Grotesk', -apple-system, sans-serif;
             background: var(--bg);
@@ -69,11 +73,21 @@
             transition: background var(--transition), color var(--transition);
             overflow-x: hidden;
         }
-        
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--sage); border-radius: 20px; }
-        
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--sage);
+            border-radius: 20px;
+        }
+
         /* ─── Ambient Glow ─── */
         .glow {
             position: fixed;
@@ -81,6 +95,7 @@
             pointer-events: none;
             z-index: 0;
         }
+
         .glow.one {
             width: 500px;
             height: 500px;
@@ -88,6 +103,7 @@
             right: -100px;
             background: radial-gradient(circle, var(--sage-glow), transparent 70%);
         }
+
         .glow.two {
             width: 450px;
             height: 450px;
@@ -95,7 +111,7 @@
             left: -80px;
             background: radial-gradient(circle, var(--sage-glow), transparent 70%);
         }
-        
+
         .app-wrapper {
             position: relative;
             z-index: 1;
@@ -103,7 +119,7 @@
             flex-direction: column;
             min-height: 100vh;
         }
-        
+
         /* ─── Top Navbar ─── */
         .admin-nav {
             position: sticky;
@@ -119,10 +135,11 @@
             justify-content: space-between;
             gap: 16px;
         }
+
         [data-theme="light"] .admin-nav {
             background: rgba(244, 248, 246, 0.85);
         }
-        
+
         .nav-brand {
             display: flex;
             align-items: center;
@@ -130,17 +147,20 @@
             text-decoration: none;
             color: var(--text);
         }
+
         .nav-brand img {
             width: 38px;
             height: 38px;
             border-radius: 50%;
             border: 2px solid var(--sage);
         }
+
         .nav-brand .brand-title {
             font-size: 1.1rem;
             font-weight: 700;
             letter-spacing: -0.02em;
         }
+
         .nav-brand .brand-badge {
             background: var(--sage-dim);
             color: var(--sage);
@@ -148,16 +168,16 @@
             font-weight: 700;
             padding: 3px 8px;
             border-radius: 6px;
-            border: 1px solid rgba(124,244,152,0.3);
+            border: 1px solid rgba(124, 244, 152, 0.3);
             text-transform: uppercase;
         }
-        
+
         .nav-actions {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        
+
         .nav-btn {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -174,21 +194,24 @@
             gap: 8px;
             transition: all var(--transition);
         }
+
         .nav-btn:hover {
             border-color: var(--sage);
             color: var(--sage);
             transform: translateY(-1px);
         }
+
         .nav-btn.danger {
             border-color: var(--danger-dim);
             color: var(--danger);
         }
+
         .nav-btn.danger:hover {
             background: var(--danger);
             color: #fff;
             border-color: var(--danger);
         }
-        
+
         /* ─── Login Screen ─── */
         .login-view {
             flex: 1;
@@ -197,6 +220,7 @@
             justify-content: center;
             padding: 40px 20px;
         }
+
         .login-card {
             width: 100%;
             max-width: 420px;
@@ -208,6 +232,7 @@
             text-align: center;
             animation: fadeIn 0.4s ease-out;
         }
+
         .login-card img {
             width: 72px;
             height: 72px;
@@ -216,22 +241,26 @@
             border: 2px solid var(--sage);
             padding: 2px;
         }
+
         .login-card h2 {
             font-size: 1.4rem;
             font-weight: 700;
             margin-bottom: 6px;
         }
+
         .login-card p {
             font-size: 0.85rem;
             color: var(--text-dim);
             margin-bottom: 24px;
         }
+
         .login-input-group {
             display: flex;
             flex-direction: column;
             gap: 12px;
             text-align: left;
         }
+
         .login-input-group input {
             width: 100%;
             background: var(--bg-elevated);
@@ -244,11 +273,12 @@
             outline: none;
             transition: all var(--transition);
         }
+
         .login-input-group input:focus {
             border-color: var(--sage);
             box-shadow: 0 0 0 3px var(--sage-dim);
         }
-        
+
         /* ─── Dashboard Main Layout ─── */
         .dashboard-view {
             flex: 1;
@@ -260,13 +290,14 @@
             flex-direction: column;
             gap: 28px;
         }
-        
+
         /* ─── Top Stats Bar ─── */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 16px;
         }
+
         .stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -278,10 +309,12 @@
             box-shadow: var(--shadow);
             transition: transform var(--transition), border-color var(--transition);
         }
+
         .stat-card:hover {
             transform: translateY(-2px);
             border-color: var(--border-hover);
         }
+
         .stat-icon {
             width: 48px;
             height: 48px;
@@ -292,12 +325,33 @@
             font-size: 1.3rem;
             flex-shrink: 0;
         }
-        .stat-icon.event { background: var(--sage-dim); color: var(--sage); }
-        .stat-icon.ultah { background: var(--gold-dim); color: var(--gold); }
-        .stat-icon.today { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-        .stat-val { font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
-        .stat-label { font-size: 0.8rem; color: var(--text-dim); }
-        
+
+        .stat-icon.event {
+            background: var(--sage-dim);
+            color: var(--sage);
+        }
+
+        .stat-icon.ultah {
+            background: var(--gold-dim);
+            color: var(--gold);
+        }
+
+        .stat-icon.today {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .stat-val {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
         /* ─── Navigation Tabs Bar ─── */
         .admin-nav-tabs {
             display: flex;
@@ -308,6 +362,7 @@
             border-radius: 16px;
             overflow-x: auto;
         }
+
         .tab-btn {
             background: transparent;
             border: none;
@@ -324,24 +379,27 @@
             white-space: nowrap;
             transition: all var(--transition);
         }
+
         .tab-btn:hover {
             color: var(--text);
             background: var(--bg-elevated);
         }
+
         .tab-btn.active {
             background: var(--sage);
             color: #0a0d0b;
             box-shadow: 0 4px 16px var(--sage-glow);
         }
-        
+
         .tab-section {
             display: none;
             animation: fadeIn 0.3s ease-out;
         }
+
         .tab-section.active {
             display: block;
         }
-        
+
         /* ─── 📅 CALENDAR STYLES ─── */
         .calendar-layout {
             display: grid;
@@ -349,7 +407,7 @@
             gap: 24px;
             align-items: start;
         }
-        
+
         .calendar-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -357,7 +415,7 @@
             padding: 24px;
             box-shadow: var(--shadow);
         }
-        
+
         .calendar-header {
             display: flex;
             align-items: center;
@@ -366,25 +424,30 @@
             flex-wrap: wrap;
             gap: 12px;
         }
+
         .calendar-title-wrap {
             display: flex;
             align-items: baseline;
             gap: 10px;
         }
+
         .calendar-month-title {
             font-size: 1.4rem;
             font-weight: 700;
             color: var(--text);
         }
+
         .calendar-year-title {
             font-size: 1rem;
             color: var(--text-dim);
         }
+
         .calendar-controls {
             display: flex;
             align-items: center;
             gap: 8px;
         }
+
         .cal-btn {
             background: var(--bg-elevated);
             border: 1px solid var(--border);
@@ -397,16 +460,18 @@
             cursor: pointer;
             transition: all var(--transition);
         }
+
         .cal-btn:hover {
             border-color: var(--sage);
             color: var(--sage);
         }
-        
+
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 8px;
         }
+
         .cal-day-header {
             text-align: center;
             font-size: 0.75rem;
@@ -416,7 +481,7 @@
             letter-spacing: 0.08em;
             padding: 8px 0;
         }
-        
+
         .cal-cell {
             min-height: 82px;
             background: var(--bg-elevated);
@@ -431,25 +496,30 @@
             position: relative;
             user-select: none;
         }
+
         .cal-cell:hover {
             border-color: var(--sage);
             background: var(--bg-card-hover);
             transform: scale(1.02);
             z-index: 2;
         }
+
         .cal-cell.other-month {
             opacity: 0.3;
             background: transparent;
         }
+
         .cal-cell.today {
             border-color: var(--sage);
             box-shadow: inset 0 0 0 1px var(--sage);
         }
+
         .cal-cell.selected {
             background: var(--sage-dim);
             border-color: var(--sage);
             box-shadow: 0 0 12px var(--sage-dim);
         }
+
         .cal-cell-num {
             font-size: 0.85rem;
             font-weight: 600;
@@ -460,18 +530,20 @@
             text-align: center;
             border-radius: 50%;
         }
+
         .cal-cell.today .cal-cell-num {
             background: var(--sage);
             color: #0a0d0b;
             font-weight: 700;
         }
-        
+
         .cal-markers {
             display: flex;
             flex-direction: column;
             gap: 3px;
             margin-top: 4px;
         }
+
         .cal-tag {
             font-size: 0.65rem;
             font-weight: 600;
@@ -482,17 +554,19 @@
             text-overflow: ellipsis;
             line-height: 1.2;
         }
+
         .cal-tag.event {
             background: rgba(124, 244, 152, 0.2);
             color: var(--sage);
             border-left: 2px solid var(--sage);
         }
+
         .cal-tag.ultah {
             background: rgba(255, 200, 90, 0.2);
             color: var(--gold);
             border-left: 2px solid var(--gold);
         }
-        
+
         /* ─── Side Agenda Panel ─── */
         .agenda-panel {
             background: var(--bg-card);
@@ -503,6 +577,7 @@
             position: sticky;
             top: 90px;
         }
+
         .agenda-header {
             display: flex;
             align-items: center;
@@ -511,10 +586,12 @@
             border-bottom: 1px solid var(--border);
             margin-bottom: 18px;
         }
+
         .agenda-header h3 {
             font-size: 1.1rem;
             font-weight: 700;
         }
+
         .agenda-date-badge {
             font-size: 0.75rem;
             font-weight: 600;
@@ -523,7 +600,7 @@
             padding: 4px 10px;
             border-radius: 100px;
         }
-        
+
         .agenda-list {
             display: flex;
             flex-direction: column;
@@ -532,19 +609,21 @@
             overflow-y: auto;
             padding-right: 4px;
         }
+
         .agenda-empty {
             text-align: center;
             padding: 40px 10px;
             color: var(--text-muted);
             font-size: 0.88rem;
         }
+
         .agenda-empty i {
             font-size: 2rem;
             margin-bottom: 10px;
             color: var(--text-dim);
             opacity: 0.5;
         }
-        
+
         .agenda-item {
             background: var(--bg-elevated);
             border: 1px solid var(--border);
@@ -555,9 +634,11 @@
             align-items: center;
             transition: all var(--transition);
         }
+
         .agenda-item:hover {
             border-color: var(--border-hover);
         }
+
         .agenda-item img {
             width: 52px;
             height: 52px;
@@ -566,10 +647,12 @@
             flex-shrink: 0;
             border: 1px solid var(--border);
         }
+
         .agenda-item-info {
             flex: 1;
             min-width: 0;
         }
+
         .agenda-item-badge {
             display: inline-block;
             font-size: 0.62rem;
@@ -579,8 +662,17 @@
             border-radius: 100px;
             margin-bottom: 4px;
         }
-        .agenda-item-badge.event { background: var(--sage-dim); color: var(--sage); }
-        .agenda-item-badge.ultah { background: var(--gold-dim); color: var(--gold); }
+
+        .agenda-item-badge.event {
+            background: var(--sage-dim);
+            color: var(--sage);
+        }
+
+        .agenda-item-badge.ultah {
+            background: var(--gold-dim);
+            color: var(--gold);
+        }
+
         .agenda-item-title {
             font-size: 0.9rem;
             font-weight: 700;
@@ -589,16 +681,18 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .agenda-item-desc {
             font-size: 0.78rem;
             color: var(--text-dim);
             line-height: 1.4;
         }
+
         .age-highlight {
             color: var(--gold);
             font-weight: 700;
         }
-        
+
         .agenda-quick-add {
             margin-top: 18px;
             padding-top: 14px;
@@ -606,7 +700,7 @@
             display: flex;
             gap: 8px;
         }
-        
+
         /* ─── FORM STYLES ─── */
         .form-card {
             max-width: 680px;
@@ -617,29 +711,34 @@
             padding: 32px;
             box-shadow: var(--shadow);
         }
+
         .form-card-header {
             margin-bottom: 24px;
         }
+
         .form-card-header h2 {
             font-size: 1.3rem;
             font-weight: 700;
             margin-bottom: 4px;
         }
+
         .form-card-header p {
             font-size: 0.85rem;
             color: var(--text-dim);
         }
-        
+
         .admin-form {
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
+
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
+
         .form-label {
             font-size: 0.75rem;
             font-weight: 700;
@@ -650,20 +749,23 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .form-hint {
             font-size: 0.72rem;
             color: var(--text-muted);
             font-weight: 400;
             text-transform: none;
         }
+
         .form-hint a {
             color: var(--sage);
             text-decoration: none;
         }
+
         .form-hint a:hover {
             text-decoration: underline;
         }
-        
+
         .admin-form input[type="text"],
         .admin-form input[type="url"],
         .admin-form input[type="date"],
@@ -679,16 +781,52 @@
             outline: none;
             transition: all var(--transition);
         }
+
         .admin-form input:focus,
         .admin-form textarea:focus {
             border-color: var(--sage);
             box-shadow: 0 0 0 3px var(--sage-dim);
         }
+
         .admin-form textarea {
             min-height: 100px;
             resize: vertical;
         }
-        
+
+        /* ─── Input dengan ikon (WA, Email, dll) ─── */
+        .icon-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .icon-input-wrap>i {
+            position: absolute;
+            left: 14px;
+            color: var(--sage);
+            font-size: 1rem;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .icon-input-wrap input {
+            padding-left: 44px !important;
+        }
+
+        .wa-prefix {
+            position: absolute;
+            left: 42px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .wa-prefix~input {
+            padding-left: 72px !important;
+        }
+
         .age-calculator-pill {
             display: inline-flex;
             align-items: center;
@@ -701,13 +839,14 @@
             font-weight: 700;
             margin-top: 4px;
         }
-        
+
         /* ─── Pilihan Jenis Event (Tetap / Tidak Tetap) ─── */
         .tetap-choice-group {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
         }
+
         .tetap-choice {
             flex: 1;
             min-width: 200px;
@@ -721,21 +860,25 @@
             cursor: pointer;
             transition: all var(--transition);
         }
+
         .tetap-choice:hover {
             border-color: var(--border-hover);
         }
+
         .tetap-choice input[type="radio"] {
             accent-color: var(--sage);
             margin-top: 3px;
             cursor: pointer;
             flex-shrink: 0;
         }
+
         .tetap-choice.selected,
         .tetap-choice:has(input:checked) {
             border-color: var(--sage);
             background: var(--sage-dim);
             box-shadow: 0 0 0 3px var(--sage-dim);
         }
+
         .tetap-choice .choice-title {
             display: flex;
             align-items: center;
@@ -744,6 +887,7 @@
             font-weight: 700;
             color: var(--text);
         }
+
         .tetap-choice .choice-desc {
             display: block;
             font-size: 0.72rem;
@@ -751,7 +895,7 @@
             line-height: 1.45;
             margin-top: 3px;
         }
-        
+
         .cdn-preview-box {
             position: relative;
             border-radius: 12px;
@@ -761,6 +905,7 @@
             background: var(--bg-elevated);
             text-align: center;
         }
+
         .cdn-preview-box img {
             max-width: 100%;
             max-height: 200px;
@@ -768,7 +913,7 @@
             display: block;
             margin: 0 auto;
         }
-        
+
         .btn-submit {
             background: linear-gradient(135deg, var(--sage), var(--sage-dark));
             color: #0a0d0b;
@@ -787,16 +932,18 @@
             box-shadow: 0 4px 16px var(--sage-glow);
             margin-top: 8px;
         }
+
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(124,244,152,0.3);
+            box-shadow: 0 8px 24px rgba(124, 244, 152, 0.3);
         }
+
         .btn-submit:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-        
+
         /* ─── KELOLA DATA TAB ─── */
         .kelola-wrapper {
             background: var(--bg-card);
@@ -805,6 +952,7 @@
             padding: 24px;
             box-shadow: var(--shadow);
         }
+
         .kelola-top {
             display: flex;
             align-items: center;
@@ -813,11 +961,13 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
+
         .kelola-search {
             position: relative;
             flex: 1;
             min-width: 240px;
         }
+
         .kelola-search i {
             position: absolute;
             left: 14px;
@@ -826,6 +976,7 @@
             color: var(--text-muted);
             font-size: 0.85rem;
         }
+
         .kelola-search input {
             width: 100%;
             background: var(--bg-elevated);
@@ -838,14 +989,16 @@
             outline: none;
             transition: border-color var(--transition);
         }
+
         .kelola-search input:focus {
             border-color: var(--sage);
         }
-        
+
         .filter-pills {
             display: flex;
             gap: 8px;
         }
+
         .pill-btn {
             background: var(--bg-elevated);
             border: 1px solid var(--border);
@@ -858,18 +1011,23 @@
             font-family: inherit;
             transition: all var(--transition);
         }
-        .pill-btn:hover { color: var(--text); }
+
+        .pill-btn:hover {
+            color: var(--text);
+        }
+
         .pill-btn.active {
             background: var(--sage);
             color: #0a0d0b;
             border-color: var(--sage);
         }
-        
+
         .kelola-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 16px;
         }
+
         .kelola-card {
             background: var(--bg-elevated);
             border: 1px solid var(--border);
@@ -880,10 +1038,12 @@
             align-items: center;
             transition: all var(--transition);
         }
+
         .kelola-card:hover {
             border-color: var(--border-hover);
             transform: translateY(-2px);
         }
+
         .kelola-card img {
             width: 60px;
             height: 60px;
@@ -892,10 +1052,12 @@
             border: 1px solid var(--border);
             flex-shrink: 0;
         }
+
         .kelola-card-content {
             flex: 1;
             min-width: 0;
         }
+
         .kelola-card-title {
             font-size: 0.95rem;
             font-weight: 700;
@@ -905,6 +1067,7 @@
             text-overflow: ellipsis;
             margin-bottom: 2px;
         }
+
         .kelola-card-meta {
             font-size: 0.78rem;
             color: var(--text-muted);
@@ -912,6 +1075,7 @@
             flex-direction: column;
             gap: 2px;
         }
+
         .kelola-delete-btn {
             background: transparent;
             border: 1px solid var(--danger-dim);
@@ -926,14 +1090,16 @@
             transition: all var(--transition);
             flex-shrink: 0;
         }
+
         .kelola-delete-btn:hover {
             background: var(--danger);
             color: #fff;
             border-color: var(--danger);
         }
+
         .kelola-edit-btn {
             background: transparent;
-            border: 1px solid rgba(124,244,152,0.25);
+            border: 1px solid rgba(124, 244, 152, 0.25);
             color: var(--sage);
             width: 36px;
             height: 36px;
@@ -945,19 +1111,27 @@
             transition: all var(--transition);
             flex-shrink: 0;
         }
+
         .kelola-edit-btn:hover {
             background: var(--sage);
             color: #0a0d0b;
             border-color: var(--sage);
         }
-        .kelola-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+
+        .kelola-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
         .edit-banner {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
             background: var(--gold-dim);
-            border: 1px solid rgba(255,200,90,0.4);
+            border: 1px solid rgba(255, 200, 90, 0.4);
             color: var(--gold);
             border-radius: 12px;
             padding: 10px 14px;
@@ -966,8 +1140,17 @@
             font-weight: 600;
             animation: fadeIn 0.3s ease-out;
         }
-        .edit-banner.error { background: var(--danger-dim); border-color: rgba(239,68,68,0.4); color: var(--danger); }
-        .edit-banner i { margin-right: 6px; }
+
+        .edit-banner.error {
+            background: var(--danger-dim);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: var(--danger);
+        }
+
+        .edit-banner i {
+            margin-right: 6px;
+        }
+
         .edit-cancel-btn {
             background: transparent;
             border: 1px solid currentColor;
@@ -984,7 +1167,12 @@
             transition: all var(--transition);
             flex-shrink: 0;
         }
-        .edit-cancel-btn:hover { background: currentColor; color: var(--bg-card); }
+
+        .edit-cancel-btn:hover {
+            background: currentColor;
+            color: var(--bg-card);
+        }
+
         .btn-edit-submit {
             background: linear-gradient(135deg, var(--gold), #e6a800);
             color: #0a0d0b;
@@ -1000,12 +1188,21 @@
             justify-content: center;
             gap: 10px;
             transition: all var(--transition);
-            box-shadow: 0 4px 16px rgba(255,200,90,0.2);
+            box-shadow: 0 4px 16px rgba(255, 200, 90, 0.2);
             margin-top: 8px;
         }
-        .btn-edit-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,200,90,0.35); }
-        .btn-edit-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        
+
+        .btn-edit-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 200, 90, 0.35);
+        }
+
+        .btn-edit-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         /* ─── Toast Notifications ─── */
         .toast-container {
             position: fixed;
@@ -1016,6 +1213,7 @@
             flex-direction: column;
             gap: 10px;
         }
+
         .toast {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -1031,79 +1229,118 @@
             animation: slideUp 0.3s ease-out;
             min-width: 260px;
         }
-        .toast.success { border-left: 4px solid var(--sage); }
-        .toast.error { border-left: 4px solid var(--danger); }
-        .toast i { font-size: 1.1rem; }
-        .toast.success i { color: var(--sage); }
-        .toast.error i { color: var(--danger); }
-        
+
+        .toast.success {
+            border-left: 4px solid var(--sage);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast i {
+            font-size: 1.1rem;
+        }
+
+        .toast.success i {
+            color: var(--sage);
+        }
+
+        .toast.error i {
+            color: var(--danger);
+        }
+
         /* ─── Animations ─── */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
         /* ─── Responsive ─── */
         @media (max-width: 900px) {
             .calendar-layout {
                 grid-template-columns: 1fr;
             }
+
             .agenda-panel {
                 position: static;
             }
         }
+
         @media (max-width: 640px) {
             .admin-nav {
                 padding: 12px 16px;
             }
+
             .nav-brand .brand-title {
                 font-size: 0.95rem;
             }
+
             .dashboard-view {
                 padding: 16px 12px 40px;
             }
+
             .cal-cell {
                 min-height: 54px;
                 padding: 4px 2px;
             }
+
             .cal-cell-num {
                 font-size: 0.75rem;
                 width: 20px;
                 height: 20px;
                 line-height: 20px;
             }
+
             .cal-tag {
                 font-size: 0.55rem;
                 padding: 1px 3px;
             }
+
             .form-card {
                 padding: 20px 16px;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="glow one"></div>
     <div class="glow two"></div>
-    
+
     <div class="app-wrapper">
         <!-- ─── Top Navbar ─── -->
         <header class="admin-nav">
-            <a href="index.html" class="nav-brand">
+            <a href="/" class="nav-brand">
                 <img src="Logo_xxvganespic.png" alt="Logo Ganespic" />
                 <span class="brand-title">Ganespic XXV</span>
                 <span class="brand-badge">Admin Portal</span>
             </a>
-            
+
             <div class="nav-actions">
                 <button class="nav-btn" id="themeToggle" title="Ganti Tema">
                     <i class="fas fa-moon" id="themeIcon"></i>
                 </button>
-                <a href="index.html" class="nav-btn">
+                <a href="/" class="nav-btn">
                     <i class="fas fa-home"></i>
                     <span>Web Utama</span>
                 </a>
@@ -1113,7 +1350,7 @@
                 </button>
             </div>
         </header>
-        
+
         <!-- ─── 1. Login View ─── -->
         <main class="login-view" id="loginView">
             <div class="login-card">
@@ -1122,7 +1359,8 @@
                 <p>Silakan masukkan password admin untuk mengelola agenda dan database.</p>
                 <form id="formLogin" class="login-input-group">
                     <div style="position:relative;">
-                        <input type="password" id="adminPasswordInput" placeholder="Masukkan password admin" required autofocus autocomplete="current-password" style="padding-right:46px;" />
+                        <input type="password" id="adminPasswordInput" placeholder="Masukkan password admin" required
+                            autofocus autocomplete="current-password" style="padding-right:46px;" />
                         <button type="button" id="togglePwdBtn" aria-label="Tampilkan password"
                             style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;padding:0;line-height:1;display:flex;align-items:center;">
                             <i class="fas fa-eye"></i>
@@ -1134,7 +1372,7 @@
                 </form>
             </div>
         </main>
-        
+
         <!-- ─── 2. Dashboard View ─── -->
         <main class="dashboard-view" id="dashboardView" style="display:none;">
             <!-- Stats -->
@@ -1161,7 +1399,7 @@
                     </div>
                 </div>
             </section>
-            
+
             <!-- Navigation Tabs -->
             <nav class="admin-nav-tabs">
                 <button class="tab-btn active" data-target="tabCalendar">
@@ -1173,11 +1411,14 @@
                 <button class="tab-btn" data-target="tabAddUltah">
                     <i class="fas fa-cake-candles"></i> Tambah Ulang Tahun
                 </button>
+                <button class="tab-btn" data-target="tabAnggota">
+                    <i class="fas fa-users"></i> Anggota Angkatan (<span id="totalAnggotaBadge">0</span>)
+                </button>
                 <button class="tab-btn" data-target="tabManage">
                     <i class="fas fa-list-check"></i> Kelola Data (<span id="totalDataBadge">0</span>)
                 </button>
             </nav>
-            
+
             <!-- ── TAB 1: KALENDER & AGENDA ── -->
             <section class="tab-section active" id="tabCalendar">
                 <div class="calendar-layout">
@@ -1189,17 +1430,19 @@
                                 <span class="calendar-year-title" id="calYearDisplay">2026</span>
                             </div>
                             <div class="calendar-controls">
-                                <button class="cal-btn" id="btnPrevMonth" title="Bulan Sebelumnya"><i class="fas fa-chevron-left"></i></button>
+                                <button class="cal-btn" id="btnPrevMonth" title="Bulan Sebelumnya"><i
+                                        class="fas fa-chevron-left"></i></button>
                                 <button class="cal-btn" id="btnToday">Hari Ini</button>
-                                <button class="cal-btn" id="btnNextMonth" title="Bulan Berikutnya"><i class="fas fa-chevron-right"></i></button>
+                                <button class="cal-btn" id="btnNextMonth" title="Bulan Berikutnya"><i
+                                        class="fas fa-chevron-right"></i></button>
                             </div>
                         </div>
-                        
+
                         <div class="calendar-grid" id="calendarGrid">
                             <!-- Rendered via JS -->
                         </div>
                     </div>
-                    
+
                     <!-- Side Agenda Panel -->
                     <div class="agenda-panel">
                         <div class="agenda-header">
@@ -1209,14 +1452,14 @@
                             </div>
                             <i class="fas fa-calendar-day" style="color:var(--sage);font-size:1.4rem;"></i>
                         </div>
-                        
+
                         <div class="agenda-list" id="agendaList">
                             <div class="agenda-empty">
                                 <i class="fas fa-calendar-check"></i>
                                 <p>Pilih tanggal pada kalender untuk melihat daftar event & ulang tahun.</p>
                             </div>
                         </div>
-                        
+
                         <div class="agenda-quick-add">
                             <button class="cal-btn" style="flex:1;" id="btnQuickAddEvent">
                                 <i class="fas fa-plus"></i> + Event
@@ -1228,26 +1471,32 @@
                     </div>
                 </div>
             </section>
-            
+
             <!-- ── TAB 2: TAMBAH EVENT ── -->
             <section class="tab-section" id="tabAddEvent">
                 <div class="form-card">
                     <div class="form-card-header">
-                        <h2><i class="fas fa-calendar-plus" style="color:var(--sage);"></i> <span id="eventFormTitle">Tambah Event Baru</span></h2>
+                        <h2><i class="fas fa-calendar-plus" style="color:var(--sage);"></i> <span
+                                id="eventFormTitle">Tambah Event Baru</span></h2>
                         <p>Simpan data event dan tautan foto CDN langsung ke database.</p>
                     </div>
                     <div class="edit-banner" id="editBannerEvent" style="display:none;">
-                        <span><i class="fas fa-pen-to-square"></i> Sedang mengedit event — ID: <b id="editIdEvent"></b></span>
-                        <button type="button" class="edit-cancel-btn" onclick="cancelEdit('event')"><i class="fas fa-xmark"></i> Batal</button>
+                        <span><i class="fas fa-pen-to-square"></i> Sedang mengedit event — ID: <b
+                                id="editIdEvent"></b></span>
+                        <button type="button" class="edit-cancel-btn" onclick="cancelEdit('event')"><i
+                                class="fas fa-xmark"></i> Batal</button>
                     </div>
                     <form class="admin-form" id="formAddEvent">
                         <div class="form-group">
                             <label class="form-label">Judul Event</label>
-                            <input type="text" id="eventJudul" placeholder="Contoh: Makrab Angkatan XXV / Gathering" required />
+                            <input type="text" id="eventJudul" placeholder="Contoh: Makrab Angkatan XXV / Gathering"
+                                required />
                         </div>
                         <div class="form-group">
                             <label class="form-label">Deskripsi Event</label>
-                            <textarea id="eventDeskripsi" placeholder="Tuliskan keterangan waktu, lokasi, atau informasi penting acara..." required></textarea>
+                            <textarea id="eventDeskripsi"
+                                placeholder="Tuliskan keterangan waktu, lokasi, atau informasi penting acara..."
+                                required></textarea>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Tanggal Pelaksanaan (YYYY-MM-DD)</label>
@@ -1262,15 +1511,19 @@
                                 <label class="tetap-choice selected">
                                     <input type="radio" name="eventTetap" value="tetap" checked />
                                     <span>
-                                        <span class="choice-title"><i class="fas fa-repeat" style="color:var(--sage);"></i> Tetap (Tahunan)</span>
-                                        <span class="choice-desc">Event selalu ada setiap tahun di tanggal & bulan yang sama. Contoh: Event Kemerdekaan NKRI (17 Agustus).</span>
+                                        <span class="choice-title"><i class="fas fa-repeat"
+                                                style="color:var(--sage);"></i> Tetap (Tahunan)</span>
+                                        <span class="choice-desc">Event selalu ada setiap tahun di tanggal & bulan yang
+                                            sama. Contoh: Event Kemerdekaan NKRI (17 Agustus).</span>
                                     </span>
                                 </label>
                                 <label class="tetap-choice">
                                     <input type="radio" name="eventTetap" value="tidak" />
                                     <span>
-                                        <span class="choice-title"><i class="fas fa-clock-rotate-left" style="color:var(--gold);"></i> Tidak Tetap</span>
-                                        <span class="choice-desc">Hanya berlaku pada tanggal pelaksanaan. Setelah hari berganti (esok hari), data otomatis terhapus dari database.</span>
+                                        <span class="choice-title"><i class="fas fa-clock-rotate-left"
+                                                style="color:var(--gold);"></i> Tidak Tetap</span>
+                                        <span class="choice-desc">Hanya berlaku pada tanggal pelaksanaan. Setelah hari
+                                            berganti (esok hari), data otomatis terhapus dari database.</span>
                                     </span>
                                 </label>
                             </div>
@@ -1278,7 +1531,9 @@
                         <div class="form-group">
                             <label class="form-label">
                                 Link Foto / Banner CDN
-                                <span class="form-hint">Upload gratis di <a href="https://imgbb.com" target="_blank">ImgBB</a> / <a href="https://postimages.org" target="_blank">Postimages</a></span>
+                                <span class="form-hint">Upload gratis di <a href="https://imgbb.com"
+                                        target="_blank">ImgBB</a> / <a href="https://postimages.org"
+                                        target="_blank">Postimages</a></span>
                             </label>
                             <input type="url" id="eventFotoUrl" placeholder="https://i.ibb.co/contoh/foto-event.jpg" />
                             <div class="cdn-preview-box" id="previewBoxEvent" style="display:none;">
@@ -1291,17 +1546,20 @@
                     </form>
                 </div>
             </section>
-            
+
             <!-- ── TAB 3: TAMBAH ULANG TAHUN ── -->
             <section class="tab-section" id="tabAddUltah">
                 <div class="form-card">
                     <div class="form-card-header">
-                        <h2><i class="fas fa-cake-candles" style="color:var(--gold);"></i> <span id="ultahFormTitle">Tambah Ulang Tahun Anggota</span></h2>
+                        <h2><i class="fas fa-cake-candles" style="color:var(--gold);"></i> <span
+                                id="ultahFormTitle">Tambah Ulang Tahun Anggota</span></h2>
                         <p>Masukkan tanggal lahir lengkap agar umur anggota dapat terhitung otomatis setiap tahun.</p>
                     </div>
                     <div class="edit-banner" id="editBannerUltah" style="display:none;">
-                        <span><i class="fas fa-pen-to-square"></i> Sedang mengedit data — ID: <b id="editIdUltah"></b></span>
-                        <button type="button" class="edit-cancel-btn" onclick="cancelEdit('ultah')"><i class="fas fa-xmark"></i> Batal</button>
+                        <span><i class="fas fa-pen-to-square"></i> Sedang mengedit data — ID: <b
+                                id="editIdUltah"></b></span>
+                        <button type="button" class="edit-cancel-btn" onclick="cancelEdit('ultah')"><i
+                                class="fas fa-xmark"></i> Batal</button>
                     </div>
                     <form class="admin-form" id="formAddUltah">
                         <div class="form-group">
@@ -1322,9 +1580,12 @@
                         <div class="form-group">
                             <label class="form-label">
                                 Link Foto Anggota CDN
-                                <span class="form-hint">Upload gratis di <a href="https://imgbb.com" target="_blank">ImgBB</a> / <a href="https://postimages.org" target="_blank">Postimages</a></span>
+                                <span class="form-hint">Upload gratis di <a href="https://imgbb.com"
+                                        target="_blank">ImgBB</a> / <a href="https://postimages.org"
+                                        target="_blank">Postimages</a></span>
                             </label>
-                            <input type="url" id="ultahFotoUrl" placeholder="https://i.ibb.co/contoh/foto-anggota.jpg" />
+                            <input type="url" id="ultahFotoUrl"
+                                placeholder="https://i.ibb.co/contoh/foto-anggota.jpg" />
                             <div class="cdn-preview-box" id="previewBoxUltah" style="display:none;">
                                 <img id="imgPreviewUltah" alt="Preview CDN Ultah" />
                             </div>
@@ -1335,7 +1596,110 @@
                     </form>
                 </div>
             </section>
-            
+
+            <!-- ── TAB 5: ANGGOTA ANGKATAN ── -->
+            <section class="tab-section" id="tabAnggota">
+                <div class="form-card" style="margin-bottom:24px;">
+                    <div class="form-card-header">
+                        <h2><i class="fas fa-user-plus" style="color:var(--sage);"></i> <span
+                                id="anggotaFormTitle">Tambah Anggota Angkatan</span></h2>
+                        <p>Data anggota akan tampil di halaman utama, terurut dari No Induk.</p>
+                    </div>
+                    <div class="edit-banner" id="editBannerAnggota" style="display:none;">
+                        <span><i class="fas fa-pen-to-square"></i> Sedang mengedit anggota — ID: <b
+                                id="editIdAnggota"></b></span>
+                        <button type="button" class="edit-cancel-btn" onclick="cancelEditAnggota()"><i
+                                class="fas fa-xmark"></i> Batal</button>
+                    </div>
+                    <form class="admin-form" id="formAddAnggota">
+                        <div class="form-group">
+                            <label class="form-label">No Induk / NIS</label>
+                            <input type="text" id="angNoInduk" placeholder="Contoh: 20230323" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nama Lengkap (beserta bin/binti)</label>
+                            <input type="text" id="angNamaLengkap" placeholder="Contoh: Muhammad Bayu bin Budi Pratama"
+                                required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nama Panggilan</label>
+                            <input type="text" id="angNamaPanggilan" placeholder="Contoh: Bayu" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                Link Foto Anggota (CDN)
+                                <span class="form-hint">Upload gratis di <a href="https://imgbb.com"
+                                        target="_blank">ImgBB</a> / <a href="https://postimages.org"
+                                        target="_blank">Postimages</a></span>
+                            </label>
+                            <input type="url" id="angFotoUrl" placeholder="https://i.ibb.co/contoh/foto-anggota.jpg" />
+                            <div class="cdn-preview-box" id="previewBoxAnggota" style="display:none;">
+                                <img id="imgPreviewAnggota" alt="Preview Foto Anggota" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Link Profil Instagram <span class="form-hint">Tempel link langsung
+                                    — opsional</span></label>
+                            <div class="icon-input-wrap">
+                                <i class="fab fa-instagram"></i>
+                                <input type="text" id="angIgUsername"
+                                    placeholder="https://www.instagram.com/username/" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Link Profil TikTok <span class="form-hint">Tempel link langsung —
+                                    opsional</span></label>
+                            <div class="icon-input-wrap">
+                                <i class="fab fa-tiktok"></i>
+                                <input type="text" id="angTiktokUsername"
+                                    placeholder="https://www.tiktok.com/@username" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email <span class="form-hint">Opsional</span></label>
+                            <div class="icon-input-wrap">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="angEmail" placeholder="contoh@email.com" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nomor WhatsApp <span class="form-hint">Angka saja, diawali 08 atau
+                                    62 — opsional</span></label>
+                            <div class="icon-input-wrap">
+                                <i class="fab fa-whatsapp"></i>
+                                <span class="wa-prefix">+62</span>
+                                <input type="tel" id="angWhatsapp" inputmode="numeric" placeholder="81234567890" />
+                            </div>
+                            <div id="waPreview"
+                                style="display:none;margin-top:8px;font-size:0.75rem;color:var(--text-muted);">
+                                <i class="fab fa-whatsapp" style="color:#25D366;"></i>
+                                Preview: <a id="waPreviewLink" href="#" target="_blank" rel="noopener"
+                                    style="color:var(--sage);text-decoration:none;">wa.me/...</a>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Alamat Rumah</label>
+                            <textarea id="angAlamatRumah" placeholder="Alamat lengkap rumah anggota..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit" id="btnSubmitAnggota">
+                            <i class="fas fa-paper-plane"></i> Simpan Anggota ke Database
+                        </button>
+                    </form>
+                </div>
+
+                <div class="kelola-wrapper">
+                    <div class="kelola-top">
+                        <div class="kelola-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="anggotaSearchInput" placeholder="Cari nama / no induk anggota..." />
+                        </div>
+                    </div>
+                    <div class="kelola-grid" id="anggotaGrid">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+            </section>
+
             <!-- ── TAB 4: KELOLA DATA ── -->
             <section class="tab-section" id="tabManage">
                 <div class="kelola-wrapper">
@@ -1348,9 +1712,10 @@
                             <button class="pill-btn active" data-filter="all">Semua</button>
                             <button class="pill-btn" data-filter="event">Event</button>
                             <button class="pill-btn" data-filter="ultah">Ulang Tahun</button>
+                            <button class="pill-btn" data-filter="anggota">Anggota</button>
                         </div>
                     </div>
-                    
+
                     <div class="kelola-grid" id="manageGrid">
                         <!-- Rendered via JS -->
                     </div>
@@ -1358,15 +1723,17 @@
             </section>
         </main>
     </div>
-    
+
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        (function() {
+        (function () {
             // ── Konfigurasi & State (Vercel Serverless & Postgres) ──
             const ADMIN_PASS = 'admininformasipublikasi';
             const API_URL = '/api/news';
-            
+            const ANGGOTA_API = '/api/anggota';
+            let allAnggotaData = [];
+
             // ─── Password Toggle ───
             const _pwdInput = document.getElementById('adminPasswordInput');
             const _toggleBtn = document.getElementById('togglePwdBtn');
@@ -1386,13 +1753,14 @@
             let activeFilter = 'all';
             let editingEventId = null;
             let editingUltahId = null;
-            
+            let editingAnggotaId = null;
+
             const monthNames = [
                 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
                 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
             ];
             const dayNames = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-            
+
             // Helper Hitung Umur
             function getAgeInfo(tanggalLahirStr, targetYear = currentCalYear) {
                 if (!tanggalLahirStr || tanggalLahirStr.length < 4) return '';
@@ -1401,7 +1769,7 @@
                 const age = targetYear - birthYear;
                 return `Ultah yang ke-${age} tahun (${age} th)`;
             }
-            
+
             // Helper: apakah item tampil pada tanggal tertentu?
             // - Event TIDAK TETAP → hanya pada tanggal persisnya (YYYY-MM-DD).
             // - Event TETAP & Ulang Tahun → berulang tiap tahun (cukup cocokkan bulan-tanggal).
@@ -1413,40 +1781,40 @@
                 const t = item.tanggal.length > 5 ? item.tanggal.slice(5) : item.tanggal;
                 return t === mmdd;
             }
-            
+
             // Helper: sinkronkan tampilan pilihan Tetap / Tidak Tetap
             function syncTetapChoiceUI() {
                 const checked = document.querySelector('input[name="eventTetap"]:checked');
                 document.querySelectorAll('#tetapChoiceGroup .tetap-choice').forEach(l => l.classList.remove('selected'));
                 if (checked) checked.closest('.tetap-choice').classList.add('selected');
             }
-            
+
             // ── DOM Elements ──
             const loginView = document.getElementById('loginView');
             const dashboardView = document.getElementById('dashboardView');
             const formLogin = document.getElementById('formLogin');
             const adminPasswordInput = document.getElementById('adminPasswordInput');
             const btnLogout = document.getElementById('btnLogout');
-            
+
             // ── Theme Manager ──
             const themeToggle = document.getElementById('themeToggle');
             const themeIcon = document.getElementById('themeIcon');
             const html = document.documentElement;
-            
+
             function applyTheme(theme) {
                 html.setAttribute('data-theme', theme);
                 localStorage.setItem('ganespic-theme', theme);
                 themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
             }
-            const savedTheme = localStorage.getItem('ganespic-theme') || 
+            const savedTheme = localStorage.getItem('ganespic-theme') ||
                 (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
             applyTheme(savedTheme);
-            
+
             themeToggle.addEventListener('click', () => {
                 const current = html.getAttribute('data-theme');
                 applyTheme(current === 'dark' ? 'light' : 'dark');
             });
-            
+
             function showToast(message, type = 'success') {
                 const container = document.getElementById('toastContainer');
                 const toast = document.createElement('div');
@@ -1461,7 +1829,7 @@
                     setTimeout(() => toast.remove(), 300);
                 }, 3500);
             }
-            
+
             // ── Auth Handling ──
             function checkAuth() {
                 const sessionAuth = sessionStorage.getItem('ganespic_admin_auth');
@@ -1476,7 +1844,7 @@
                     btnLogout.style.display = 'none';
                 }
             }
-            
+
             formLogin.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const pass = adminPasswordInput.value;
@@ -1489,7 +1857,7 @@
                     showToast('Password admin salah! Silakan coba lagi.', 'error');
                 }
             });
-            
+
             btnLogout.addEventListener('click', () => {
                 if (confirm('Yakin ingin keluar dari panel admin?')) {
                     sessionStorage.removeItem('ganespic_admin_auth');
@@ -1497,26 +1865,28 @@
                     showToast('Anda telah logout.', 'success');
                 }
             });
-            
-            // ── Tab Navigation ──
+
+            // ── Tab Navigation ── render anggota saat tab dibuka
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                     document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
-                    
+
                     btn.classList.add('active');
                     const targetId = btn.dataset.target;
                     const targetSection = document.getElementById(targetId);
                     if (targetSection) targetSection.classList.add('active');
-                    
+
                     if (targetId === 'tabCalendar') {
                         renderCalendar();
                     } else if (targetId === 'tabManage') {
                         renderManageList();
+                    } else if (targetId === 'tabAnggota') {
+                        renderAnggotaList();
                     }
                 });
             });
-            
+
             // ── Fetch Data ──
             async function loadData() {
                 try {
@@ -1531,28 +1901,29 @@
                         allNewsData = [];
                         showToast(data.error || `HTTP ${res.status}`, 'error');
                     }
-                } catch(e) {
+                } catch (e) {
                     console.warn('API fetch note:', e);
                 }
-                
+
                 updateStats();
                 renderCalendar();
                 renderManageList();
-                
+                loadAnggota();
+
                 const today = new Date();
                 const mm = String(today.getMonth() + 1).padStart(2, '0');
                 const dd = String(today.getDate()).padStart(2, '0');
                 selectDate(`${today.getFullYear()}-${mm}-${dd}`);
             }
-            
+
             function updateStats() {
                 const events = allNewsData.filter(item => item.tipe === 'event');
                 const ultahs = allNewsData.filter(item => item.tipe === 'ultah');
-                
+
                 document.getElementById('statEventCount').textContent = events.length;
                 document.getElementById('statUltahCount').textContent = ultahs.length;
-                document.getElementById('totalDataBadge').textContent = allNewsData.length;
-                
+                document.getElementById('totalDataBadge').textContent = allNewsData.length + allAnggotaData.length;
+
                 const curMonthStr = String(currentCalMonth + 1).padStart(2, '0');
                 const monthAgendas = allNewsData.filter(item => {
                     if (!item.tanggal) return false;
@@ -1565,31 +1936,31 @@
                 });
                 document.getElementById('statMonthCount').textContent = monthAgendas.length;
             }
-            
+
             // ── Calendar Rendering ──
             function renderCalendar() {
                 const grid = document.getElementById('calendarGrid');
                 grid.innerHTML = '';
-                
+
                 document.getElementById('calMonthDisplay').textContent = monthNames[currentCalMonth];
                 document.getElementById('calYearDisplay').textContent = currentCalYear;
-                
+
                 dayNames.forEach(name => {
                     const h = document.createElement('div');
                     h.className = 'cal-day-header';
                     h.textContent = name;
                     grid.appendChild(h);
                 });
-                
+
                 const firstDayOfMonth = new Date(currentCalYear, currentCalMonth, 1);
                 const lastDayOfMonth = new Date(currentCalYear, currentCalMonth + 1, 0);
                 const totalDays = lastDayOfMonth.getDate();
-                
+
                 let startDayIndex = firstDayOfMonth.getDay() - 1;
                 if (startDayIndex === -1) startDayIndex = 6;
-                
+
                 const prevMonthLastDay = new Date(currentCalYear, currentCalMonth, 0).getDate();
-                
+
                 for (let i = startDayIndex - 1; i >= 0; i--) {
                     const dayNum = prevMonthLastDay - i;
                     const cell = document.createElement('div');
@@ -1597,16 +1968,16 @@
                     cell.innerHTML = `<span class="cal-cell-num">${dayNum}</span>`;
                     grid.appendChild(cell);
                 }
-                
+
                 const today = new Date();
                 const isCurrentMonthNow = today.getFullYear() === currentCalYear && today.getMonth() === currentCalMonth;
                 const curMonthStr = String(currentCalMonth + 1).padStart(2, '0');
-                
+
                 for (let d = 1; d <= totalDays; d++) {
                     const dStr = String(d).padStart(2, '0');
                     const dateFullStr = `${currentCalYear}-${curMonthStr}-${dStr}`;
                     const mmdd = `${curMonthStr}-${dStr}`;
-                    
+
                     const cell = document.createElement('div');
                     cell.className = 'cal-cell';
                     if (isCurrentMonthNow && today.getDate() === d) {
@@ -1615,9 +1986,9 @@
                     if (selectedCalDate === dateFullStr) {
                         cell.classList.add('selected');
                     }
-                    
+
                     const dayItems = allNewsData.filter(item => itemMatchesDate(item, mmdd, dateFullStr));
-                    
+
                     let markersHtml = '<div class="cal-markers">';
                     dayItems.forEach(item => {
                         const isEvent = item.tipe === 'event';
@@ -1628,12 +1999,12 @@
                         markersHtml += `<div class="${tagClass}" title="${title}">${icon} ${title}</div>`;
                     });
                     markersHtml += '</div>';
-                    
+
                     cell.innerHTML = `<span class="cal-cell-num">${d}</span>${markersHtml}`;
                     cell.addEventListener('click', () => selectDate(dateFullStr));
                     grid.appendChild(cell);
                 }
-                
+
                 const totalCells = startDayIndex + totalDays;
                 const nextDaysCount = (7 - (totalCells % 7)) % 7;
                 for (let n = 1; n <= nextDaysCount; n++) {
@@ -1642,24 +2013,24 @@
                     cell.innerHTML = `<span class="cal-cell-num">${n}</span>`;
                     grid.appendChild(cell);
                 }
-                
+
                 updateStats();
             }
-            
+
             function selectDate(fullDateStr) {
                 selectedCalDate = fullDateStr;
                 document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected'));
                 renderCalendar();
-                
+
                 const [year, month, day] = fullDateStr.split('-');
                 const monthName = monthNames[parseInt(month, 10) - 1];
                 const mmdd = `${month}-${day}`;
-                
+
                 document.getElementById('selectedDateLabel').textContent = `${parseInt(day, 10)} ${monthName} ${year}`;
-                
+
                 const list = document.getElementById('agendaList');
                 const matchingItems = allNewsData.filter(item => itemMatchesDate(item, mmdd, fullDateStr));
-                
+
                 if (!matchingItems.length) {
                     list.innerHTML = `
                         <div class="agenda-empty">
@@ -1669,18 +2040,18 @@
                     `;
                     return;
                 }
-                
+
                 list.innerHTML = matchingItems.map(item => {
                     const isEvent = item.tipe === 'event';
                     const badgeClass = isEvent ? 'agenda-item-badge event' : 'agenda-item-badge ultah';
                     const badgeText = isEvent ? (item.isTetap === false ? 'Event • Tidak Tetap' : 'Event • Tetap') : 'Ulang Tahun';
                     const title = isEvent ? item.judul : item.nama;
                     const ageText = !isEvent ? getAgeInfo(item.tanggal, parseInt(year, 10)) : '';
-                    const desc = isEvent 
-                        ? (item.deskripsi || '') 
+                    const desc = isEvent
+                        ? (item.deskripsi || '')
                         : `${ageText ? `<strong class="age-highlight">${ageText}</strong><br>` : ''}No ID: ${item.noId || '-'}`;
                     const img = item.fotoUrl || 'Logo_xxvganespic.png';
-                    
+
                     return `
                         <div class="agenda-item">
                             <img src="${img}" alt="${title}" onerror="this.src='Logo_xxvganespic.png'" />
@@ -1693,7 +2064,7 @@
                     `;
                 }).join('');
             }
-            
+
             // Calendar Nav
             document.getElementById('btnPrevMonth').addEventListener('click', () => {
                 currentCalMonth--;
@@ -1713,7 +2084,7 @@
                 const dd = String(now.getDate()).padStart(2, '0');
                 selectDate(`${currentCalYear}-${mm}-${dd}`);
             });
-            
+
             document.getElementById('btnQuickAddEvent').addEventListener('click', () => {
                 document.querySelector('.tab-btn[data-target="tabAddEvent"]').click();
                 if (selectedCalDate) document.getElementById('eventTanggal').value = selectedCalDate;
@@ -1725,7 +2096,7 @@
                     document.getElementById('ultahTanggal').dispatchEvent(new Event('change'));
                 }
             });
-            
+
             // ── Live CDN Photo Previews ──
             function setupCdnPreview(inputId, boxId, imgId) {
                 const input = document.getElementById(inputId);
@@ -1743,17 +2114,17 @@
             }
             setupCdnPreview('eventFotoUrl', 'previewBoxEvent', 'imgPreviewEvent');
             setupCdnPreview('ultahFotoUrl', 'previewBoxUltah', 'imgPreviewUltah');
-            
+
             // ── Pilihan Jenis Event: Tetap / Tidak Tetap ──
             document.querySelectorAll('input[name="eventTetap"]').forEach(radio => {
                 radio.addEventListener('change', syncTetapChoiceUI);
             });
-            
+
             // ── Live Age Preview on Birthday Date Change ──
             const ultahTanggalInput = document.getElementById('ultahTanggal');
             const liveAgePreview = document.getElementById('liveAgePreview');
             const liveAgeText = document.getElementById('liveAgeText');
-            
+
             ultahTanggalInput.addEventListener('change', () => {
                 const val = ultahTanggalInput.value;
                 const info = getAgeInfo(val, new Date().getFullYear());
@@ -1764,17 +2135,17 @@
                     liveAgePreview.style.display = 'none';
                 }
             });
-            
+
             // ── Submit Forms with JSON (CDN Link & Data) ──
             async function saveNewsPayload(payload, form, submitBtn, method = 'POST', editingId = null) {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = method === 'PUT'
                     ? '<i class="fas fa-spinner fa-spin"></i> Menyimpan Perubahan...'
                     : '<i class="fas fa-spinner fa-spin"></i> Menyimpan ke Database...';
-                
+
                 const isEdit = method === 'PUT' && editingId;
                 const url = isEdit ? `${API_URL}?id=${editingId}` : API_URL;
-                
+
                 try {
                     const res = await fetch(url, {
                         method,
@@ -1784,13 +2155,13 @@
                         },
                         body: JSON.stringify(payload)
                     });
-                    
+
                     const resData = await res.json().catch(() => ({}));
-                    
+
                     if (!res.ok) {
                         throw new Error(resData.error || `Server error (HTTP ${res.status})`);
                     }
-                    
+
                     showToast(isEdit ? 'Perubahan berhasil disimpan!' : 'Berhasil disimpan ke database!', 'success');
                     form.reset();
                     syncTetapChoiceUI();
@@ -1802,7 +2173,7 @@
                     }
                     await loadData();
                     document.querySelector('.tab-btn[data-target="tabCalendar"]').click();
-                } catch(e) {
+                } catch (e) {
                     console.error('Save error:', e);
                     showToast('Gagal: ' + e.message, 'error');
                     alert('Gagal menyimpan ke database:\n' + e.message + '\n\nPastikan Vercel sudah di-redeploy setelah Neon terhubung.');
@@ -1813,7 +2184,7 @@
                         : '<i class="fas fa-paper-plane"></i> Simpan ke Database';
                 }
             }
-            
+
             document.getElementById('formAddEvent').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const tetapChoice = document.querySelector('input[name="eventTetap"]:checked');
@@ -1827,7 +2198,7 @@
                     isTetap: tetapChoice ? tetapChoice.value === 'tetap' : true
                 }, e.target, document.getElementById('btnSubmitEvent'), editingEventId ? 'PUT' : 'POST', editingEventId);
             });
-            
+
             document.getElementById('formAddUltah').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 await saveNewsPayload({
@@ -1838,11 +2209,11 @@
                     fotoUrl: document.getElementById('ultahFotoUrl').value.trim()
                 }, e.target, document.getElementById('btnSubmitUltah'), editingUltahId ? 'PUT' : 'POST', editingUltahId);
             });
-            
+
             // ── Kelola Data ──
             const manageSearchInput = document.getElementById('manageSearchInput');
             manageSearchInput.addEventListener('input', renderManageList);
-            
+
             document.querySelectorAll('.pill-btn').forEach(pill => {
                 pill.addEventListener('click', () => {
                     document.querySelectorAll('.pill-btn').forEach(p => p.classList.remove('active'));
@@ -1851,21 +2222,21 @@
                     renderManageList();
                 });
             });
-            
+
             function renderManageList() {
                 const grid = document.getElementById('manageGrid');
                 const query = manageSearchInput.value.toLowerCase().trim();
-                
-                let filtered = allNewsData.filter(item => {
+
+                let filtered = [...allNewsData, ...allAnggotaData].filter(item => {
                     if (activeFilter !== 'all' && item.tipe !== activeFilter) return false;
                     if (query) {
-                        const name = (item.tipe === 'event' ? item.judul : item.nama) || '';
-                        const desc = item.deskripsi || item.noId || '';
+                        const name = (item.tipe === 'event' ? item.judul : (item.namaLengkap || item.nama)) || '';
+                        const desc = item.deskripsi || item.noId || item.noInduk || '';
                         return name.toLowerCase().includes(query) || desc.toLowerCase().includes(query);
                     }
                     return true;
                 });
-                
+
                 if (!filtered.length) {
                     grid.innerHTML = `
                         <div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">
@@ -1875,60 +2246,79 @@
                     `;
                     return;
                 }
-                
+
                 grid.innerHTML = filtered.map(item => {
                     const isEvent = item.tipe === 'event';
-                    const title = isEvent ? item.judul : item.nama;
+                    const isAnggota = item.tipe === 'anggota';
+                    const title = isEvent ? item.judul : (item.namaLengkap || item.nama);
                     const badgeTag = isEvent
                         ? '<span class="agenda-item-badge event">Event</span>'
-                        : '<span class="agenda-item-badge ultah">Ultah</span>';
-                    const ageText = !isEvent ? getAgeInfo(item.tanggal, currentCalYear) : '';
+                        : isAnggota
+                            ? '<span class="agenda-item-badge" style="background:rgba(124,244,152,.15);color:var(--sage);">Anggota</span>'
+                            : '<span class="agenda-item-badge ultah">Ultah</span>';
+                    const ageText = (!isEvent && !isAnggota) ? getAgeInfo(item.tanggal, currentCalYear) : '';
                     const meta = isEvent
                         ? `<span><i class="fas fa-calendar"></i> ${item.tanggal || '-'}</span><span><i class="fas ${item.isTetap === false ? 'fa-clock-rotate-left' : 'fa-repeat'}"></i> ${item.isTetap === false ? 'Tidak Tetap (auto-hapus setelah event)' : 'Tetap / Tahunan'}</span>`
-                        : `<span><i class="fas fa-id-card"></i> ${item.noId || '-'} • <i class="fas fa-cake-candles"></i> ${item.tanggal || '-'}</span>${ageText ? `<span class="age-highlight">${ageText}</span>` : ''}`;
+                        : isAnggota
+                            ? `<span><i class="fas fa-id-card"></i> NIS ${item.noInduk || '-'}</span>${item.igUsername ? `<span><i class="fab fa-instagram"></i> ${escHtml(sosmedLabel(item.igUsername))}</span>` : ''}${item.whatsapp ? `<span><i class="fab fa-whatsapp"></i> +${escHtml(String(item.whatsapp).replace(/[^0-9]/g, '').replace(/^62/, ''))}</span>` : ''}`
+                            : `<span><i class="fas fa-id-card"></i> ${item.noId || '-'} • <i class="fas fa-cake-candles"></i> ${item.tanggal || '-'}</span>${ageText ? `<span class="age-highlight">${ageText}</span>` : ''}`;
                     const img = item.fotoUrl || 'Logo_xxvganespic.png';
-                    
+                    const editBtn = isAnggota
+                        ? `<button class="kelola-edit-btn" data-edit-ang-id="${escHtml(item.id)}" title="Edit anggota"><i class="fas fa-pen"></i></button>`
+                        : `<button class="kelola-edit-btn" data-edit-id="${escHtml(item.id)}" title="Edit data"><i class="fas fa-pen"></i></button>`;
+
                     return `
                         <div class="kelola-card">
-                            <img src="${img}" alt="${title}" onerror="this.src='Logo_xxvganespic.png'" />
+                            <img src="${escHtml(img)}" alt="${escHtml(title)}" onerror="this.src='Logo_xxvganespic.png'" />
                             <div class="kelola-card-content">
                                 <div>${badgeTag}</div>
-                                <div class="kelola-card-title">${title}</div>
+                                <div class="kelola-card-title">${escHtml(title)}</div>
+                                ${isAnggota && item.namaPanggilan ? `<div style="font-size:0.8rem;color:var(--sage);font-weight:600;">“${escHtml(item.namaPanggilan)}”</div>` : ''}
                                 <div class="kelola-card-meta">${meta}</div>
                             </div>
                             <div class="kelola-actions">
-                                <button class="kelola-edit-btn" data-edit-id="${item.id}" title="Edit data">
-                                    <i class="fas fa-pen"></i>
-                                </button>
-                                <button class="kelola-delete-btn" data-id="${item.id}" title="Hapus data">
+                                ${editBtn}
+                                <button class="kelola-delete-btn" data-id="${escHtml(item.id)}" data-tipe="${isAnggota ? 'anggota' : 'news'}" title="Hapus data">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </div>
                     `;
                 }).join('');
-                
-                grid.querySelectorAll('.kelola-edit-btn').forEach(btn => {
+
+                grid.querySelectorAll('.kelola-edit-btn[data-edit-id]').forEach(btn => {
                     btn.addEventListener('click', () => {
                         const item = allNewsData.find(n => n.id === btn.dataset.editId);
                         if (item) startEdit(item);
                     });
                 });
+                grid.querySelectorAll('.kelola-edit-btn[data-edit-ang-id]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const item = allAnggotaData.find(n => n.id === btn.dataset.editAngId);
+                        if (item) startEditAnggota(item);
+                    });
+                });
                 grid.querySelectorAll('.kelola-delete-btn').forEach(btn => {
                     btn.addEventListener('click', async () => {
                         const id = btn.dataset.id;
+                        const isAnggota = btn.dataset.tipe === 'anggota';
                         if (!confirm('Hapus data ini secara permanen dari database?')) return;
-                        
+
                         try {
-                            await fetch(`${API_URL}?id=${id}`, {
+                            await fetch(`${isAnggota ? ANGGOTA_API : API_URL}?id=${id}`, {
                                 method: 'DELETE',
                                 headers: { 'Authorization': `Bearer ${ADMIN_PASS}` }
                             });
-                        } catch(e) {
+                        } catch (e) {
                             console.warn('Local delete:', e);
                         }
-                        
-                        allNewsData = allNewsData.filter(n => n.id !== id);
+
+                        if (isAnggota) {
+                            allAnggotaData = allAnggotaData.filter(n => n.id !== id);
+                            document.getElementById('totalAnggotaBadge').textContent = allAnggotaData.length;
+                        } else {
+                            allNewsData = allNewsData.filter(n => n.id !== id);
+                        }
                         showToast('Data berhasil dihapus.', 'success');
                         updateStats();
                         renderCalendar();
@@ -1994,7 +2384,7 @@
                 }
             }
 
-            window.cancelEdit = function(tipe) {
+            window.cancelEdit = function (tipe) {
                 if (tipe === 'event') {
                     editingEventId = null;
                     document.getElementById('formAddEvent').reset();
@@ -2017,10 +2407,216 @@
                     btn.className = 'btn-submit';
                 }
             };
-            
+
+            // ══════════ ANGGOTA ANGKATAN ══════════
+            function escHtml(s) {
+                return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            }
+
+            // Label medsos: terima URL penuh atau username → tampil @handle
+            function sosmedLabel(value) {
+                const v = String(value || '').trim();
+                if (!v) return '';
+                if (/^https?:\/\//i.test(v)) return '@' + (v.replace(/\/$/, '').split('/').pop() || v).replace(/^@/, '');
+                return '@' + v.replace(/^@/, '');
+            }
+
+            setupCdnPreview('angFotoUrl', 'previewBoxAnggota', 'imgPreviewAnggota');
+
+            // Input WA: hanya angka + preview link wa.me
+            const waInput = document.getElementById('angWhatsapp');
+            const waPreview = document.getElementById('waPreview');
+            const waPreviewLink = document.getElementById('waPreviewLink');
+            waInput.addEventListener('input', () => {
+                const digits = waInput.value.replace(/[^0-9]/g, '').replace(/^62/, '');
+                if (waInput.value !== digits) waInput.value = digits;
+                if (digits) {
+                    waPreviewLink.href = 'https://wa.me/62' + digits;
+                    waPreviewLink.textContent = 'wa.me/62' + digits;
+                    waPreview.style.display = 'block';
+                } else {
+                    waPreview.style.display = 'none';
+                }
+            });
+
+            async function loadAnggota() {
+                try {
+                    const res = await fetch(ANGGOTA_API);
+                    const data = await res.json().catch(() => ({}));
+                    allAnggotaData = res.ok ? (data.anggota || []) : [];
+                } catch (e) {
+                    console.warn('Anggota fetch note:', e);
+                    allAnggotaData = [];
+                }
+                document.getElementById('totalAnggotaBadge').textContent = allAnggotaData.length;
+                renderAnggotaList();
+            }
+
+            const anggotaSearchInput = document.getElementById('anggotaSearchInput');
+            anggotaSearchInput.addEventListener('input', renderAnggotaList);
+
+            function renderAnggotaList() {
+                const grid = document.getElementById('anggotaGrid');
+                if (!grid) return;
+                const query = anggotaSearchInput.value.toLowerCase().trim();
+                const rows = allAnggotaData.slice().sort((a, b) =>
+                    String(a.noInduk || '').localeCompare(String(b.noInduk || ''), 'id', { numeric: true })
+                ).filter(a => {
+                    if (!query) return true;
+                    return (a.namaLengkap || '').toLowerCase().includes(query) ||
+                        (a.noInduk || '').toLowerCase().includes(query) ||
+                        (a.namaPanggilan || '').toLowerCase().includes(query);
+                });
+
+                if (!rows.length) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">
+                            <i class="fas fa-user-slash" style="font-size:2rem; margin-bottom:10px; display:block;"></i>
+                            ${query ? 'Tidak ada anggota yang cocok.' : 'Belum ada anggota. Tambahkan lewat form di atas.'}
+                        </div>
+                    `;
+                    return;
+                }
+
+                grid.innerHTML = rows.map(a => {
+                    const img = a.fotoUrl || 'Logo_xxvganespic.png';
+                    const meta = `
+                        <span><i class="fas fa-id-card"></i> ${escHtml(a.noInduk) || '-'}</span>
+                        ${a.igUsername ? `<span><i class="fab fa-instagram"></i> @${escHtml(String(a.igUsername).replace(/^@/, ''))}</span>` : ''}
+                        ${a.tiktokUsername ? `<span><i class="fab fa-tiktok"></i> @${escHtml(String(a.tiktokUsername).replace(/^@/, ''))}</span>` : ''}
+                        ${a.email ? `<span><i class="fas fa-envelope"></i> ${escHtml(a.email)}</span>` : ''}
+                        ${a.whatsapp ? `<span><i class="fab fa-whatsapp"></i> +${escHtml(String(a.whatsapp).replace(/[^0-9]/g, '').replace(/^62/, ''))}</span>` : ''}
+                        ${a.alamatRumah ? `<span><i class="fas fa-house"></i> ${escHtml(a.alamatRumah)}</span>` : ''}
+                    `;
+                    return `
+                        <div class="kelola-card">
+                            <img src="${escHtml(img)}" alt="${escHtml(a.namaLengkap)}" onerror="this.src='Logo_xxvganespic.png'" />
+                            <div class="kelola-card-content">
+                                <div class="kelola-card-title">${escHtml(a.namaLengkap)}</div>
+                                ${a.namaPanggilan ? `<div style="font-size:0.8rem;color:var(--sage);font-weight:600;">“${escHtml(a.namaPanggilan)}”</div>` : ''}
+                                <div class="kelola-card-meta">${meta}</div>
+                            </div>
+                            <div class="kelola-actions">
+                                <button class="kelola-edit-btn" data-edit-id="${escHtml(a.id)}" title="Edit anggota">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button class="kelola-delete-btn" data-id="${escHtml(a.id)}" title="Hapus anggota">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                grid.querySelectorAll('.kelola-edit-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const item = allAnggotaData.find(n => n.id === btn.dataset.editId);
+                        if (item) startEditAnggota(item);
+                    });
+                });
+                grid.querySelectorAll('.kelola-delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+                        const item = allAnggotaData.find(n => n.id === id);
+                        if (!confirm(`Hapus anggota "${item ? item.namaLengkap : id}" secara permanen?`)) return;
+                        try {
+                            await fetch(`${ANGGOTA_API}?id=${id}`, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Bearer ${ADMIN_PASS}` }
+                            });
+                            showToast('Anggota berhasil dihapus.', 'success');
+                        } catch (e) {
+                            showToast('Gagal menghapus anggota.', 'error');
+                        }
+                        await loadAnggota();
+                    });
+                });
+            }
+
+            document.getElementById('formAddAnggota').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('btnSubmitAnggota');
+                const isEdit = Boolean(editingAnggotaId);
+                const payload = {
+                    noInduk: document.getElementById('angNoInduk').value.trim(),
+                    namaLengkap: document.getElementById('angNamaLengkap').value.trim(),
+                    namaPanggilan: document.getElementById('angNamaPanggilan').value.trim(),
+                    fotoUrl: document.getElementById('angFotoUrl').value.trim(),
+                    igUsername: document.getElementById('angIgUsername').value.trim(),
+                    tiktokUsername: document.getElementById('angTiktokUsername').value.trim(),
+                    email: document.getElementById('angEmail').value.trim(),
+                    whatsapp: document.getElementById('angWhatsapp').value.trim(),
+                    alamatRumah: document.getElementById('angAlamatRumah').value.trim()
+                };
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+                try {
+                    const url = isEdit ? `${ANGGOTA_API}?id=${editingAnggotaId}` : ANGGOTA_API;
+                    const res = await fetch(url, {
+                        method: isEdit ? 'PUT' : 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${ADMIN_PASS}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    const resData = await res.json().catch(() => ({}));
+                    if (!res.ok) throw new Error(resData.error || `HTTP ${res.status}`);
+                    showToast(isEdit ? 'Perubahan anggota berhasil disimpan!' : 'Anggota berhasil ditambahkan!', 'success');
+                    cancelEditAnggota();
+                    await loadAnggota();
+                } catch (err) {
+                    showToast('Gagal: ' + err.message, 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Simpan Anggota ke Database';
+                }
+            });
+
+            function startEditAnggota(item) {
+                editingAnggotaId = item.id;
+                document.getElementById('angNoInduk').value = item.noInduk || '';
+                document.getElementById('angNamaLengkap').value = item.namaLengkap || '';
+                document.getElementById('angNamaPanggilan').value = item.namaPanggilan || '';
+                document.getElementById('angIgUsername').value = item.igUsername || '';
+                document.getElementById('angTiktokUsername').value = item.tiktokUsername || '';
+                document.getElementById('angEmail').value = item.email || '';
+                document.getElementById('angWhatsapp').value = item.whatsapp || '';
+                waInput.dispatchEvent(new Event('input'));
+                document.getElementById('angAlamatRumah').value = item.alamatRumah || '';
+                const foto = item.fotoUrl || '';
+                document.getElementById('angFotoUrl').value = foto;
+                const box = document.getElementById('previewBoxAnggota');
+                if (foto) {
+                    document.getElementById('imgPreviewAnggota').src = foto;
+                    box.style.display = 'block';
+                } else {
+                    box.style.display = 'none';
+                }
+                document.getElementById('anggotaFormTitle').textContent = 'Edit Anggota Angkatan';
+                document.getElementById('editIdAnggota').textContent = item.id;
+                document.getElementById('editBannerAnggota').style.display = 'flex';
+                const btn = document.getElementById('btnSubmitAnggota');
+                btn.innerHTML = '<i class="fas fa-floppy-disk"></i> Simpan Perubahan';
+                btn.className = 'btn-edit-submit';
+                document.querySelector('.tab-btn[data-target="tabAnggota"]').click();
+            }
+
+            window.cancelEditAnggota = function () {
+                editingAnggotaId = null;
+                document.getElementById('formAddAnggota').reset();
+                document.getElementById('previewBoxAnggota').style.display = 'none';
+                document.getElementById('waPreview').style.display = 'none';
+                document.getElementById('anggotaFormTitle').textContent = 'Tambah Anggota Angkatan';
+                document.getElementById('editBannerAnggota').style.display = 'none';
+                const btn = document.getElementById('btnSubmitAnggota');
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Simpan Anggota ke Database';
+                btn.className = 'btn-submit';
+            };
+
             checkAuth();
         })();
     </script>
 </body>
-</html>
 
+</html>
