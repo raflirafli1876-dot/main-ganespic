@@ -702,6 +702,56 @@
             margin-top: 4px;
         }
         
+        /* ─── Pilihan Jenis Event (Tetap / Tidak Tetap) ─── */
+        .tetap-choice-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .tetap-choice {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .tetap-choice:hover {
+            border-color: var(--border-hover);
+        }
+        .tetap-choice input[type="radio"] {
+            accent-color: var(--sage);
+            margin-top: 3px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .tetap-choice.selected,
+        .tetap-choice:has(input:checked) {
+            border-color: var(--sage);
+            background: var(--sage-dim);
+            box-shadow: 0 0 0 3px var(--sage-dim);
+        }
+        .tetap-choice .choice-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .tetap-choice .choice-desc {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            line-height: 1.45;
+            margin-top: 3px;
+        }
+        
         .cdn-preview-box {
             position: relative;
             border-radius: 12px;
@@ -1205,6 +1255,28 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">
+                                Jenis Event
+                                <span class="form-hint">Menentukan perilaku event di tahun-tahun berikutnya</span>
+                            </label>
+                            <div class="tetap-choice-group" id="tetapChoiceGroup">
+                                <label class="tetap-choice selected">
+                                    <input type="radio" name="eventTetap" value="tetap" checked />
+                                    <span>
+                                        <span class="choice-title"><i class="fas fa-repeat" style="color:var(--sage);"></i> Tetap (Tahunan)</span>
+                                        <span class="choice-desc">Event selalu ada setiap tahun di tanggal & bulan yang sama. Contoh: Event Kemerdekaan NKRI (17 Agustus).</span>
+                                    </span>
+                                </label>
+                                <label class="tetap-choice">
+                                    <input type="radio" name="eventTetap" value="tidak" />
+                                    <span>
+                                        <span class="choice-title"><i class="fas fa-clock-rotate-left" style="color:var(--gold);"></i> Tidak Tetap</span>
+                                        <span class="choice-desc">Hanya berlaku pada tanggal pelaksanaan. Setelah hari berganti (esok hari), data otomatis terhapus dari database.</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
                                 Link Foto / Banner CDN
                                 <span class="form-hint">Upload gratis di <a href="https://imgbb.com" target="_blank">ImgBB</a> / <a href="https://postimages.org" target="_blank">Postimages</a></span>
                             </label>
@@ -1328,6 +1400,25 @@
                 if (isNaN(birthYear) || birthYear >= targetYear) return '';
                 const age = targetYear - birthYear;
                 return `Ultah yang ke-${age} tahun (${age} th)`;
+            }
+            
+            // Helper: apakah item tampil pada tanggal tertentu?
+            // - Event TIDAK TETAP → hanya pada tanggal persisnya (YYYY-MM-DD).
+            // - Event TETAP & Ulang Tahun → berulang tiap tahun (cukup cocokkan bulan-tanggal).
+            function itemMatchesDate(item, mmdd, fullDateStr) {
+                if (!item.tanggal) return false;
+                if (item.tipe === 'event' && item.isTetap === false) {
+                    return item.tanggal === fullDateStr;
+                }
+                const t = item.tanggal.length > 5 ? item.tanggal.slice(5) : item.tanggal;
+                return t === mmdd;
+            }
+            
+            // Helper: sinkronkan tampilan pilihan Tetap / Tidak Tetap
+            function syncTetapChoiceUI() {
+                const checked = document.querySelector('input[name="eventTetap"]:checked');
+                document.querySelectorAll('#tetapChoiceGroup .tetap-choice').forEach(l => l.classList.remove('selected'));
+                if (checked) checked.closest('.tetap-choice').classList.add('selected');
             }
             
             // ── DOM Elements ──
@@ -1465,6 +1556,10 @@
                 const curMonthStr = String(currentCalMonth + 1).padStart(2, '0');
                 const monthAgendas = allNewsData.filter(item => {
                     if (!item.tanggal) return false;
+                    // Event tidak tetap dihitung hanya jika tahunnya juga cocok
+                    if (item.tipe === 'event' && item.isTetap === false) {
+                        return item.tanggal.startsWith(`${currentCalYear}-${curMonthStr}-`);
+                    }
                     const cleanTgl = item.tanggal.length > 5 ? item.tanggal.slice(5) : item.tanggal;
                     return cleanTgl.startsWith(curMonthStr + '-');
                 });
@@ -1521,18 +1616,15 @@
                         cell.classList.add('selected');
                     }
                     
-                    const dayItems = allNewsData.filter(item => {
-                        if (!item.tanggal) return false;
-                        const t = item.tanggal.length > 5 ? item.tanggal.slice(5) : item.tanggal;
-                        return t === mmdd;
-                    });
+                    const dayItems = allNewsData.filter(item => itemMatchesDate(item, mmdd, dateFullStr));
                     
                     let markersHtml = '<div class="cal-markers">';
                     dayItems.forEach(item => {
                         const isEvent = item.tipe === 'event';
                         const title = isEvent ? item.judul : item.nama;
                         const tagClass = isEvent ? 'cal-tag event' : 'cal-tag ultah';
-                        const icon = isEvent ? '📅' : '🎂';
+                        // 🔁 = event tetap (berulang tiap tahun) • 📌 = event tidak tetap (sekali pakai)
+                        const icon = isEvent ? (item.isTetap === false ? '📌' : '🔁') : '🎂';
                         markersHtml += `<div class="${tagClass}" title="${title}">${icon} ${title}</div>`;
                     });
                     markersHtml += '</div>';
@@ -1566,11 +1658,7 @@
                 document.getElementById('selectedDateLabel').textContent = `${parseInt(day, 10)} ${monthName} ${year}`;
                 
                 const list = document.getElementById('agendaList');
-                const matchingItems = allNewsData.filter(item => {
-                    if (!item.tanggal) return false;
-                    const t = item.tanggal.length > 5 ? item.tanggal.slice(5) : item.tanggal;
-                    return t === mmdd;
-                });
+                const matchingItems = allNewsData.filter(item => itemMatchesDate(item, mmdd, fullDateStr));
                 
                 if (!matchingItems.length) {
                     list.innerHTML = `
@@ -1585,7 +1673,7 @@
                 list.innerHTML = matchingItems.map(item => {
                     const isEvent = item.tipe === 'event';
                     const badgeClass = isEvent ? 'agenda-item-badge event' : 'agenda-item-badge ultah';
-                    const badgeText = isEvent ? 'Event' : 'Ulang Tahun';
+                    const badgeText = isEvent ? (item.isTetap === false ? 'Event • Tidak Tetap' : 'Event • Tetap') : 'Ulang Tahun';
                     const title = isEvent ? item.judul : item.nama;
                     const ageText = !isEvent ? getAgeInfo(item.tanggal, parseInt(year, 10)) : '';
                     const desc = isEvent 
@@ -1656,6 +1744,11 @@
             setupCdnPreview('eventFotoUrl', 'previewBoxEvent', 'imgPreviewEvent');
             setupCdnPreview('ultahFotoUrl', 'previewBoxUltah', 'imgPreviewUltah');
             
+            // ── Pilihan Jenis Event: Tetap / Tidak Tetap ──
+            document.querySelectorAll('input[name="eventTetap"]').forEach(radio => {
+                radio.addEventListener('change', syncTetapChoiceUI);
+            });
+            
             // ── Live Age Preview on Birthday Date Change ──
             const ultahTanggalInput = document.getElementById('ultahTanggal');
             const liveAgePreview = document.getElementById('liveAgePreview');
@@ -1700,6 +1793,7 @@
                     
                     showToast(isEdit ? 'Perubahan berhasil disimpan!' : 'Berhasil disimpan ke database!', 'success');
                     form.reset();
+                    syncTetapChoiceUI();
                     document.getElementById('previewBoxEvent').style.display = 'none';
                     document.getElementById('previewBoxUltah').style.display = 'none';
                     liveAgePreview.style.display = 'none';
@@ -1722,12 +1816,15 @@
             
             document.getElementById('formAddEvent').addEventListener('submit', async (e) => {
                 e.preventDefault();
+                const tetapChoice = document.querySelector('input[name="eventTetap"]:checked');
                 await saveNewsPayload({
                     tipe: 'event',
                     judul: document.getElementById('eventJudul').value.trim(),
                     deskripsi: document.getElementById('eventDeskripsi').value.trim(),
                     tanggal: document.getElementById('eventTanggal').value, // YYYY-MM-DD
-                    fotoUrl: document.getElementById('eventFotoUrl').value.trim()
+                    fotoUrl: document.getElementById('eventFotoUrl').value.trim(),
+                    // true = Tetap (tahunan) • false = Tidak Tetap (auto-hapus setelah hari berganti)
+                    isTetap: tetapChoice ? tetapChoice.value === 'tetap' : true
                 }, e.target, document.getElementById('btnSubmitEvent'), editingEventId ? 'PUT' : 'POST', editingEventId);
             });
             
@@ -1787,7 +1884,7 @@
                         : '<span class="agenda-item-badge ultah">Ultah</span>';
                     const ageText = !isEvent ? getAgeInfo(item.tanggal, currentCalYear) : '';
                     const meta = isEvent
-                        ? `<span><i class="fas fa-calendar"></i> ${item.tanggal || '-'}</span>`
+                        ? `<span><i class="fas fa-calendar"></i> ${item.tanggal || '-'}</span><span><i class="fas ${item.isTetap === false ? 'fa-clock-rotate-left' : 'fa-repeat'}"></i> ${item.isTetap === false ? 'Tidak Tetap (auto-hapus setelah event)' : 'Tetap / Tahunan'}</span>`
                         : `<span><i class="fas fa-id-card"></i> ${item.noId || '-'} • <i class="fas fa-cake-candles"></i> ${item.tanggal || '-'}</span>${ageText ? `<span class="age-highlight">${ageText}</span>` : ''}`;
                     const img = item.fotoUrl || 'Logo_xxvganespic.png';
                     
@@ -1854,6 +1951,8 @@
                     document.getElementById('eventJudul').value = item.judul || '';
                     document.getElementById('eventDeskripsi').value = item.deskripsi || '';
                     document.getElementById('eventTanggal').value = fixTanggalInput(item.tanggal);
+                    const tetapRadio = document.querySelector(`input[name="eventTetap"][value="${item.isTetap === false ? 'tidak' : 'tetap'}"]`);
+                    if (tetapRadio) { tetapRadio.checked = true; syncTetapChoiceUI(); }
                     const foto = item.fotoUrl || '';
                     document.getElementById('eventFotoUrl').value = foto;
                     const box = document.getElementById('previewBoxEvent');
@@ -1899,6 +1998,7 @@
                 if (tipe === 'event') {
                     editingEventId = null;
                     document.getElementById('formAddEvent').reset();
+                    syncTetapChoiceUI();
                     document.getElementById('previewBoxEvent').style.display = 'none';
                     document.getElementById('eventFormTitle').textContent = 'Tambah Event Baru';
                     document.getElementById('editBannerEvent').style.display = 'none';

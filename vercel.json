@@ -1,4 +1,10 @@
 {
+  "crons": [
+    {
+      "path": "/api/news",
+      "schedule": "0 17 * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/news",
@@ -6,4 +12,3 @@
     }
   ]
 }
-

@@ -1044,9 +1044,18 @@
                     const { news } = await res.json();
 
                     const now = new Date();
-                    const mmdd = String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+                    const mm = String(now.getMonth() + 1).padStart(2, '0');
+                    const dd = String(now.getDate()).padStart(2, '0');
+                    const mmdd = mm + '-' + dd;
+                    const fullToday = now.getFullYear() + '-' + mm + '-' + dd;
                     const hariIni = news.filter(n => {
                         if (!n.tanggal) return false;
+                        // Event TIDAK TETAP → hanya tampil pada tanggal persisnya (sekali pakai,
+                        // setelah hari berganti data sudah otomatis terhapus di database).
+                        if (n.tipe === 'event' && n.isTetap === false) {
+                            return n.tanggal === fullToday;
+                        }
+                        // Event TETAP & Ulang Tahun → berulang tiap tahun (bulan-tanggal sama)
                         const tgl = n.tanggal.length > 5 ? n.tanggal.slice(5) : n.tanggal;
                         return tgl === mmdd;
                     });
@@ -1061,9 +1070,12 @@
                             ? '<span class="badge event">Event</span>'
                             : '<span class="badge ultah">Ulang Tahun</span>';
                         if (n.tipe === 'event') {
+                            const jenisInfo = n.isTetap === false
+                                ? '<span style="font-size:0.7rem;color:var(--text-muted);"><i class="fas fa-clock-rotate-left"></i> Event Tidak Tetap</span> '
+                                : '<span style="font-size:0.7rem;color:var(--text-muted);"><i class="fas fa-repeat"></i> Event Tetap (Tahunan)</span> ';
                             return `<div class="news-item">
                                 ${n.fotoUrl ? `<img src="${n.fotoUrl}" alt="Foto Event" onerror="this.src='Logo_xxvganespic.png'" />` : ''}
-                                <div>${badge}<h3>${n.judul}</h3><p>${n.deskripsi || ''}</p></div>
+                                <div>${badge}${jenisInfo}<h3>${n.judul}</h3><p>${n.deskripsi || ''}</p></div>
                             </div>`;
                         }
 
