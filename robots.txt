@@ -3,7 +3,7 @@ Allow: /
 Disallow: /admin
 Disallow: /*.json$
 
-Sitemap: https://main-ganespic.vercel.app/sitemap.xml
+Sitemap: https://ganespic.vercel.app/sitemap.xml
 
 # Crawl delay
 Crawl-delay: 1
