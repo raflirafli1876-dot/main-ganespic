@@ -4,6 +4,14 @@ import { neon } from '@neondatabase/serverless';
 // Tabel: anggota — data lengkap anggota angkatan XXV Ganespic.
 // Public  : GET  → daftar semua anggota (terurut no_induk ASC)
 // Admin   : POST / PUT / DELETE (Bearer ADMIN_PASSWORD)
+//
+// ── Sinkronisasi Ulang Tahun Otomatis ──
+// Setiap anggota yang punya TANGGAL LAHIR otomatis disinkronkan ke tabel agendas
+// sebagai data ulang tahun (tipe='ultah', is_tetap=TRUE, anggota_id=<id anggota>).
+// - POST  → saat anggota baru ditambahkan, agendas dibuat sekaligus.
+// - PUT   → saat tanggal lahir/nama anggota diubah, agendas ikut diperbarui.
+// - DELETE→ saat anggota dihapus, agenda ultah terkait ikut terhapus.
+// Jadi admin TIDAK perlu entry data ulang tahun satu per satu lagi.
 
 export default async function handler(req, res) {
   // CORS Headers
@@ -53,13 +61,17 @@ export default async function handler(req, res) {
         ig_username VARCHAR(100),
         tiktok_username VARCHAR(100),
         whatsapp VARCHAR(32),
+        email VARCHAR(255),
         alamat_rumah TEXT,
+        tanggal_lahir VARCHAR(20),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
     await sql`ALTER TABLE anggota ADD COLUMN IF NOT EXISTS tiktok_username VARCHAR(100);`;
     await sql`ALTER TABLE anggota ADD COLUMN IF NOT EXISTS whatsapp VARCHAR(32);`;
     await sql`ALTER TABLE anggota ADD COLUMN IF NOT EXISTS email VARCHAR(255);`;
+    // Kolom tanggal lahir (sumber data otomatis ulang tahun di kalender)
+    await sql`ALTER TABLE anggota ADD COLUMN IF NOT EXISTS tanggal_lahir VARCHAR(20);`;
     await sql`CREATE INDEX IF NOT EXISTS idx_anggota_no_induk ON anggota (no_induk);`;
   }
 
@@ -69,6 +81,85 @@ export default async function handler(req, res) {
       try { body = JSON.parse(body); } catch (e) { }
     }
     return body || {};
+  }
+
+  // ── Helper Sinkronisasi Ulang Tahun → Tabel agendas ──
+  // Pastikan tabel agendas ada (skema sama seperti di api/news.js).
+  async function initAgendaTable() {
+    await sql`
+      CREATE TABLE IF NOT EXISTS agendas (
+        id VARCHAR(64) PRIMARY KEY,
+        tipe VARCHAR(20) NOT NULL,
+        nama_judul VARCHAR(255) NOT NULL,
+        deskripsi_nis TEXT,
+        tanggal VARCHAR(20) NOT NULL,
+        foto_cdn_url TEXT,
+        is_tetap BOOLEAN DEFAULT TRUE,
+        anggota_id VARCHAR(64),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+    // Migrasi kolom relasi ke anggota (untuk database lama)
+    await sql`ALTER TABLE agendas ADD COLUMN IF NOT EXISTS anggota_id VARCHAR(64);`;
+  }
+
+  // Validasi tanggal lahir format YYYY-MM-DD (atau kosong)
+  function normalizeTanggalLahir(value) {
+    const v = String(value || '').trim();
+    if (!v) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+    return ''; // nilai tidak valid dianggap kosong agar tidak merusak data
+  }
+
+  // Simpan / perbarui agenda ultah yang ditautkan ke anggota.
+  // Jika anggota TANPA tanggal lahir (kosong), agenda ultah terkait dihapus.
+  // Return: agenda id yang dipakai (atau null jika tanpa tanggal lahir).
+  async function upsertAgendaUltah({ anggotaId, noInduk, namaLengkap, fotoUrl, tanggalLahir }) {
+    if (!anggotaId) return null;
+    await initAgendaTable();
+
+    // Anggota tidak punya tanggal lahir → bersihkan agenda ultah yang lama (jika ada).
+    if (!tanggalLahir) {
+      await hapusAgendaUltah(anggotaId);
+      return null;
+    }
+
+    const agendaId = 'ultah-' + anggotaId.replace(/[^a-zA-Z0-9_-]/g, '');
+    // NIS dipakai pada deskripsi_nis, tanggal lahir di kolom tanggal.
+    const nama = namaLengkap || 'Anggota Ganespic';
+    const noId = noInduk || '';
+    const foto = fotoUrl || '';
+
+    const existing = await sql`
+      SELECT id FROM agendas WHERE anggota_id = ${anggotaId} LIMIT 1;
+    `;
+    const found = existing && existing.length > 0 ? existing[0] : null;
+
+    if (found) {
+      await sql`
+        UPDATE agendas
+        SET tipe = 'ultah',
+            nama_judul = ${nama},
+            deskripsi_nis = ${noId},
+            tanggal = ${tanggalLahir},
+            foto_cdn_url = ${foto},
+            is_tetap = TRUE
+        WHERE anggota_id = ${anggotaId};
+      `;
+    } else {
+      await sql`
+        INSERT INTO agendas (id, tipe, nama_judul, deskripsi_nis, tanggal, foto_cdn_url, is_tetap, anggota_id)
+        VALUES (${agendaId}, 'ultah', ${nama}, ${noId}, ${tanggalLahir}, ${foto}, TRUE, ${anggotaId});
+      `;
+    }
+    return agendaId;
+  }
+
+  // Hapus agenda ultah yang ditautkan ke anggota (dipakai saat DELETE anggota).
+  async function hapusAgendaUltah(anggotaId) {
+    if (!anggotaId) return;
+    await initAgendaTable();
+    await sql`DELETE FROM agendas WHERE anggota_id = ${anggotaId};`;
   }
 
   // ── 1. GET: daftar anggota terurut no induk ──
@@ -87,6 +178,7 @@ export default async function handler(req, res) {
           whatsapp,
           email,
           alamat_rumah AS "alamatRumah",
+          tanggal_lahir AS "tanggalLahir",
           created_at AS dibuat
         FROM anggota
         ORDER BY no_induk ASC;
@@ -110,8 +202,9 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'No Induk dan Nama Lengkap wajib diisi' });
       }
       const id = 'anggota-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
+      const tanggalLahir = normalizeTanggalLahir(body.tanggalLahir);
       await sql`
-        INSERT INTO anggota (id, no_induk, nama_lengkap, nama_panggilan, foto_url, ig_username, tiktok_username, whatsapp, email, alamat_rumah)
+        INSERT INTO anggota (id, no_induk, nama_lengkap, nama_panggilan, foto_url, ig_username, tiktok_username, whatsapp, email, alamat_rumah, tanggal_lahir)
         VALUES (
           ${id}, ${noInduk}, ${namaLengkap},
           ${body.namaPanggilan || ''},
@@ -120,9 +213,18 @@ export default async function handler(req, res) {
           ${body.tiktokUsername || ''},
           ${body.whatsapp || ''},
           ${body.email || ''},
-          ${body.alamatRumah || ''}
+          ${body.alamatRumah || ''},
+          ${tanggalLahir || null}
         );
       `;
+      // Auto-sinkron: tanggal lahir anggota → data ulang tahun di kalender.
+      await upsertAgendaUltah({
+        anggotaId: id,
+        noInduk,
+        namaLengkap,
+        fotoUrl: body.fotoUrl || '',
+        tanggalLahir: tanggalLahir || ''
+      });
       return res.status(200).json({ ok: true, id });
     } catch (error) {
       console.error('Anggota POST error:', error);
@@ -143,6 +245,7 @@ export default async function handler(req, res) {
       if (!noInduk || !namaLengkap) {
         return res.status(400).json({ error: 'No Induk dan Nama Lengkap wajib diisi' });
       }
+      const tanggalLahir = normalizeTanggalLahir(body.tanggalLahir);
       await sql`
         UPDATE anggota
         SET no_induk = ${noInduk},
@@ -153,9 +256,18 @@ export default async function handler(req, res) {
       tiktok_username = ${body.tiktokUsername || ''},
       whatsapp = ${body.whatsapp || ''},
       email = ${body.email || ''},
-      alamat_rumah = ${body.alamatRumah || ''}
+      alamat_rumah = ${body.alamatRumah || ''},
+      tanggal_lahir = ${tanggalLahir || null}
         WHERE id = ${id};
       `;
+      // Auto-sinkron: perbarui data ulang tahun di kalender mengikuti data terbaru anggota.
+      await upsertAgendaUltah({
+        anggotaId: id,
+        noInduk,
+        namaLengkap,
+        fotoUrl: body.fotoUrl || '',
+        tanggalLahir: tanggalLahir || ''
+      });
       return res.status(200).json({ ok: true, id });
     } catch (error) {
       console.error('Anggota PUT error:', error);
@@ -169,6 +281,8 @@ export default async function handler(req, res) {
     try {
       const { id } = req.query;
       if (!id) return res.status(400).json({ error: 'Parameter ID diperlukan' });
+      // Hapus juga data ulang tahun terkait di tabel agendas agar tidak tersisa
+      await hapusAgendaUltah(id);
       await sql`DELETE FROM anggota WHERE id = ${id}; `;
       return res.status(200).json({ ok: true });
     } catch (error) {

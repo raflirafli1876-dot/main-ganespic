@@ -1627,6 +1627,15 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">
+                                Tanggal Lahir <span class="form-hint">Otomatis masuk ke data ulang tahun kalender & berita</span>
+                            </label>
+                            <input type="date" id="angTanggalLahir" />
+                            <div id="angAgePreview" style="display:none;" class="age-calculator-pill">
+                                <i class="fas fa-cake-candles"></i> <span id="angAgeText">Ultah ke-18 tahun</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
                                 Link Foto Anggota (CDN)
                                 <span class="form-hint">Upload gratis di <a href="https://imgbb.com"
                                         target="_blank">ImgBB</a> / <a href="https://postimages.org"
@@ -2136,6 +2145,23 @@
                 }
             });
 
+            // ── Live Age Preview Tanggal Lahir Anggota ──
+            // Muncul preview umur saat admin mengisi tanggal lahir di form tambah/edit anggota.
+            const angTanggalLahirInput = document.getElementById('angTanggalLahir');
+            const angAgePreview = document.getElementById('angAgePreview');
+            const angAgeText = document.getElementById('angAgeText');
+
+            angTanggalLahirInput.addEventListener('change', () => {
+                const val = angTanggalLahirInput.value;
+                const info = getAgeInfo(val, new Date().getFullYear());
+                if (info) {
+                    angAgeText.textContent = `🎂 ${info}`;
+                    angAgePreview.style.display = 'inline-flex';
+                } else {
+                    angAgePreview.style.display = 'none';
+                }
+            });
+
             // ── Submit Forms with JSON (CDN Link & Data) ──
             async function saveNewsPayload(payload, form, submitBtn, method = 'POST', editingId = null) {
                 submitBtn.disabled = true;
@@ -2420,6 +2446,16 @@
                 return '@' + v.replace(/^@/, '');
             }
 
+            // Format tanggal lahir YYYY-MM-DD → teks Indonesia ("29 Agustus 2008")
+            function ultahTanggalLabel(tgl) {
+                if (!tgl || tgl.length < 10) return tgl || '';
+                const [y, m, d] = tgl.split('-');
+                const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                const idx = parseInt(m, 10) - 1;
+                return `${parseInt(d, 10)} ${namaBulan[idx] || m} ${y}`;
+            }
+
             setupCdnPreview('angFotoUrl', 'previewBoxAnggota', 'imgPreviewAnggota');
 
             // Input WA: hanya angka + preview link wa.me
@@ -2466,7 +2502,8 @@
                     if (!query) return true;
                     return (a.namaLengkap || '').toLowerCase().includes(query) ||
                         (a.noInduk || '').toLowerCase().includes(query) ||
-                        (a.namaPanggilan || '').toLowerCase().includes(query);
+                        (a.namaPanggilan || '').toLowerCase().includes(query) ||
+                        (a.tanggalLahir || '').toLowerCase().includes(query);
                 });
 
                 if (!rows.length) {
@@ -2483,6 +2520,7 @@
                     const img = a.fotoUrl || 'Logo_xxvganespic.png';
                     const meta = `
                         <span><i class="fas fa-id-card"></i> ${escHtml(a.noInduk) || '-'}</span>
+                        ${a.tanggalLahir ? `<span><i class="fas fa-cake-candles" style="color:var(--gold);"></i> ${ultahTanggalLabel(a.tanggalLahir)}</span>` : ''}
                         ${a.igUsername ? `<span><i class="fab fa-instagram"></i> @${escHtml(String(a.igUsername).replace(/^@/, ''))}</span>` : ''}
                         ${a.tiktokUsername ? `<span><i class="fab fa-tiktok"></i> @${escHtml(String(a.tiktokUsername).replace(/^@/, ''))}</span>` : ''}
                         ${a.email ? `<span><i class="fas fa-envelope"></i> ${escHtml(a.email)}</span>` : ''}
@@ -2529,7 +2567,8 @@
                         } catch (e) {
                             showToast('Gagal menghapus anggota.', 'error');
                         }
-                        await loadAnggota();
+                        // Reload agenda juga karena data ultah terkait ikut terhapus di backend.
+                        await loadData();
                     });
                 });
             }
@@ -2547,7 +2586,8 @@
                     tiktokUsername: document.getElementById('angTiktokUsername').value.trim(),
                     email: document.getElementById('angEmail').value.trim(),
                     whatsapp: document.getElementById('angWhatsapp').value.trim(),
-                    alamatRumah: document.getElementById('angAlamatRumah').value.trim()
+                    alamatRumah: document.getElementById('angAlamatRumah').value.trim(),
+                    tanggalLahir: document.getElementById('angTanggalLahir').value || ''
                 };
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
@@ -2565,7 +2605,8 @@
                     if (!res.ok) throw new Error(resData.error || `HTTP ${res.status}`);
                     showToast(isEdit ? 'Perubahan anggota berhasil disimpan!' : 'Anggota berhasil ditambahkan!', 'success');
                     cancelEditAnggota();
-                    await loadAnggota();
+                    // Muat ulang agenda + anggota agar ultah dari tanggal lahir langsung tercermin di kalender.
+                    await loadData();
                 } catch (err) {
                     showToast('Gagal: ' + err.message, 'error');
                 } finally {
@@ -2579,6 +2620,7 @@
                 document.getElementById('angNoInduk').value = item.noInduk || '';
                 document.getElementById('angNamaLengkap').value = item.namaLengkap || '';
                 document.getElementById('angNamaPanggilan').value = item.namaPanggilan || '';
+                document.getElementById('angTanggalLahir').value = item.tanggalLahir || '';
                 document.getElementById('angIgUsername').value = item.igUsername || '';
                 document.getElementById('angTiktokUsername').value = item.tiktokUsername || '';
                 document.getElementById('angEmail').value = item.email || '';
@@ -2594,6 +2636,8 @@
                 } else {
                     box.style.display = 'none';
                 }
+                // Preview umur sesuai tanggal lahir anggota yang diedit
+                document.getElementById('angTanggalLahir').dispatchEvent(new Event('change'));
                 document.getElementById('anggotaFormTitle').textContent = 'Edit Anggota Angkatan';
                 document.getElementById('editIdAnggota').textContent = item.id;
                 document.getElementById('editBannerAnggota').style.display = 'flex';
@@ -2606,6 +2650,8 @@
             window.cancelEditAnggota = function () {
                 editingAnggotaId = null;
                 document.getElementById('formAddAnggota').reset();
+                document.getElementById('angTanggalLahir').value = '';
+                document.getElementById('angAgePreview').style.display = 'none';
                 document.getElementById('previewBoxAnggota').style.display = 'none';
                 document.getElementById('waPreview').style.display = 'none';
                 document.getElementById('anggotaFormTitle').textContent = 'Tambah Anggota Angkatan';

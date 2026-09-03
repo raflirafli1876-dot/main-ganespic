@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS agendas (
     foto_cdn_url TEXT,                       -- Link URL Foto dari CDN (ImgBB, Cloudinary, dll)
     is_tetap BOOLEAN DEFAULT TRUE,           -- TRUE = Event Tetap/Tahunan (ultah selalu TRUE)
                                              -- FALSE = Event Tidak Tetap (auto-hapus setelah hari berganti)
+    anggota_id VARCHAR(64),                  -- Relasi ke tabel anggota (sinkronisasi ultah otomatis).
+                                             -- Berisi id anggota. NULL untuk event / ultah manual.
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -46,12 +48,16 @@ CREATE TABLE IF NOT EXISTS anggota (
     whatsapp VARCHAR(32),                     -- Nomor WhatsApp
     email VARCHAR(255),                       -- Email anggota
     alamat_rumah TEXT,                        -- Alamat rumah lengkap
+    tanggal_lahir VARCHAR(20),                -- Tanggal lahir YYYY-MM-DD. Sumber otomatis data ultah.
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_anggota_no_induk ON anggota (no_induk);
+CREATE INDEX IF NOT EXISTS idx_agendas_anggota_id ON agendas (anggota_id);
 -- Migrasi database lama:
 --   ALTER TABLE anggota ADD COLUMN IF NOT EXISTS email VARCHAR(255);
+--   ALTER TABLE anggota ADD COLUMN IF NOT EXISTS tanggal_lahir VARCHAR(20);
+--   ALTER TABLE agendas ADD COLUMN IF NOT EXISTS anggota_id VARCHAR(64);
 -- (API juga menjalankan migrasi ini otomatis saat pertama kali diakses)
 
 -- ==============================================================================

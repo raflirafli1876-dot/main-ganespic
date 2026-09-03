@@ -56,6 +56,7 @@ export default async function handler(req, res) {
         tanggal VARCHAR(20) NOT NULL,
         foto_cdn_url TEXT,
         is_tetap BOOLEAN DEFAULT TRUE,
+        anggota_id VARCHAR(64),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
@@ -64,6 +65,10 @@ export default async function handler(req, res) {
     // is_tetap FALSE = event tidak tetap (otomatis terhapus setelah hari pelaksanaan berakhir)
     await sql`
       ALTER TABLE agendas ADD COLUMN IF NOT EXISTS is_tetap BOOLEAN DEFAULT TRUE;
+    `;
+    // Kolom relasi ke tabel anggota (untuk sinkronisasi ulang tahun otomatis)
+    await sql`
+      ALTER TABLE agendas ADD COLUMN IF NOT EXISTS anggota_id VARCHAR(64);
     `;
   }
 
@@ -95,6 +100,7 @@ export default async function handler(req, res) {
           tanggal, 
           foto_cdn_url AS "fotoUrl", 
           is_tetap AS "isTetap",
+          anggota_id AS "anggotaId",
           created_at AS dibuat 
         FROM agendas 
         ORDER BY tanggal ASC;
@@ -126,11 +132,40 @@ export default async function handler(req, res) {
       const deskripsiNis = (tipe === 'event' ? body.deskripsi : (body.id || body.noId)) || '';
       const tanggal = body.tanggal || ''; // YYYY-MM-DD
       const fotoCdnUrl = body.fotoUrl || body.foto_cdn_url || '';
+      const anggotaId = body.anggotaId || body.anggota_id || '';
       // Ulang tahun selalu "tetap" (berulang tiap tahun). Event mengikuti pilihan admin.
       const isTetap = tipe === 'ultah' ? true : (body.isTetap === undefined ? true : Boolean(body.isTetap));
 
       if (!namaJudul || !tanggal) {
         return res.status(400).json({ error: 'Judul/Nama dan Tanggal wajib diisi' });
+      }
+
+      // Jika data berasal dari sinkronisasi anggota (sudah punya anggota_id),
+      // jangan membuat duplikat — cukup update agenda yang sudah ada.
+      if (anggotaId) {
+        const existing = await sql`
+          SELECT id FROM agendas WHERE anggota_id = ${anggotaId} LIMIT 1;
+        `;
+        const found = existing && existing.length > 0 ? existing[0] : null;
+        if (found) {
+          await sql`
+            UPDATE agendas
+            SET tipe = 'ultah',
+                nama_judul = ${namaJudul},
+                deskripsi_nis = ${deskripsiNis},
+                tanggal = ${tanggal},
+                foto_cdn_url = ${fotoCdnUrl},
+                is_tetap = TRUE
+            WHERE anggota_id = ${anggotaId};
+          `;
+          return res.status(200).json({ ok: true, id: found.id });
+        }
+        // Belum ada → insert dengan anggota_id
+        await sql`
+          INSERT INTO agendas (id, tipe, nama_judul, deskripsi_nis, tanggal, foto_cdn_url, is_tetap, anggota_id)
+          VALUES (${id}, ${tipe}, ${namaJudul}, ${deskripsiNis}, ${tanggal}, ${fotoCdnUrl}, ${isTetap}, ${anggotaId});
+        `;
+        return res.status(200).json({ ok: true, id });
       }
 
       await sql`

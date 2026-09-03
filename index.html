@@ -653,6 +653,41 @@
             transform: rotate(3deg);
         }
 
+        /* Tombol aksi di dalam modal (cth: Lihat Kalender) */
+        .modal-footer {
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+        }
+
+        .modal-kalender-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            width: 100%;
+            justify-content: center;
+            background: var(--sage-dim);
+            color: var(--sage);
+            border: 1px solid rgba(124, 244, 152, 0.35);
+            padding: 12px 22px;
+            border-radius: 14px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .modal-kalender-btn:hover {
+            background: var(--sage);
+            color: #0a0d0b;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(124, 244, 152, 0.22);
+        }
+
         .tim-pengembang-grid {
             display: flex;
             justify-content: center;
@@ -1208,7 +1243,7 @@
                 <strong>Berita</strong>
                 <p>Berita hari ini: event terbaru dan ulang tahun anggota angkatan. Jangan sampai ketinggalan momen
                     penting.</p>
-                <a>Baca Berita →</a>
+                <a>Lihat Berita →</a>
             </article>
 
             <article class="card">
@@ -1276,6 +1311,11 @@
                 <button id="btnTutupBerita" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
             </div>
             <div id="beritaList"></div>
+            <div class="modal-footer">
+                <a href="/kalender" class="modal-kalender-btn">
+                    <i class="fas fa-calendar-days"></i> Lihat Kalender Ulang Tahun & Event
+                </a>
+            </div>
         </div>
     </div>
 

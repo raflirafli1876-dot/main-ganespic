@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalender • Ganespic XXV</title>
+    <meta name="description"
+        content="Kalender Angkatan XXV Ganespic: ulang tahun anggota dan event angkatan sepanjang tahun. Cari ultah teman atau event dengan mudah." />
+    <meta name="keywords"
+        content="Ganespic, Ganespic XXV, Angkatan XXV, kalender, ulang tahun, ultah, event angkatan, agenda" />
+    <meta name="author" content="Ganespic XXV" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0a0d0b" />
+    <link rel="canonical" href="https://ganespic.vercel.app/kalender" />
+
+    <link rel="shortcut icon" href="Logo_xxvganespic.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --sage: #7CF498;
+            --sage-dark: #5bc97a;
+            --sage-dim: rgba(124, 244, 152, 0.12);
+            --sage-glow: rgba(124, 244, 152, 0.08);
+            --gold: #ffc85a;
+            --gold-dim: rgba(255, 200, 90, 0.14);
+
+            --bg: #0a0d0b;
+            --bg-card: #111816;
+            --bg-card-hover: #18221c;
+            --bg-elevated: #151e19;
+            --border: #1e2c24;
+            --border-hover: #2d4a38;
+
+            --text: #e8f2ec;
+            --text-dim: #8aaa9a;
+            --text-muted: #5a7a6a;
+
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            --radius: 18px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg: #f4f8f6;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f0f5f2;
+            --bg-elevated: #f8fbf9;
+            --border: #d0ded6;
+            --border-hover: #b0c8bc;
+
+            --text: #1a2a22;
+            --text-dim: #4a6a5a;
+            --text-muted: #7a9a8a;
+
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        .glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(110px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glow.one {
+            width: 480px;
+            height: 480px;
+            background: var(--sage-glow);
+            top: -140px;
+            right: -120px;
+        }
+        .glow.two {
+            width: 420px;
+            height: 420px;
+            background: rgba(255, 200, 90, 0.05);
+            bottom: -160px;
+            left: -120px;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: min(1180px, 92vw);
+            margin: 0 auto;
+            flex: 1;
+            padding: 40px 0 60px;
+        }
+
+        /* ── Navbar ── */
+        .nav {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 18px 0;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 700;
+        }
+        .nav-brand img {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+        }
+        .nav-brand .brand-title {
+            font-size: 1.05rem;
+        }
+        .nav-brand .brand-badge {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            background: var(--sage-dim);
+            color: var(--sage);
+            padding: 3px 8px;
+            border-radius: 100px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 9px 14px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+        .nav-btn:hover {
+            border-color: var(--sage);
+            color: var(--sage);
+        }
+
+        /* ── Header ── */
+        .page-header {
+            text-align: center;
+            margin: 34px 0 30px;
+        }
+        .page-header .overline {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .page-header h1 {
+            font-size: clamp(1.7rem, 4vw, 2.6rem);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .page-header h1 .highlight {
+            color: var(--sage);
+        }
+        .page-header p {
+            color: var(--text-dim);
+            max-width: 620px;
+            margin: 12px auto 0;
+            font-size: 0.95rem;
+        }
+        .page-header .header-icon {
+            font-size: 2.4rem;
+            color: var(--sage);
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* ── Toolbar: Pencarian & Filter ── */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .search-wrap {
+            flex: 1;
+            min-width: 240px;
+            position: relative;
+        }
+        .search-wrap i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+        .search-wrap input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 13px 16px 13px 42px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all var(--transition);
+        }
+        .search-wrap input:focus {
+            outline: none;
+            border-color: var(--sage);
+            box-shadow: 0 0 0 3px var(--sage-dim);
+        }
+        .search-wrap input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 11px 18px;
+            color: var(--text-dim);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .filter-chip.active {
+            background: var(--sage-dim);
+            border-color: var(--sage);
+            color: var(--sage);
+        }
+        .filter-chip:hover {
+            border-color: var(--border-hover);
+        }
+
+        /* ── Kalender Card ── */
+        .calendar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 26px;
+            box-shadow: var(--shadow);
+        }
+
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .calendar-title-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .calendar-month-title {
+            font-size: 1.45rem;
+            font-weight: 700;
+        }
+        .calendar-year-title {
+            font-size: 1rem;
+            color: var(--text-dim);
+        }
+        .calendar-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cal-btn {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 14px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .cal-btn:hover {
+            border-color: var(--sage);
+            color: var(--sage);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .cal-day-header {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 8px 0;
+        }
+
+        .cal-cell {
+            min-height: 86px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 6px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+            user-select: none;
+        }
+        .cal-cell:hover {
+            border-color: var(--sage);
+            background: var(--bg-card-hover);
+            transform: scale(1.02);
+            z-index: 2;
+        }
+        .cal-cell.other-month {
+            opacity: 0.3;
+            background: transparent;
+        }
+        .cal-cell.today {
+            border-color: var(--sage);
+            box-shadow: inset 0 0 0 1px var(--sage);
+        }
+        .cal-cell.selected {
+            background: var(--sage-dim);
+            border-color: var(--sage);
+            box-shadow: 0 0 12px var(--sage-dim);
+        }
+
+        .cal-cell-num {
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .cal-cell.today .cal-cell-num {
+            background: var(--sage);
+            color: #06210f;
+        }
+
+        .cal-markers {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            overflow: hidden;
+        }
+
+        .cal-tag {
+            font-size: 0.58rem;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+        .cal-tag.event {
+            background: var(--sage-dim);
+            color: var(--sage);
+        }
+        .cal-tag.ultah {
+            background: var(--gold-dim);
+            color: var(--gold);
+        }
+
+        /* ── Layout Kalender + Daftar ── */
+        .cal-layout {
+            display: grid;
+            grid-template-columns: 1.55fr 1fr;
+            gap: 24px;
+            align-items: start;
+            margin-top: 24px;
+        }
+
+        .list-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .list-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .list-card-header h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+        .lk-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: var(--sage-dim);
+            color: var(--sage);
+            border-radius: 100px;
+            padding: 4px 12px;
+        }
+
+        .list-empty {
+            text-align: center;
+            padding: 36px 12px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .list-empty i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.6;
+        }
+
+        .sch-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            transition: all var(--transition);
+        }
+        .sch-item:hover {
+            border-color: var(--border-hover);
+        }
+        .sch-item img {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+        .sch-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .sch-item-badge {
+            display: inline-block;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 100px;
+            margin-bottom: 3px;
+        }
+        .sch-item-badge.event {
+            background: var(--sage-dim);
+            color: var(--sage);
+        }
+        .sch-item-badge.ultah {
+            background: var(--gold-dim);
+            color: var(--gold);
+        }
+        .sch-item-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        .sch-item-desc {
+            font-size: 0.76rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+        .sch-item-date {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        /* ── Banner Ultah Hari Ini ── */
+        .birthday-now {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--gold-dim);
+            border: 1px solid rgba(255, 200, 90, 0.35);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            font-size: 0.9rem;
+        }
+        .birthday-now i {
+            font-size: 1.6rem;
+            color: var(--gold);
+        }
+        .birthday-now b {
+            color: var(--gold);
+        }
+
+        /* ── Footer ── */
+        .footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border);
+            padding: 22px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        .footer a {
+            color: var(--sage);
+            text-decoration: none;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .cal-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 640px) {
+            .cal-cell {
+                min-height: 56px;
+                padding: 4px 2px;
+            }
+            .cal-cell-num {
+                font-size: 0.7rem;
+                width: 20px;
+                height: 20px;
+                line-height: 20px;
+            }
+            .cal-tag {
+                font-size: 0.5rem;
+                padding: 1px 3px;
+            }
+            .calendar-card {
+                padding: 16px;
+            }
+            .list-card {
+                padding: 16px;
+            }
+            .nav-actions .nav-btn span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glow one"></div>
+    <div class="glow two"></div>
+
+    <header class="nav container">
+        <a href="/" class="nav-brand">
+            <img src="Logo_xxvganespic.png" alt="Logo Ganespic XXV" />
+            <span class="brand-title">Ganespic XXV</span>
+            <span class="brand-badge">Kalender</span>
+        </a>
+        <div class="nav-actions">
+            <button class="nav-btn" id="themeToggle" title="Ganti Tema">
+                <i class="fas fa-moon" id="themeIcon"></i>
+                <span>Tema</span>
+            </button>
+            <a href="/" class="nav-btn">
+                <i class="fas fa-home"></i>
+                <span>Beranda</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="page-header">
+            <i class="fas fa-calendar-days header-icon"></i>
+            <div class="overline">Angkatan XXV Ganespic</div>
+            <h1>Kalender <span class="highlight">Ulang Tahun & Event</span></h1>
+            <p>
+                Lihat seluruh ulang tahun anggota dan agenda event Ganespic XXV
+                sepanjang tahun. Temukan momen spesial dengan cepat lewat pencarian.
+            </p>
+        </section>
+
+        <!-- Banner ultah hari ini -->
+        <div class="birthday-now" id="birthdayNow" style="display:none;"></div>
+
+        <!-- Toolbar: pencarian & filter -->
+        <div class="toolbar">
+            <div class="search-wrap">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="search" id="searchInput" placeholder="Cari nama anggota / event / bulan (contoh: Rafli, Makrab, Agustus)..." />
+            </div>
+            <button class="filter-chip active" data-filter="all">
+                <i class="fas fa-layer-group"></i> Semua
+            </button>
+            <button class="filter-chip" data-filter="ultah">
+                <i class="fas fa-cake-candles"></i> Ultah
+            </button>
+            <button class="filter-chip" data-filter="event">
+                <i class="fas fa-calendar-check"></i> Event
+            </button>
+        </div>
+
+        <div class="cal-layout">
+            <!-- Kalender -->
+            <section class="calendar-card">
+                <div class="calendar-header">
+                    <div class="calendar-title-wrap">
+                        <h2 class="calendar-month-title" id="calMonthDisplay">September</h2>
+                        <span class="calendar-year-title" id="calYearDisplay">2026</span>
+                    </div>
+                    <div class="calendar-controls">
+                        <button class="cal-btn" id="btnPrevMonth" title="Bulan Sebelumnya"><i class="fas fa-chevron-left"></i></button>
+                        <button class="cal-btn" id="btnToday">Hari Ini</button>
+                        <button class="cal-btn" id="btnNextMonth" title="Bulan Berikutnya"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </section>
+
+            <!-- Daftar jadwal -->
+            <aside class="list-card">
+                <div class="list-card-header">
+                    <h3><i class="fas fa-calendar-day" style="color:var(--sage);margin-right:6px;"></i> Jadwal</h3>
+                    <span class="lk-badge" id="listBadge">Semua Tanggal</span>
+                </div>
+                <div id="agendaList">
+                    <div class="list-empty">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Memuat kalender...
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <a href="/"><i class="fas fa-leaf"></i> Ganespic XXV</a> • Kalender Ulang Tahun & Event Angkatan
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            // ── Konfigurasi ──
+            const API_URL = '/api/news';
+
+            // ── Dark / Light Theme ──
+            const html = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+
+            function applyTheme(theme) {
+                html.setAttribute('data-theme', theme);
+                themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+            }
+            const savedTheme = localStorage.getItem('ganespic-theme') ||
+                (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+            applyTheme(savedTheme);
+            themeToggle.addEventListener('click', () => {
+                const current = html.getAttribute('data-theme');
+                applyTheme(current === 'dark' ? 'light' : 'dark');
+                localStorage.setItem('ganespic-theme', current === 'dark' ? 'light' : 'dark');
+            });
+
+            // ── State ──
+            let allNews = [];
+            let currentYear = new Date().getFullYear();
+            let currentMonth = new Date().getMonth();
+            let selectedDate = null;
+            let activeFilter = 'all';
+
+            const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+            const dayNames = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+
+            const $ = (id) => document.getElementById(id);
+
+            function escHtml(s) {
+                return String(s ?? '').replace(/[&<>"']/g, m => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                }[m]));
+            }
+
+            // Apakah item tampil pada tanggal tertentu?
+            // - Event TIDAK TETAP → hanya tanggal persisnya.
+            // - Event TETAP & Ultah → berulang tiap tahun (cocokkan bulan-tanggal).
+            function itemMatchesDate(item, mmdd, fullDateStr) {
+                if (!item.tanggal) return false;
+                if (item.tipe === 'event' && item.isTetap === false) {
+                    return item.tanggal === fullDateStr;
+                }
+                const t = item.tanggal.length > 5 ? item.tanggal.slice(5) : item.tanggal;
+                return t === mmdd;
+            }
+
+            // Format tanggal tampilan singkat ("29 Agu")
+            function shortDate(tgl) {
+                if (!tgl || tgl.length < 10) return tgl || '';
+                const [, m, d] = tgl.split('-');
+                const abbr = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                return `${parseInt(d, 10)} ${abbr[parseInt(m, 10) - 1] || m}`;
+            }
+
+            // Hitung umur untuk ulang tahun
+            function getAgeInfo(tanggalLahirStr, targetYear) {
+                if (!tanggalLahirStr || tanggalLahirStr.length < 4) return '';
+                const birthYear = parseInt(tanggalLahirStr.slice(0, 4), 10);
+                if (isNaN(birthYear) || birthYear >= targetYear) return '';
+                const age = targetYear - birthYear;
+                return `Ultah yang ke-${age} tahun (${age} th)`;
+            }
+
+            // ── Render Kalender ──
+            function renderCalendar() {
+                const grid = $('calendarGrid');
+                grid.innerHTML = '';
+
+                document.getElementById('calMonthDisplay').textContent = monthNames[currentMonth];
+                document.getElementById('calYearDisplay').textContent = currentYear;
+
+                // Header hari
+                dayNames.forEach(name => {
+                    const h = document.createElement('div');
+                    h.className = 'cal-day-header';
+                    h.textContent = name;
+                    grid.appendChild(h);
+                });
+
+                const firstDay = new Date(currentYear, currentMonth, 1);
+                // Senin = 0 di grid ini
+                const startDay = (firstDay.getDay() + 6) % 7;
+                const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+                // Sel kosong awal bulan
+                for (let i = 0; i < startDay; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cal-cell other-month';
+                    grid.appendChild(cell);
+                }
+
+                const curMonthStr = String(currentMonth + 1).padStart(2, '0');
+                const today = new Date();
+                const isThisMonthNow = today.getFullYear() === currentYear && today.getMonth() === currentMonth;
+
+                for (let d = 1; d <= totalDays; d++) {
+                    const dStr = String(d).padStart(2, '0');
+                    const dateFullStr = `${currentYear}-${curMonthStr}-${dStr}`;
+                    const mmdd = `${curMonthStr}-${dStr}`;
+
+                    const cell = document.createElement('div');
+                    cell.className = 'cal-cell';
+                    if (isThisMonthNow && today.getDate() === d) cell.classList.add('today');
+                    if (selectedDate === dateFullStr) cell.classList.add('selected');
+
+                    const dayItems = allNews.filter(item => itemMatchesDate(item, mmdd, dateFullStr));
+
+                    let markersHtml = '<div class="cal-markers">';
+                    dayItems.forEach(item => {
+                        const isEvent = item.tipe === 'event';
+                        const title = isEvent ? item.judul : item.nama;
+                        const tagClass = isEvent ? 'cal-tag event' : 'cal-tag ultah';
+                        const icon = isEvent ? (item.isTetap === false ? '📌' : '🔁') : '🎂';
+                        markersHtml += `<div class="${tagClass}" title="${escHtml(title)}">${icon} ${escHtml(title)}</div>`;
+                    });
+                    markersHtml += '</div>';
+
+                    cell.innerHTML = `<span class="cal-cell-num">${d}</span>${markersHtml}`;
+                    cell.addEventListener('click', () => selectDay(dateFullStr));
+                    grid.appendChild(cell);
+                }
+            }
+
+            function selectDay(fullDateStr) {
+                selectedDate = fullDateStr;
+                document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected'));
+                renderCalendar();
+                renderAgendaList();
+            }
+
+            // ── Render Daftar Jadwal (dengan search & filter) ──
+            function renderAgendaList() {
+                const list = $('agendaList');
+                const query = $('searchInput').value.trim().toLowerCase();
+
+                // Filter tipe (Ultah / Event / Semua)
+                let items = allNews.filter(item => {
+                    if (activeFilter === 'ultah' && item.tipe !== 'ultah') return false;
+                    if (activeFilter === 'event' && item.tipe !== 'event') return false;
+                    return true;
+                });
+
+                // Filter pencarian (nama/event, noId, tanggal, nama bulan)
+                if (query) {
+                    items = items.filter(item => {
+                        const title = item.tipe === 'event' ? item.judul : item.nama;
+                        const noId = item.noId || '';
+                        const tgl = item.tanggal || '';
+                        const bulanNama = tgl.length >= 10 ? monthNames[parseInt(tgl.slice(5, 7), 10) - 1] : '';
+                        const hay = `${title} ${noId} ${tgl} ${bulanNama}`.toLowerCase();
+                        return hay.includes(query);
+                    });
+                }
+
+                const badge = $('listBadge');
+                badge.textContent = activeFilter === 'ultah' ? 'Ulang Tahun' :
+                    activeFilter === 'event' ? 'Event' : 'Semua Tanggal';
+
+                if (!items.length) {
+                    list.innerHTML = `<div class="list-empty">
+                        <i class="fas fa-calendar-xmark"></i>
+                        ${query ? `Tidak ada jadwal yang cocok dengan "<b style="color:var(--text)">${escHtml(query)}</b>".` : 'Belum ada agenda untuk ditampilkan.'}
+                    </div>`;
+                    return;
+                }
+
+                // Urutkan berdasarkan tanggal
+                items.sort((a, b) => String(a.tanggal || '').localeCompare(String(b.tanggal || '')));
+
+                list.innerHTML = items.map(item => {
+                    const isEvent = item.tipe === 'event';
+                    const badgeCls = isEvent ? 'sch-item-badge event' : 'sch-item-badge ultah';
+                    const badgeText = isEvent ?
+                        (item.isTetap === false ? 'Event • Tidak Tetap' : 'Event • Tetap') :
+                        'Ulang Tahun';
+                    const title = isEvent ? (item.judul || 'Event') : (item.nama || 'Anggota');
+                    const img = item.fotoUrl || 'Logo_xxvganespic.png';
+                    const ageText = !isEvent ? getAgeInfo(item.tanggal, currentYear) : '';
+                    const desc = isEvent ?
+                        (item.deskripsi || '') :
+                        `${ageText ? `<strong style="color:var(--gold)">${escHtml(ageText)}</strong><br>` : ''}No ID: ${escHtml(item.noId || '-')}`;
+
+                    return `
+                        <div class="sch-item">
+                            <img src="${escHtml(img)}" alt="${escHtml(title)}" onerror="this.src='Logo_xxvganespic.png'" />
+                            <div class="sch-item-info">
+                                <span class="${badgeCls}">${badgeText}</span>
+                                <div class="sch-item-title">${escHtml(title)}</div>
+                                <div class="sch-item-desc">${desc}</div>
+                            </div>
+                            <div class="sch-item-date">${shortDate(item.tanggal)}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // ── Banner ultah hari ini ──
+            function renderBirthdayBanner() {
+                const banner = $('birthdayNow');
+                const now = new Date();
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                const dd = String(now.getDate()).padStart(2, '0');
+                const mmdd = mm + '-' + dd;
+
+                const todayBdays = allNews.filter(item => {
+                    if (item.tipe !== 'ultah') return false;
+                    const t = item.tanggal.length > 5 ? item.tanggal.slice(5) : item.tanggal;
+                    return t === mmdd;
+                });
+
+                if (todayBdays.length) {
+                    const names = todayBdays.map(b => `<b>${escHtml(b.nama)}</b>`).join(', ');
+                    banner.innerHTML = `<i class="fas fa-cake-candles"></i>
+                        <span>Ayo ucapkan selamat ulang tahun hari ini untuk: ${names}! 🎉</span>`;
+                    banner.style.display = 'flex';
+                } else {
+                    banner.style.display = 'none';
+                }
+            }
+
+            // ── Events: navigasi kalender ──
+            $('btnPrevMonth').addEventListener('click', () => {
+                currentMonth--;
+                if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+                selectedDate = null;
+                renderCalendar();
+                renderAgendaList();
+            });
+            $('btnNextMonth').addEventListener('click', () => {
+                currentMonth++;
+                if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+                selectedDate = null;
+                renderCalendar();
+                renderAgendaList();
+            });
+            $('btnToday').addEventListener('click', () => {
+                const now = new Date();
+                currentYear = now.getFullYear();
+                currentMonth = now.getMonth();
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                const ddd = String(now.getDate()).padStart(2, '0');
+                selectDay(`${currentYear}-${mm}-${ddd}`);
+            });
+
+            // ── Events: pencarian & filter ──
+            $('searchInput').addEventListener('input', renderAgendaList);
+
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    activeFilter = chip.dataset.filter;
+                    renderAgendaList();
+                });
+            });
+
+            // ── Load Data ──
+            (async function load() {
+                try {
+                    const res = await fetch(API_URL);
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const data = await res.json();
+                    allNews = Array.isArray(data.news) ? data.news : [];
+                    renderBirthdayBanner();
+                    renderCalendar();
+                    renderAgendaList();
+                } catch (e) {
+                    $('calendarGrid').innerHTML =
+                        '<div class="list-empty" style="grid-column:1/-1;"><i class="fas fa-triangle-exclamation"></i>Gagal memuat kalender. Periksa koneksi internet.</div>';
+                    $('agendaList').innerHTML =
+                        '<div class="list-empty"><i class="fas fa-triangle-exclamation"></i>Gagal memuat data. Coba muat ulang halaman.</div>';
+                }
+            })();
+        })();
+    </script>
+</body>
+
+</html>
