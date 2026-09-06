@@ -601,6 +601,12 @@
             animation: modalIn 330ms cubic-bezier(0.22, 1, 0.36, 1) both;
         }
 
+        /* Popup berita dibuat lebih besar agar konten berita nyaman dibaca */
+        #modalBerita .modal-box {
+            width: min(100%, 760px);
+            max-height: min(90vh, 820px);
+        }
+
         @keyframes modalIn {
             from {
                 opacity: 0;
@@ -833,6 +839,9 @@
             font-size: 0.75rem;
             color: var(--text-dim);
             margin-bottom: 10px;
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .anggota-card .ang-detail-btn {
@@ -951,6 +960,13 @@
             background: var(--bg-elevated);
             margin-bottom: 14px;
             transition: all var(--transition);
+        }
+
+        .news-item > div:last-child {
+            flex: 1;
+            min-width: 0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .news-item:hover {
@@ -1076,6 +1092,222 @@
 
         .pass-toggle:hover {
             color: var(--sage);
+        }
+
+        /* ─── AI · Asisten Virtual Ganespic XXV ─── */
+        #modalAI .modal-box {
+            width: min(100%, 640px);
+            max-height: min(88vh, 720px);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 22px 18px;
+            overflow: hidden;
+        }
+
+        .ai-messages {
+            flex: 1;
+            min-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 4px 4px 12px;
+        }
+
+        .ai-msg {
+            max-width: 88%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            animation: aiMsgIn 240ms ease-out both;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .ai-msg.ai-bot {
+            align-self: flex-start;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 6px;
+            color: var(--text);
+        }
+
+        .ai-msg.ai-bot a {
+            color: var(--sage);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .ai-msg.ai-bot a:hover {
+            text-decoration: underline;
+        }
+
+        .ai-msg.ai-user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--sage), var(--sage-dark));
+            color: #0a0d0b;
+            border-bottom-right-radius: 6px;
+            font-weight: 500;
+        }
+
+        @keyframes aiMsgIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .ai-typing {
+            display: inline-flex;
+            gap: 5px;
+            align-items: center;
+            padding: 12px 16px;
+        }
+
+        .ai-typing .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--sage);
+            animation: aiBounce 1s infinite ease-in-out;
+        }
+
+        .ai-typing .dot:nth-child(2) {
+            animation-delay: .15s;
+        }
+
+        .ai-typing .dot:nth-child(3) {
+            animation-delay: .3s;
+        }
+
+        @keyframes aiBounce {
+
+            0%,
+            80%,
+            100% {
+                transform: translateY(0);
+                opacity: .5;
+            }
+
+            40% {
+                transform: translateY(-5px);
+                opacity: 1;
+            }
+        }
+
+        .ai-linkrow {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 7px 0;
+            padding: 9px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .ai-linkrow:hover {
+            border-color: var(--sage);
+            transform: translateX(2px);
+        }
+
+        .ai-linkrow i {
+            color: var(--sage);
+            margin-top: 2px;
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .ai-linkrow small {
+            display: block;
+            color: var(--text-muted);
+            font-size: .72rem;
+            line-height: 1.4;
+        }
+
+        .ai-suggest {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 2px 4px;
+            border-top: 1px solid var(--border);
+        }
+
+        .ai-chip {
+            background: var(--sage-dim);
+            color: var(--sage);
+            border: 1px solid transparent;
+            border-radius: 100px;
+            padding: 7px 14px;
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .ai-chip:hover {
+            border-color: var(--sage);
+            transform: translateY(-1px);
+            background: rgba(124, 244, 152, .22);
+        }
+
+        .ai-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .ai-form input {
+            flex: 1;
+            min-width: 0;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color var(--transition);
+        }
+
+        .ai-form input:focus {
+            border-color: var(--sage);
+        }
+
+        .ai-form input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .ai-form button {
+            width: 46px;
+            height: 46px;
+            flex: 0 0 auto;
+            display: grid;
+            place-items: center;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--sage), var(--sage-dark));
+            color: #0a0d0b;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .ai-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(124, 244, 152, .3);
         }
 
         /* ─── Responsive ─── */
@@ -1269,6 +1501,14 @@
                     dan kegiatan angkatan.</p>
                 <a href="https://galery.ganespic.workers.dev/">Masuk Galeri →</a>
             </article>
+
+            <article class="card" id="btnAI" onclick="openAIChat()" style="cursor:pointer;">
+                <div class="icon-big"><i class="fas fa-robot"></i></div>
+                <strong>AI</strong>
+                <p>Tanya apa saja seputar website Ganespic: ulang tahun anggota, jadwal event, dan tautan menu seperti
+                    galeri, kas, serta struktural MPK.</p>
+                <a>Tanya AI →</a>
+            </article>
         </section>
 
         <!-- ─── Sambutan ─── -->
@@ -1338,6 +1578,22 @@
                     </a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ─── MODAL AI ─── -->
+    <div id="modalAI" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-robot" style="color:var(--sage);"></i> AI · Asisten Ganespic</h2>
+                <button id="btnTutupAI" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
+            </div>
+            <div id="aiMessages" class="ai-messages" role="log" aria-live="polite"></div>
+            <div id="aiSuggest" class="ai-suggest"></div>
+            <form id="aiForm" class="ai-form" autocomplete="off">
+                <input type="text" id="aiInput" placeholder="Tanya seputar angkatan & website..." />
+                <button type="submit" id="btnKirimAI" aria-label="Kirim pertanyaan"><i class="fas fa-paper-plane"></i></button>
+            </form>
         </div>
     </div>
 
@@ -1484,10 +1740,470 @@
             btnDev.addEventListener('click', bukaModal);
             btnTutup.addEventListener('click', tutupModal);
 
+            // ══════════════════════════════════════════════════════════════════
+            // —── AI: Asisten Virtual Ganespic XXV ─────────────────────────────
+            // Menjawab pertanyaan khusus seputar WEBSITE & INFORMASI ANGKATAN,
+            // bersumber langsung dari API anggota (/api/anggota) dan agenda
+            // (/api/news). Tidak memakai server eksternal / API key.
+            // ══════════════════════════════════════════════════════════════════
+            const modalAI = document.getElementById('modalAI');
+            const aiMessages = document.getElementById('aiMessages');
+            const aiInput = document.getElementById('aiInput');
+            const aiForm = document.getElementById('aiForm');
+            const aiSuggest = document.getElementById('aiSuggest');
+
+            const BULAN_ID = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+            const HARI_ID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+            const LINKS_WEB = [{
+                nama: 'Anggota Angkatan',
+                url: '/anggota',
+                icon: 'fa-users',
+                kata: 'anggota,profil,teman,siswa,orang',
+                desc: 'Daftar lengkap anggota Angkatan XXV'
+            }, {
+                nama: 'Kas Angkatan',
+                url: 'https://kas-ganespic.vercel.app/',
+                icon: 'fa-wallet',
+                kata: 'kas,uang,keuangan,iuran,dana,duit',
+                desc: 'Kelola & lihat keuangan angkatan'
+            }, {
+                nama: 'Struktural MPK',
+                url: 'https://mpk-ganespic.vercel.app/',
+                icon: 'fa-users-gear',
+                kata: 'mpk,struktural,pengurus,struktur,ketua,bendahara,seksi',
+                desc: 'Susunan pengurus & peran tiap anggota'
+            }, {
+                nama: 'Galeri Angkatan',
+                url: 'https://galery.ganespic.workers.dev/',
+                icon: 'fa-images',
+                kata: 'galeri,galery,foto,dokumentasi,album,gambar',
+                desc: 'Dokumentasi kegiatan & gathering angkatan'
+            }, {
+                nama: 'Kalender',
+                url: '/kalender',
+                icon: 'fa-calendar-days',
+                kata: 'kalender,jadwal,tanggal,bulan',
+                desc: 'Kalender ultah & event sepanjang tahun'
+            }];
+
+            let aiCache = null;
+            let aiReady = false;
+
+            function escAI(s) {
+                return String(s == null ? '' : s)
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            }
+
+            function cleanId(s) {
+                return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+            }
+
+            function fmtTanggalId(str, withDay) {
+                if (!str) return '-';
+                const p = String(str).split('-');
+                if (p.length < 3) return escAI(String(str));
+                const y = p[0],
+                    m = parseInt(p[1], 10),
+                    d = parseInt(p[2], 10);
+                if (!m || !d) return escAI(String(str));
+                let out = d + ' ' + BULAN_ID[m - 1] + ' ' + y;
+                if (withDay) {
+                    const hari = new Date(y, m - 1, d).getDay();
+                    out = HARI_ID[hari] + ', ' + out;
+                }
+                return out;
+            }
+
+            function hitungUmur(tglLahir) {
+                if (!tglLahir || String(tglLahir).length < 4) return null;
+                const y = parseInt(String(tglLahir).slice(0, 4), 10);
+                if (!y) return null;
+                const now = new Date();
+                const lahir = new Date(String(tglLahir) + 'T00:00:00');
+                if (isNaN(lahir.getTime()) || y > now.getFullYear()) return null;
+                let umur = now.getFullYear() - lahir.getFullYear();
+                const mDiff = now.getMonth() - lahir.getMonth();
+                if (mDiff < 0 || (mDiff === 0 && now.getDate() < lahir.getDate())) umur--;
+                return umur >= 0 ? umur : null;
+            }
+
+            async function loadAIData() {
+                if (aiCache) return aiCache;
+                const [resA, resN] = await Promise.all([
+                    fetch('/api/anggota').then(r => r.json()).catch(() => ({ anggota: [] })),
+                    fetch('/api/news').then(r => r.json()).catch(() => ({ news: [] }))
+                ]);
+                aiCache = {
+                    anggota: Array.isArray(resA.anggota) ? resA.anggota : [],
+                    news: Array.isArray(resN.news) ? resN.news : []
+                };
+                return aiCache;
+            }
+
+            // Cari anggota berdasarkan token nama di dalam pertanyaan
+            function cariAnggota(q) {
+                const qtokens = new Set(cleanId(q).split(/\s+/).filter(t => t.length > 1));
+                let best = null,
+                    bestScore = 0;
+                (aiCache.anggota || []).forEach(a => {
+                    const gabung = cleanId((a.namaLengkap || '') + ' ' + (a.namaPanggilan || ''));
+                    const uniq = [];
+                    gabung.split(/\s+/).forEach(t => { if (t.length > 1 && uniq.indexOf(t) === -1) uniq.push(t); });
+                    let hit = 0,
+                        maxLen = 0;
+                    uniq.forEach(t => { if (qtokens.has(t)) { hit++; maxLen = Math.max(maxLen, t.length); } });
+                    if (hit > bestScore && (hit >= 2 || maxLen >= 4)) { bestScore = hit; best = a; }
+                });
+                return best;
+            }
+
+            // Cari nama di data agenda ulang tahun (jika tabel anggota kosong)
+            function cariUltahDiNews(q) {
+                const qtokens = cleanId(q).split(/\s+/).filter(t => t.length > 2);
+                let best = null,
+                    bs = 1;
+                (aiCache.news || []).forEach(n => {
+                    if (n.tipe !== 'ultah') return;
+                    const namaQ = cleanId((n.nama || n.judul || '').toString());
+                    let hit = 0;
+                    namaQ.split(/\s+/).forEach(t => { if (qtokens.indexOf(t) !== -1) hit++; });
+                    if (hit > bs) { bs = hit; best = n; }
+                });
+                return best;
+            }
+
+            function hariIniUltah() {
+                const now = new Date();
+                const tgl = String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+                const hasil = [];
+                (aiCache.anggota || []).forEach(a => {
+                    const tl = a.tanggalLahir ? String(a.tanggalLahir) : '';
+                    if (tl.length >= 10 && tl.slice(5) === tgl) {
+                        hasil.push({ nama: a.namaLengkap, tgl: tl, umur: hitungUmur(tl) });
+                    }
+                });
+                (aiCache.news || []).forEach(n => {
+                    if (n.tipe !== 'ultah') return;
+                    const t2 = n.tanggal ? String(n.tanggal) : '';
+                    if (t2.length >= 10 && t2.slice(5) === tgl && !hasil.some(h => h.nama === (n.nama || n.judul))) {
+                        hasil.push({ nama: n.nama || n.judul, tgl: t2, umur: hitungUmur(t2) });
+                    }
+                });
+                return hasil;
+            }
+
+            function daftarPutaran(items) {
+                return items.map((u, i) =>
+                    '<div class="ai-linkrow"><i class="fas fa-cake-candles"></i>' +
+                    '<div><b>' + escAI(u.nama) + '</b><small>' +
+                    (u.umur != null ? 'Bertepatan dengan ultah ke-' + (u.umur + 1) + ' · ' : '') +
+                    fmtTanggalId(u.tgl, true) + '</small></div></div>').join('');
+            }
+
+            function renderLinks(kataMatch) {
+                const cocok = LINKS_WEB.filter(l => {
+                    const kw = l.kata.split(',');
+                    return kw.some(k => kataMatch.includes(cleanId(k))) ||
+                        l.nama.toLowerCase().includes(kataMatch);
+                });
+                const target = cocok.length ? cocok : LINKS_WEB;
+                return '<div>' + target.map(l =>
+                    '<a class="ai-linkrow" href="' + l.url + '" target="_blank" rel="noopener">' +
+                    '<i class="fas ' + l.icon + '"></i><div><b>' + l.nama + '</b><small>' + l.desc + '</small></div></a>'
+                ).join('') + '</div>';
+            }
+
+            function daftarKemampuan() {
+                return '• <b>Ultah anggota</b> — "kapan ultah si <i>nama</i>?" / "siapa yang ultah bulan ini?"<br>' +
+                    '• <b>Event</b> — "event apa aja tahun ini?" / "ada acara bulan depan?"<br>' +
+                    '• <b>Tautan web</b> — "link galeri?", "kas angkatan", "struktural MPK"<br>' +
+                    '• <b>Info lain</b> — "berapa jumlah anggota?", "berita hari ini"';
+            }
+
+            async function aiJawab(qRaw) {
+                const text = cleanId(qRaw);
+                const now = new Date();
+                const thn = now.getFullYear();
+                const bln = now.getMonth() + 1;
+                const todayISO = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+                const namaBulan = BULAN_ID[bln - 1];
+
+                // ── Sapaan ──
+                if (/^(halo|hai|hello|hi|p|yo|salam|assalamualaikum|selamat (pagi|siang|sore|malam))\b/.test(text) && text.split(/\s+/).length <= 3) {
+                    return 'Halo! 👋 Aku <b>AI Ganespic XXV</b>, asisten khusus website & info angkatan.<br>Kamu bisa tanya:<br>' +
+                        daftarKemampuan();
+                }
+
+                // ── Terima kasih ──
+                if (/^(makasih|terima kasih|thanks|thank you|sip|mantap|oke|ok)\b/.test(text)) {
+                    return 'Sama-sama! 😊 Senang bisa membantu. Kalau ada pertanyaan lain seputar angkatan atau website, langsung tanya saja ya.';
+                }
+
+                // ── Bantuan ──
+                if (/\b(bantuan|help|tolong|apa yang bisa|bisa apa|kamu bisa apa|fitur apa|caranya)\b/.test(text)) {
+                    return 'Aku <b>AI</b> asisten <b>Ganespic XXV</b>. Hal-hal seputar website & angkatan yang bisa kutanyakan:<br>' + daftarKemampuan();
+                }
+
+                const adaUltah = /(ultah|ulang ?tahun|lahir|birthday|hbd)/.test(text);
+                const adaEvent = /(event|acara|kegiatan|agenda|jadwal|dies|makrab|gathering|pentas|kumpul)/.test(text);
+
+                // ── ULANG TAHUN ──
+                if (adaUltah) {
+                    if (/hari ini|hari ini juga|sekarang/.test(text)) {
+                        const list = hariIniUltah();
+                        return list.length ?
+                            '🎂 Ada <b>' + list.length + '</b> anggota yang merayakan ulang tahun <b>hari ini</b> (' + fmtTanggalId(todayISO) + '):<br>' +
+                            daftarPutaran(list.slice(0, 15)) :
+                            'Hari ini (<b>' + fmtTanggalId(todayISO) + '</b>) tidak ada anggota yang merayakan ulang tahun. Coba lihat kalender biar tidak ketinggalan 🗓️ → <a href="/kalender">Buka Kalender</a>';
+                    }
+                    if (/besok|esok/.test(text)) {
+                        const besok = new Date(now.getTime() + 86400000);
+                        const besokISO = besok.getFullYear() + '-' + String(besok.getMonth() + 1).padStart(2, '0') + '-' + String(besok.getDate()).padStart(2, '0');
+                        const mmdd = String(besok.getMonth() + 1).padStart(2, '0') + '-' + String(besok.getDate()).padStart(2, '0');
+                        const list = [];
+                        (aiCache.anggota || []).forEach(a => {
+                            const tl = a.tanggalLahir ? String(a.tanggalLahir) : '';
+                            if (tl.length >= 10 && tl.slice(5) === mmdd) list.push({ nama: a.namaLengkap, tgl: tl, umur: hitungUmur(tl) });
+                        });
+                        return list.length ?
+                            '🎂 Besok (<b>' + fmtTanggalId(besokISO) + '</b>) ada <b>' + list.length + '</b> anggota berulang tahun:<br>' + daftarPutaran(list.slice(0, 15)) :
+                            'Besok (<b>' + fmtTanggalId(besokISO) + '</b>) belum ada data anggota yang ulang tahun.';
+                    }
+
+                    // Cari nama anggota spesifik
+                    const anggota = cariAnggota(text);
+                    if (anggota) {
+                        const tl = anggota.tanggalLahir ? String(anggota.tanggalLahir) : '';
+                        if (!tl || tl.length < 10) {
+                            return 'Anggota <b>' + escAI(anggota.namaLengkap) + '</b> ditemukan, tapi tanggal lahirnya belum diisi di database. Tanya pengurus untuk melengkapi datanya ya. 🙏';
+                        }
+                        const umur = hitungUmur(tl);
+                        return '🎂 Ultah <b>' + escAI(anggota.namaLengkap) + '</b> (ID: ' + escAI(anggota.noInduk || '-') + ') jatuh pada <b>' + fmtTanggalId(tl, true) + '</b>.' +
+                            (umur != null ? ' Tahun ini genap masuk umur <b>' + (umur + 1) + ' tahun</b> 🎉' : '') +
+                            '<br><small><i class="fas fa-arrow-right"></i> Cek semua ultah di <a href="/kalender">Kalender</a></small>';
+                    }
+                    const agNews = cariUltahDiNews(text);
+                    if (agNews) {
+                        const t2 = agNews.tanggal ? String(agNews.tanggal) : '';
+                        return '🎂 Ultah <b>' + escAI(agNews.nama || agNews.judul) + '</b> (No ID: ' + escAI(agNews.noId || '-') + ') jatuh pada <b>' + fmtTanggalId(t2, true) + '</b>.' +
+                            '<br><small><i class="fas fa-arrow-right"></i> Cek semua ultah di <a href="/kalender">Kalender</a></small>';
+                    }
+
+            // Daftar ultah bulan tertentu / bulan ini
+                    let bulanTarget = null;
+                    BULAN_ID.forEach((b, i) => {
+                        if (text.includes(cleanId(b))) bulanTarget = i + 1;
+                    });
+                    if (text.includes('bulan ini')) bulanTarget = bln;
+                    const bulanTeks = text.match(/bulan\s+(\d{1,2})/);
+                    if (bulanTeks && bulanTeks[1] >= 1 && bulanTeks[1] <= 12) bulanTarget = parseInt(bulanTeks[1], 10);
+
+                    if (bulanTarget !== null) {
+                        const mb = bulanTarget;
+                        const list = [];
+                        (aiCache.anggota || []).forEach(a => {
+                            const tl = a.tanggalLahir ? String(a.tanggalLahir) : '';
+                            if (tl.length >= 10 && parseInt(tl.slice(5, 7), 10) === mb) list.push({ nama: a.namaLengkap, tgl: tl, umur: hitungUmur(tl) });
+                        });
+                        (aiCache.news || []).forEach(n => {
+                            if (n.tipe !== 'ultah') return;
+                            const t2 = n.tanggal ? String(n.tanggal) : '';
+                            if (t2.length >= 10 && parseInt(t2.slice(5, 7), 10) === mb && !list.some(h => h.nama === (n.nama || n.judul))) {
+                                list.push({ nama: n.nama || n.judul, tgl: t2, umur: hitungUmur(t2) });
+                            }
+                        });
+                        list.sort((a, b) => a.tgl.localeCompare(b.tgl));
+                        return list.length ?
+                            '🎂 ' + BULAN_ID[mb - 1] + ' ini ada <b>' + list.length + '</b> anggota berulang tahun:<br>' +
+                            daftarPutaran(list.slice(0, 20)) :
+                            'Belum ada data ulang tahun di bulan <b>' + BULAN_ID[mb - 1] + '</b>.';
+                    }
+
+                    // Ultah bulan berjalan
+                    const listBulan = [];
+                    (aiCache.anggota || []).forEach(a => {
+                        const tl = a.tanggalLahir ? String(a.tanggalLahir) : '';
+                        if (tl.length >= 10 && parseInt(tl.slice(5, 7), 10) === bln) listBulan.push({ nama: a.namaLengkap, tgl: tl, umur: hitungUmur(tl) });
+                    });
+                    if (listBulan.length) {
+                        return '📅 Ada <b>' + listBulan.length + '</b> anggota yang berulang tahun di bulan <b>' + namaBulan + '</b> ini:<br>' + daftarPutaran(listBulan.slice(0, 20));
+                    }
+                    return 'Hmm, aku belum menemukan data ultah yang cocok dengan pertanyaanmu. 🤔<br>Contoh yang bisa kutanya: <i>"kapan ultah si Rafli?"</i> atau lihat <a href="/kalender">Kalender</a>.';
+                }
+
+                // ── EVENT ──
+                if (adaEvent) {
+                    const events = (aiCache.news || []).filter(n => n.tipe === 'event' && n.tanggal && String(n.tanggal).length >= 10);
+                    let bulanTarget = null;
+                    BULAN_ID.forEach((b, i) => { if (text.includes(cleanId(b))) bulanTarget = i + 1; });
+                    let tahunTarget = null;
+                    const mY = qRaw.match(/\b(20\d{2})\b/);
+                    if (mY) tahunTarget = parseInt(mY[1], 10);
+                    if (text.includes('tahun ini')) tahunTarget = thn;
+                    if (text.includes('tahun depan')) tahunTarget = thn + 1;
+
+                    let hasil = [];
+                    if (bulanTarget !== null) {
+                        hasil = events.filter(n => parseInt(String(n.tanggal).slice(5, 7), 10) === bulanTarget);
+                    } else if (tahunTarget !== null) {
+                        hasil = events.filter(n => n.isTetap === true || parseInt(String(n.tanggal).slice(0 ,4), 10) === tahunTarget);
+                    } else {
+                        hasil = events.filter(n => String(n.tanggal) >= todayISO);
+                    }
+                    hasil.sort((a, b) => String(a.tanggal).localeCompare(String(b.tanggal)));
+                    const cap = bulanTarget !== null ? 'Bulan <b>' + BULAN_ID[bulanTarget - 1] + '</b>' :
+                        (tahunTarget !== null ? 'Tahun <b>' + tahunTarget + '</b>' : 'yang akan datang');
+                    if (!hasil.length) {
+                        return 'Belum ada event terdaftar ' + cap + '. 📭 Check <a href="/kalender">Kalender</a> untuk agenda terbaru.';
+                    }
+                    let rows = hasil.slice(0, 12).map(n => {
+                        return '<div class="ai-linkrow"><i class="fas fa-calendar-check"></i><div><b>' + escAI(n.judul) + '</b><small>' + fmtTanggalId(n.tanggal, true) + ' · ' + (n.deskripsi ? escAI(n.deskripsi) : 'Event Angkatan XXV') + '</small></div></div>';
+                    }).join('');
+                    return '📅 Event ' + cap + ' ada <b>' + hasil.length + '</b>:<br>' + rows +
+                        (hasil.length > 12 ? '<br><small>…dan ' + (hasil.length - 12) + ' event lainnya. Lihat <a href="/kalender">Kalender</a>.</small>' : '');
+                }
+
+                // ── BERITA HARI INI ──
+                if (/berita|kabar|info hari ini|info terbaru/.test(text)) {
+                    const list = hariIniUltah();
+                    if (!list.length) {
+                        return 'Belum ada berita/ultah untuk hari ini. 😴 Pantau terus, atau lihat <a href="/kalender">Kalender</a>.';
+                    }
+                    return '📰 Info hari ini (' + fmtTanggalId(todayISO) + '):<br>' + daftarPutaran(list.slice(0, 10));
+                }
+
+                // ── JUMLAH ANGGOTA ──
+                if (/(berapa|total|jumlah).{0,12}(anggota|orang)|anggota.{0,12}(berapa|total|jumlah)/.test(text)) {
+                    const total = (aiCache.anggota || []).length;
+                    return total ?
+                        'Angkatan XXV Ganespic saat ini terdaftar <b>' + total + ' anggota</b> di database. 👥 Lihat profil lengkapnya di <a href="/anggota">halaman Anggota</a>.' :
+                        'Data anggota belum tersedia di database. Hubungi pengurus ya. 🙏';
+                }
+
+                // ── TAUTAN WEBSITE / MENU ──
+                const adaLink = /link|href|tautan|menu|halaman|dimana|di mana|alamat|buka|ke mana|pergi ke/.test(text) ||
+                    LINKS_WEB.some(l => l.kata.split(',').some(k => text.includes(cleanId(k))));
+                if (adaLink) {
+                    const spesifik = LINKS_WEB.filter(l => l.kata.split(',').some(k => text.includes(cleanId(k))) ||
+                        text.includes(cleanId(l.nama)));
+                    const intro = spesifik.length ? 'Berikut tautan yang kamu cari: 👇' : 'Berikut menu & tautan penting di website Ganespic:';
+                    return intro + '<br>' + renderLinks(text) +
+                        '<br><small><i class="fas fa-info-circle"></i> Link ini juga tersedia di card di halaman utama.</small>';
+                }
+
+                return 'Maaf, aku hanya bisa menjawab pertanyaan seputar <b>website</b> dan <b>informasi angkatan</b> Ganespic XXV. 🤖<br>Coba tanya:<br>' + daftarKemampuan();
+            }
+
+            function aiMsg(text, from) {
+                const div = document.createElement('div');
+                div.className = 'ai-msg' + (from === 'user' ? ' ai-user' : ' ai-bot');
+                if (from === 'user') div.textContent = text;
+                else div.innerHTML = text;
+                aiMessages.appendChild(div);
+                aiMessages.scrollTop = aiMessages.scrollHeight;
+                return div;
+            }
+
+            function aiTypingDash() {
+                const div = document.createElement('div');
+                div.className = 'ai-msg ai-bot ai-typing';
+                div.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+                aiMessages.appendChild(div);
+                aiMessages.scrollTop = aiMessages.scrollHeight;
+                return div;
+            }
+
+            let aiModeCek = null; // null = belum dicek, false = pakai JS, string = pakai AI generatif (model name)
+
+            // Cek apakah API AI generatif sudah aktif (ada key di server)
+            async function cekModeAI() {
+                if (aiModeCek !== null) return aiModeCek;
+                try {
+                    const r = await fetch('/api/ai');
+                    const d = await r.json();
+                    aiModeCek = d && d.configured ? (d.model || 'AI') : false;
+                } catch (e) {
+                    aiModeCek = false;
+                }
+                return aiModeCek;
+            }
+
+            // Coba jawab lewat API AI generatif (jembatan /api/ai). Return null kalau gagal/tidak aktif.
+            async function jawabViaAPIAI(q) {
+                try {
+                    const r = await fetch('/api/ai', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ question: q })
+                    });
+                    const d = await r.json();
+                    if (d && d.configured && d.answer) return d.answer;
+                    return null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            async function kirimPertanyaan(raw) {
+                const q = (raw || '').trim();
+                if (!q) return;
+                aiMsg(q, 'user');
+                aiInput.value = '';
+                const typing = aiTypingDash();
+                try {
+                    const mode = await cekModeAI();
+                    let jawaban = null;
+                    if (mode) {
+                        jawaban = await jawabViaAPIAI(q);
+                    }
+                    if (!jawaban) {
+                        // Fallback: mesin AI JavaScript (rule-based) — pakai data internal
+                        await Promise.all([loadAIData(), new Promise(r => setTimeout(r, 350 + Math.random() * 300))]);
+                        jawaban = await aiJawab(q);
+                    }
+                    typing.remove();
+                    aiMsg(jawaban, 'bot');
+                } catch (e) {
+                    typing.remove();
+                    aiMsg('Ups, ada gangguan saat mengambil data. Coba lagi dalam beberapa detik ya. 🙏', 'bot');
+                }
+            }
+
+            function buatSaranAI() {
+                const saran = ['Kapan ultah Rafli?', 'Event apa saja tahun ini?', 'Link galeri & kas?', 'Berapa jumlah anggota?'];
+                aiSuggest.innerHTML = '';
+                saran.forEach(s => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'ai-chip';
+                    b.textContent = s;
+                    b.addEventListener('click', () => kirimPertanyaan(s));
+                    aiSuggest.appendChild(b);
+                });
+            }
+
+            window.openAIChat = function () {
+                bukaModalEl(modalAI);
+                if (!aiReady) {
+                    aiMsg('Halo! 👋 Aku <b>AI</b> asisten virtual Angkatan XXV.<br>Tanya apa saja seputar <b>website</b> &amp; <b>info angkatan</b> — ultah anggota, event tahun ini, atau tautan galeri, kas, dan struktural MPK. 🚀', 'bot');
+                    buatSaranAI();
+                    aiReady = true;
+                }
+                setTimeout(() => aiInput && aiInput.focus(), 350);
+            };
+
+            aiForm.addEventListener('submit', e => { e.preventDefault(); kirimPertanyaan(aiInput.value); });
+            document.getElementById('btnTutupAI').addEventListener('click', () => tutupModalEl(modalAI));
+            modalAI.addEventListener('click', e => { if (e.target === modalAI) tutupModalEl(modalAI); });
+
             // Tutup dengan tombol ESC
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
-                    [modalDeveloper, modalBerita].forEach(function (m) {
+                    [modalDeveloper, modalBerita, modalAI].forEach(function (m) {
                         tutupModalEl(m);
                     });
                 }

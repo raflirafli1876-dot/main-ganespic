@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Environment files (JANGAN pernah commit key/secret)
+.env
+.env.local
+.env.*.local
+
+# Vercel
+.vercel/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
