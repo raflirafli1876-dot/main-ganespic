@@ -140,6 +140,20 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Judul/Nama dan Tanggal wajib diisi' });
       }
 
+      // Validasi duplikat untuk ulang tahun: cek nama + No ID sudah ada
+      if (tipe === 'ultah' && !anggotaId) {
+        const duplikat = await sql`
+          SELECT id, nama_judul, deskripsi_nis FROM agendas
+          WHERE tipe = 'ultah' AND nama_judul = ${namaJudul} AND deskripsi_nis = ${deskripsiNis}
+          LIMIT 1;
+        `;
+        if (duplikat && duplikat.length > 0) {
+          return res.status(409).json({
+            error: `Data sudah ada! Ulang tahun "${namaJudul}" (No ID: ${deskripsiNis}) sudah terdaftar di database.`
+          });
+        }
+      }
+
       // Jika data berasal dari sinkronisasi anggota (sudah punya anggota_id),
       // jangan membuat duplikat — cukup update agenda yang sudah ada.
       if (anggotaId) {

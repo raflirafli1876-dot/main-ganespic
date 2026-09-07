@@ -1831,6 +1831,9 @@
                 return umur >= 0 ? umur : null;
             }
 
+            // ⚠️ JS AI OFF — mesin rule-based dimatikan sementara untuk test AI generatif (Groq).
+            // Kalau mau aktifkan lagi sebagai backup, hapus `if (false) {` dan `}` penutupnya.
+            if (false) {
             async function loadAIData() {
                 if (aiCache) return aiCache;
                 const [resA, resN] = await Promise.all([
@@ -2076,6 +2079,63 @@
                     return '📰 Info hari ini (' + fmtTanggalId(todayISO) + '):<br>' + daftarPutaran(list.slice(0, 10));
                 }
 
+                // ── STRUKTURAL MPK — fallback cerdas (data ter-embed) ──
+                const mpkData = {
+                    ketuaAngkatan: 'Danish Mirza',
+                    utsman: { ketua: 'Arfina Tiara Khalisa', wakil: ['Ahmad Firdaus Al Farizi'], sekretaris: ['Ilyas Rasyidin', 'Farras Putri Ardhiyanti', 'Jian Kayla Alisyah'], bendahara: ['Salma Alfu Hasani', 'Hanif Abdullah Arsyad'] },
+                    tansri: { ketua: 'Attaya Fikri Rizqullah Sitompul', wakil: ['Maulidha Sophia'], sekretaris: ['Alif Rizal Ramadhan', 'Syafira Khoirun Nissa'], bendahara: ['Rahma Dawlati Gemilang', 'Rizqi Muhammad Satria'] }
+                };
+                const qMpk = /(ketua|wakil|sekretaris|bendahara|divisi|pengurus|struktur|struktural|mpk|gedung|angkatan|organisasi)/.test(text);
+
+                if (qMpk) {
+                    if (/(ketua\s*angkatan|ketua\s*xxv|ketua\s*ganespic)/.test(text)) {
+                        return '🏛️ Ketua Angkatan XXV Ganespic sekarang adalah <b>' + mpkData.ketuaAngkatan + '</b>.<br><small>Lihat struktural lengkap di <a href="https://mpk-ganespic.vercel.app/">Struktural MPK</a>.</small>';
+                    }
+                    const g = /tansri/.test(text) ? 'tansri' : /utsman/.test(text) ? 'utsman' : null;
+                    if (g) {
+                        const d = mpkData[g];
+                        return (g === 'utsman' ? '🇺 Gedung <b>Utsman</b>:' : '🇹 Gedung <b>Tansri</b>:') +
+                            '<div class="ai-linkrow"><i class="fas fa-user-tie"></i><div><b>Ketua</b><small>' + escAI(d.ketua) + '</small></div></div>' +
+                            '<div class="ai-linkrow"><i class="fas fa-user-group"></i><div><b>Wakil</b><small>' + d.wakil.map(escAI).join(', ') + '</small></div></div>' +
+                            '<div class="ai-linkrow"><i class="fas fa-file-signature"></i><div><b>Sekretaris</b><small>' + d.sekretaris.map(escAI).join(', ') + '</small></div></div>' +
+                            '<div class="ai-linkrow"><i class="fas fa-coins"></i><div><b>Bendahara</b><small>' + d.bendahara.map(escAI).join(', ') + '</small></div></div>' +
+                            '<br><small>Struktur lengkap: <a href="https://mpk-ganespic.vercel.app/">mpk-ganespic.vercel.app</a></small>';
+                    }
+                    return '🏛️ Ketua Angkatan XXV: <b>' + mpkData.ketuaAngkatan + '</b>' +
+                        '<div class="ai-linkrow"><i class="fas fa-building"></i><div><b>Gedung Utsman</b><small>Ketua: ' + escAI(mpkData.utsman.ketua) + ' · Bendahara: ' + mpkData.utsman.bendahara.map(escAI).join(', ') + '</small></div></div>' +
+                        '<div class="ai-linkrow"><i class="fas fa-building"></i><div><b>Gedung Tansri</b><small>Ketua: ' + escAI(mpkData.tansri.ketua) + ' · Bendahara: ' + mpkData.tansri.bendahara.map(escAI).join(', ') + '</small></div></div>' +
+                        '<br><small>Divisi & staf lengkap: <a href="https://mpk-ganespic.vercel.app/">Struktural MPK</a></small>';
+                }
+
+                // ── KAS & GALERI — fallback cerdas ──
+                const qKas = /(kas|uang|saldo|pemasukan|pengeluaran|transaksi|keuangan|iuran|dana)/.test(text);
+                const qGaleri = /(galeri|galery|foto|dokumentasi|album|arsip|kegiatan|gambar|kenangan)/.test(text);
+
+                if (qKas) {
+                    try {
+                        const r = await fetch('https://suuchcvorzzgyjqivfvo.supabase.co/rest/v1/kas?select=*&order=tanggal.desc&limit=100', {
+                            headers: { 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1dWNoY3Zvcnp6Z3lqcWl2ZnZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4NzQ0NDcsImV4cCI6MjEwMTQ1MDQ0N30._thrDYitpRFmdL8D9mZ1hvqaB5BAwgOOBwPAAg4Ztlk', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1dWNoY3Zvcnp6Z3lqcWl2ZnZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4NzQ0NDcsImV4cCI6MjEwMTQ1MDQ0N30._thrDYitpRFmdL8D9mZ1hvqaB5BAwgOOBwPAAg4Ztlk' }
+                        });
+                        const rows = r.ok ? await r.json() : null;
+                        if (rows && rows.length) {
+                            let masuk = 0, keluar = 0;
+                            rows.forEach(x => { if (x.jenis === 'masuk') masuk += (x.nominal || 0); else keluar += (x.nominal || 0); });
+                            const fmt = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+                            const items = rows.slice(0, 5).map(x =>
+                                '<div class="ai-linkrow"><i class="fas fa-' + (x.jenis === 'masuk' ? 'arrow-down' : 'arrow-up') + '"></i><div><b>' + (x.jenis === 'masuk' ? 'MASUK' : 'KELUAR') + ' · ' + fmt(x.nominal) + '</b><small>' + escAI(x.keterangan) + ' · ' + escAI(x.tanggal) + '</small></div></div>'
+                            ).join('');
+                            return '💰 <b>Saldo kas: ' + fmt(masuk - keluar) + '</b> (masuk ' + fmt(masuk) + ' · keluar ' + fmt(keluar) + ')' + items +
+                                '<br><small>Transaksi terbaru. Lengkap: <a href="https://kas-ganespic.vercel.app/">Kas Angkatan</a></small>';
+                        }
+                    } catch (e) { /* lanjut fallback */ }
+                    return 'Rekap kas terbaru bisa dilihat langsung di <a href="https://kas-ganespic.vercel.app/">Kas Angkatan</a>.';
+                }
+
+                if (qGaleri) {
+                    return '🖼️ Galeri Ganespic XXV menyimpan <b>6 album kegiatan</b> & <b>39 foto kenangan</b> dari Era MTs (2023–2026) & Era MA (2026–2029) — Kelas 8 MTS, Kelas 9 MTS, Kelas 10 MA, football Usman vs Tansri, dll. ' +
+                        '<a class="ai-linkrow" href="https://galery.ganespic.workers.dev/" target="_blank" rel="noopener"><i class="fas fa-images"></i><div><b>Buka Galeri</b><small>galery.ganespic.workers.dev</small></div></a>';
+                }
+
                 // ── JUMLAH ANGGOTA ──
                 if (/(berapa|total|jumlah).{0,12}(anggota|orang)|anggota.{0,12}(berapa|total|jumlah)/.test(text)) {
                     const total = (aiCache.anggota || []).length;
@@ -2097,6 +2157,7 @@
 
                 return 'Maaf, aku hanya bisa menjawab pertanyaan seputar <b>website</b> dan <b>informasi angkatan</b> Ganespic XXV. 🤖<br>Coba tanya:<br>' + daftarKemampuan();
             }
+            } // ⚠️ end JS AI OFF
 
             function aiMsg(text, from) {
                 const div = document.createElement('div');
@@ -2161,9 +2222,13 @@
                         jawaban = await jawabViaAPIAI(q);
                     }
                     if (!jawaban) {
-                        // Fallback: mesin AI JavaScript (rule-based) — pakai data internal
-                        await Promise.all([loadAIData(), new Promise(r => setTimeout(r, 350 + Math.random() * 300))]);
-                        jawaban = await aiJawab(q);
+                        // ⚠️ JS AI OFF — fallback rule-based dimatikan saat testing Groq.
+                        // Kalau mau aktifkan: aktifkan dua baris di bawah ini.
+                        // await Promise.all([loadAIData(), new Promise(r => setTimeout(r, 350 + Math.random() * 300))]);
+                        // jawaban = await aiJawab(q);
+                        jawaban = mode
+                            ? '🔌 AI generatif belum memberikan jawaban untuk pertanyaan itu. Coba lagi ya.'
+                            : '🔌 AI generatif belum aktif. Pastikan env <code>AI_API_KEY</code> terisi di Vercel (Settings → Environment Variables).';
                     }
                     typing.remove();
                     aiMsg(jawaban, 'bot');

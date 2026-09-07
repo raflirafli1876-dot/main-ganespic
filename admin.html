@@ -1036,6 +1036,8 @@
             display: flex;
             gap: 14px;
             align-items: center;
+            min-width: 0;
+            max-width: 100%;
             transition: all var(--transition);
         }
 
@@ -1074,6 +1076,16 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
+            min-width: 0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .kelola-card-meta span {
+            display: block;
+            min-width: 0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .kelola-delete-btn {
@@ -2227,11 +2239,25 @@
 
             document.getElementById('formAddUltah').addEventListener('submit', async (e) => {
                 e.preventDefault();
+                const namaVal = document.getElementById('ultahNama').value.trim();
+                const idVal = document.getElementById('ultahId').value.trim();
+                // Cek duplikat di sisi client sebelum kirim ke API
+                if (!editingUltahId) {
+                    const duplikat = allNewsData.find(n =>
+                        n.tipe === 'ultah' &&
+                        (n.nama || '').toLowerCase() === namaVal.toLowerCase() &&
+                        (n.noId || '').toLowerCase() === idVal.toLowerCase()
+                    );
+                    if (duplikat) {
+                        showToast(`Data sudah ada! "${namaVal}" (No ID: ${idVal}) sudah terdaftar.`, 'error');
+                        return;
+                    }
+                }
                 await saveNewsPayload({
                     tipe: 'ultah',
-                    nama: document.getElementById('ultahNama').value.trim(),
-                    id: document.getElementById('ultahId').value.trim(),
-                    tanggal: document.getElementById('ultahTanggal').value, // YYYY-MM-DD
+                    nama: namaVal,
+                    id: idVal,
+                    tanggal: document.getElementById('ultahTanggal').value,
                     fotoUrl: document.getElementById('ultahFotoUrl').value.trim()
                 }, e.target, document.getElementById('btnSubmitUltah'), editingUltahId ? 'PUT' : 'POST', editingUltahId);
             });
@@ -2299,7 +2325,7 @@
                             <div class="kelola-card-content">
                                 <div>${badgeTag}</div>
                                 <div class="kelola-card-title">${escHtml(title)}</div>
-                                ${isAnggota && item.namaPanggilan ? `<div style="font-size:0.8rem;color:var(--sage);font-weight:600;">“${escHtml(item.namaPanggilan)}”</div>` : ''}
+                                ${isAnggota && item.namaPanggilan ? `<div style="font-size:0.8rem;color:var(--sage);font-weight:600;word-break:break-word;overflow-wrap:anywhere;">“${escHtml(item.namaPanggilan)}”</div>` : ''}
                                 <div class="kelola-card-meta">${meta}</div>
                             </div>
                             <div class="kelola-actions">
@@ -2532,7 +2558,7 @@
                             <img src="${escHtml(img)}" alt="${escHtml(a.namaLengkap)}" onerror="this.src='Logo_xxvganespic.png'" />
                             <div class="kelola-card-content">
                                 <div class="kelola-card-title">${escHtml(a.namaLengkap)}</div>
-                                ${a.namaPanggilan ? `<div style="font-size:0.8rem;color:var(--sage);font-weight:600;">“${escHtml(a.namaPanggilan)}”</div>` : ''}
+                                ${a.namaPanggilan ? `<div style="font-size:0.8rem;color:var(--sage);font-weight:600;word-break:break-word;overflow-wrap:anywhere;">“${escHtml(a.namaPanggilan)}”</div>` : ''}
                                 <div class="kelola-card-meta">${meta}</div>
                             </div>
                             <div class="kelola-actions">

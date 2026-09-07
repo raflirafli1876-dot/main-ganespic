@@ -366,6 +366,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-width: 0;
+            max-width: 100%;
+            overflow: hidden;
             transition: all var(--transition);
         }
 
@@ -399,13 +402,18 @@
             color: var(--text);
             line-height: 1.35;
             margin: 4px 0 2px;
+            max-width: 100%;
             word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .anggota-card .ang-panggil {
             font-size: 0.76rem;
             color: var(--text-dim);
             margin-bottom: 14px;
+            max-width: 100%;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .anggota-card .ang-detail-btn {
@@ -576,6 +584,9 @@
         .anggota-detail-hero .ang-detail-panggil {
             font-size: 0.9rem;
             color: var(--text-dim);
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .anggota-detail-info {
