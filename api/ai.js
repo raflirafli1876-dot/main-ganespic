@@ -97,9 +97,10 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const AI_API_KEY = process.env.AI_API_KEY || '';
-  const AI_BASE_URL = (process.env.AI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
-  const AI_MODEL = process.env.AI_MODEL || 'gpt-4o-mini';
+  // Trim semua env — kebal dari spasi/tab tak sengaja saat isi di Vercel dashboard
+  const AI_API_KEY = (process.env.AI_API_KEY || '').trim();
+  const AI_BASE_URL = (process.env.AI_BASE_URL || 'https://api.groq.com/openai/v1').trim().replace(/\/+$/, '');
+  const AI_MODEL = (process.env.AI_MODEL || 'groq/compound-mini').trim();
 
   // GET → cek status (dipakai front-end untuk tahu apakah AI generatif aktif)
   if (req.method === 'GET') {
