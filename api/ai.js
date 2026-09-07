@@ -97,14 +97,18 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // Trim semua env — kebal dari spasi/tab tak sengaja saat isi di Vercel dashboard
-  const AI_API_KEY = (process.env.AI_API_KEY || '').trim();
-  const AI_BASE_URL = (process.env.AI_BASE_URL || 'https://api.groq.com/openai/v1').trim().replace(/\/+$/, '');
-  const AI_MODEL = (process.env.AI_MODEL || 'groq/compound-mini').trim();
+  // Trim & sanitasi env — kebal spasi/tab/kutip tak sengaja saat isi di Vercel
+  const rawKey = (process.env.AI_API_KEY || '');
+  const AI_API_KEY = rawKey.trim().replace(/^["']+|["']+$/g, '').replace(/\s+/g, '');
+  const AI_BASE_URL = (process.env.AI_BASE_URL || 'https://api.groq.com/openai/v1').trim().replace(/^["']+|["']+$/g, '').replace(/\/+$/, '');
+  const AI_MODEL = (process.env.AI_MODEL || 'groq/compound-mini').trim().replace(/^["']+|["']+$/g, '');
+  // Debug token (untuk diagnosa key di server)
+  const AI_KEY_LEN = AI_API_KEY.length;
+  const AI_KEY_HEAD = AI_API_KEY.slice(0, 6);
 
   // GET → cek status (dipakai front-end untuk tahu apakah AI generatif aktif)
   if (req.method === 'GET') {
-    return res.status(200).json({ configured: !!AI_API_KEY, model: AI_API_KEY ? AI_MODEL : null });
+    return res.status(200).json({ configured: !!AI_API_KEY, model: AI_API_KEY ? AI_MODEL : null, keyLen: AI_API_KEY ? AI_KEY_LEN : 0 });
   }
 
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
@@ -181,7 +185,7 @@ PANDUAN:
     if (!resp.ok) {
       const errText = await resp.text().catch(() => '');
       console.error('AI API error', resp.status, errText.slice(0, 300));
-      return res.status(200).json({ configured: true, answer: null, error: 'AI API error ' + resp.status });
+      return res.status(200).json({ configured: true, answer: null, error: 'AI API error ' + resp.status, debug: { keyLen: AI_KEY_LEN, keyHead: AI_KEY_HEAD, base: AI_BASE_URL, model: AI_MODEL } });
     }
 
     const data = await resp.json();
