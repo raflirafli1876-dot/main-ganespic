@@ -2312,7 +2312,7 @@
                     const meta = isEvent
                         ? `<span><i class="fas fa-calendar"></i> ${item.tanggal || '-'}</span><span><i class="fas ${item.isTetap === false ? 'fa-clock-rotate-left' : 'fa-repeat'}"></i> ${item.isTetap === false ? 'Tidak Tetap (auto-hapus setelah event)' : 'Tetap / Tahunan'}</span>`
                         : isAnggota
-                            ? `<span><i class="fas fa-id-card"></i> NIS ${item.noInduk || '-'}</span>${item.igUsername ? `<span><i class="fab fa-instagram"></i> ${sosmedLink(item.igUsername)}</span>` : ''}${item.whatsapp ? `<span><i class="fab fa-whatsapp"></i> +${escHtml(String(item.whatsapp).replace(/[^0-9]/g, '').replace(/^62/, ''))}</span>` : ''}`
+                            ? `<span><i class="fas fa-id-card"></i> NIS ${item.noInduk || '-'}</span>${item.igUsername ? `<span><i class="fab fa-instagram"></i> ${sosmedLink(item.igUsername, 'instagram')}</span>` : ''}${item.tiktokUsername ? `<span><i class="fab fa-tiktok"></i> ${sosmedLink(item.tiktokUsername, 'tiktok')}</span>` : ''}${item.whatsapp ? `<span><i class="fab fa-whatsapp"></i> +${escHtml(String(item.whatsapp).replace(/[^0-9]/g, '').replace(/^62/, ''))}</span>` : ''}`
                             : `<span><i class="fas fa-id-card"></i> ${item.noId || '-'} • <i class="fas fa-cake-candles"></i> ${item.tanggal || '-'}</span>${ageText ? `<span class="age-highlight">${ageText}</span>` : ''}`;
                     const img = item.fotoUrl || 'Logo_xxvganespic.png';
                     const editBtn = isAnggota
@@ -2465,17 +2465,28 @@
             }
 
             // Label medsos: terima URL penuh atau username → kembalikan <a> tag link
-            function sosmedLink(value) {
+            function sosmedLink(value, platform) {
                 const v = String(value || '').trim();
                 if (!v) return '';
-                let url, handle;
+                let url, handle, baseUrl;
                 if (/^https?:\/\//i.test(v)) {
                     url = v.replace(/\/$/, '');
-                    handle = '@' + (url.split('/').pop() || v).replace(/^@/, '');
+                    // ekstrak handle bersih (tanpa query string)
+                    const path = url.split('/').pop() || '';
+                    handle = '@' + path.split('?')[0].split('#')[0].replace(/^@/, '');
+                    // deteksi platform dari URL kalau tidak dikasih
+                    if (!platform) {
+                        if (/instagram\.com/i.test(url)) platform = 'instagram';
+                        else if (/tiktok\.com/i.test(url)) platform = 'tiktok';
+                    }
                 } else {
                     handle = '@' + v.replace(/^@/, '');
-                    url = 'https://www.instagram.com/' + handle.replace(/^@/, '');
+                    platform = platform || 'instagram';
                 }
+                // base URL per platform
+                if (platform === 'tiktok') baseUrl = 'https://www.tiktok.com/';
+                else baseUrl = 'https://www.instagram.com/';
+                if (!/^https?:\/\//i.test(v)) url = baseUrl + handle.replace(/^@/, '');
                 return `<a href="${escHtml(url)}" target="_blank" rel="noopener">${escHtml(handle)}</a>`;
             }
 
@@ -2554,8 +2565,8 @@
                     const meta = `
                         <span><i class="fas fa-id-card"></i> ${escHtml(a.noInduk) || '-'}</span>
                         ${a.tanggalLahir ? `<span><i class="fas fa-cake-candles" style="color:var(--gold);"></i> ${ultahTanggalLabel(a.tanggalLahir)}</span>` : ''}
-                        ${a.igUsername ? `<span><i class="fab fa-instagram"></i> ${sosmedLink(a.igUsername)}</span>` : ''}
-                        ${a.tiktokUsername ? `<span><i class="fab fa-tiktok"></i> @${escHtml(String(a.tiktokUsername).replace(/^@/, ''))}</span>` : ''}
+                        ${a.igUsername ? `<span><i class="fab fa-instagram"></i> ${sosmedLink(a.igUsername, 'instagram')}</span>` : ''}
+                        ${a.tiktokUsername ? `<span><i class="fab fa-tiktok"></i> ${sosmedLink(a.tiktokUsername, 'tiktok')}</span>` : ''}
                         ${a.email ? `<span><i class="fas fa-envelope"></i> ${escHtml(a.email)}</span>` : ''}
                         ${a.whatsapp ? `<span><i class="fab fa-whatsapp"></i> +${escHtml(String(a.whatsapp).replace(/[^0-9]/g, '').replace(/^62/, ''))}</span>` : ''}
                         ${a.alamatRumah ? `<span><i class="fas fa-house"></i> ${escHtml(a.alamatRumah)}</span>` : ''}
