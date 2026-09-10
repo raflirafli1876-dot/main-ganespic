@@ -2312,7 +2312,7 @@
                     const meta = isEvent
                         ? `<span><i class="fas fa-calendar"></i> ${item.tanggal || '-'}</span><span><i class="fas ${item.isTetap === false ? 'fa-clock-rotate-left' : 'fa-repeat'}"></i> ${item.isTetap === false ? 'Tidak Tetap (auto-hapus setelah event)' : 'Tetap / Tahunan'}</span>`
                         : isAnggota
-                            ? `<span><i class="fas fa-id-card"></i> NIS ${item.noInduk || '-'}</span>${item.igUsername ? `<span><i class="fab fa-instagram"></i> ${escHtml(sosmedLabel(item.igUsername))}</span>` : ''}${item.whatsapp ? `<span><i class="fab fa-whatsapp"></i> +${escHtml(String(item.whatsapp).replace(/[^0-9]/g, '').replace(/^62/, ''))}</span>` : ''}`
+                            ? `<span><i class="fas fa-id-card"></i> NIS ${item.noInduk || '-'}</span>${item.igUsername ? `<span><i class="fab fa-instagram"></i> ${sosmedLink(item.igUsername)}</span>` : ''}${item.whatsapp ? `<span><i class="fab fa-whatsapp"></i> +${escHtml(String(item.whatsapp).replace(/[^0-9]/g, '').replace(/^62/, ''))}</span>` : ''}`
                             : `<span><i class="fas fa-id-card"></i> ${item.noId || '-'} • <i class="fas fa-cake-candles"></i> ${item.tanggal || '-'}</span>${ageText ? `<span class="age-highlight">${ageText}</span>` : ''}`;
                     const img = item.fotoUrl || 'Logo_xxvganespic.png';
                     const editBtn = isAnggota
@@ -2464,12 +2464,19 @@
                 return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
             }
 
-            // Label medsos: terima URL penuh atau username → tampil @handle
-            function sosmedLabel(value) {
+            // Label medsos: terima URL penuh atau username → kembalikan <a> tag link
+            function sosmedLink(value) {
                 const v = String(value || '').trim();
                 if (!v) return '';
-                if (/^https?:\/\//i.test(v)) return '@' + (v.replace(/\/$/, '').split('/').pop() || v).replace(/^@/, '');
-                return '@' + v.replace(/^@/, '');
+                let url, handle;
+                if (/^https?:\/\//i.test(v)) {
+                    url = v.replace(/\/$/, '');
+                    handle = '@' + (url.split('/').pop() || v).replace(/^@/, '');
+                } else {
+                    handle = '@' + v.replace(/^@/, '');
+                    url = 'https://www.instagram.com/' + handle.replace(/^@/, '');
+                }
+                return `<a href="${escHtml(url)}" target="_blank" rel="noopener">${escHtml(handle)}</a>`;
             }
 
             // Format tanggal lahir YYYY-MM-DD → teks Indonesia ("29 Agustus 2008")
@@ -2547,7 +2554,7 @@
                     const meta = `
                         <span><i class="fas fa-id-card"></i> ${escHtml(a.noInduk) || '-'}</span>
                         ${a.tanggalLahir ? `<span><i class="fas fa-cake-candles" style="color:var(--gold);"></i> ${ultahTanggalLabel(a.tanggalLahir)}</span>` : ''}
-                        ${a.igUsername ? `<span><i class="fab fa-instagram"></i> @${escHtml(String(a.igUsername).replace(/^@/, ''))}</span>` : ''}
+                        ${a.igUsername ? `<span><i class="fab fa-instagram"></i> ${sosmedLink(a.igUsername)}</span>` : ''}
                         ${a.tiktokUsername ? `<span><i class="fab fa-tiktok"></i> @${escHtml(String(a.tiktokUsername).replace(/^@/, ''))}</span>` : ''}
                         ${a.email ? `<span><i class="fas fa-envelope"></i> ${escHtml(a.email)}</span>` : ''}
                         ${a.whatsapp ? `<span><i class="fab fa-whatsapp"></i> +${escHtml(String(a.whatsapp).replace(/[^0-9]/g, '').replace(/^62/, ''))}</span>` : ''}
