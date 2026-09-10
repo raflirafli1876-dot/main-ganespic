@@ -1831,7 +1831,7 @@
                 return umur >= 0 ? umur : null;
             }
 
-            // ⚠️ JS AI BACKUP — rule-based aktif sebagai fallback kalau AI generatif gagal.
+            // ⚠️ AI FULL API ONLY — no JS fallback. Jika API error → tampilkan pesan error.
             async function loadAIData() {
                 if (aiCache) return aiCache;
                 const [resA, resN, resK, resG, resM] = await Promise.all([
@@ -2239,15 +2239,16 @@
                         jawaban = await jawabViaAPIAI(q);
                     }
                     if (!jawaban) {
-                        // ⚠️ JS AI BACKUP — fallback ke rule-based
-                        await Promise.all([loadAIData(), new Promise(r => setTimeout(r, 350 + Math.random() * 300))]);
-                        jawaban = await aiJawab(q);
+                        // ⚠️ AI FULL API ONLY — no fallback. Tampilkan error.
+                        jawaban = mode
+                            ? '🤖 <b>AI sedang error</b> — Gagal mendapatkan jawaban dari server. Coba tanya lagi sebentar.'
+                            : '🤖 <b>AI belum aktif</b> — Pastikan env <code>AI_API_KEY</code> terisi di Vercel (Settings → Environment Variables).';
                     }
                     typing.remove();
                     aiMsg(jawaban, 'bot');
                 } catch (e) {
                     typing.remove();
-                    aiMsg('Ups, ada gangguan saat mengambil data. Coba lagi dalam beberapa detik ya. 🙏', 'bot');
+                    aiMsg('🤖 <b>AI sedang error</b> — Terjadi gangguan koneksi. Coba lagi sebentar.', 'bot');
                 }
             }
 
