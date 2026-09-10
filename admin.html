@@ -2487,7 +2487,7 @@
                 if (platform === 'tiktok') baseUrl = 'https://www.tiktok.com/';
                 else baseUrl = 'https://www.instagram.com/';
                 if (!/^https?:\/\//i.test(v)) url = baseUrl + handle.replace(/^@/, '');
-                return `<a href="${escHtml(url)}" target="_blank" rel="noopener">${escHtml(handle)}</a>`;
+                return `<a href="${escHtml(url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">${escHtml(handle)}</a>`;
             }
 
             // Format tanggal lahir YYYY-MM-DD → teks Indonesia ("29 Agustus 2008")

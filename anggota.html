@@ -850,8 +850,20 @@
             }
 
             function gaUrl(username, platform) {
-                const u = String(username || '').trim().replace(/^@/, '');
-                return u ? (platform === 'tt' ? 'https://tiktok.com/@' : 'https://instagram.com/') + encodeURIComponent(u) : '';
+                const u = String(username || '').trim();
+                if (!u) return '';
+                let handle, url;
+                if (/^https?:\/\//i.test(u)) {
+                    url = u.replace(/\/$/, '');
+                    const path = url.split('/').pop() || '';
+                    handle = path.split('?')[0].split('#')[0].replace(/^@/, '');
+                } else {
+                    handle = u.replace(/^@/, '');
+                    url = platform === 'tt'
+                        ? 'https://www.tiktok.com/@' + handle
+                        : 'https://www.instagram.com/' + handle;
+                }
+                return url;
             }
 
             // Format tanggal YYYY-MM-DD → "29 Agustus 2008"
