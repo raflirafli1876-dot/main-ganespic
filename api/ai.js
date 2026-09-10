@@ -17,14 +17,28 @@ const MPK_URL = process.env.MPK_URL || 'https://mpk-ganespic.vercel.app/';
 let cache = { ts: 0, data: null };
 const CACHE_TTL = 5 * 60 * 1000;
 
+// Helper: fetch dengan timeout
+async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 async function fetchKasData() {
   try {
-    const res = await fetch(`${KAS_SUPA_URL}/rest/v1/kas?select=*&order=tanggal.desc&limit=100`, {
-      headers: { 'apikey': KAS_SUPA_KEY, 'Authorization': `Bearer ${KAS_SUPA_KEY}` }
-    });
+    const res = await fetchWithTimeout(
+      `${KAS_SUPA_URL}/rest/v1/kas?select=*&order=tanggal.desc&limit=100`,
+      { headers: { 'apikey': KAS_SUPA_KEY, 'Authorization': `Bearer ${KAS_SUPA_KEY}` } },
+      8000
+    );
     if (!res.ok) return null;
     return await res.json();
-  } catch (e) { return null; }
+  } catch (e) { console.warn('fetchKasData error:', e.message); return null; }
 }
 
 function stripHtml(html) {
@@ -32,31 +46,50 @@ function stripHtml(html) {
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
     .replace(/<[^>]+>/g, ' ')
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>')
+    .replace(/"/g, '"').replace(/'/g, "'")
     .replace(/\s+/g, ' ').trim();
 }
 
 async function fetchGaleriText() {
   try {
-    const res = await fetch(GALERI_URL, { headers: { 'Accept': 'text/html' } });
+    // Galeri adalah SPA (React) - ambil halaman & cari data di script tags atau fallback ke URL
+    const res = await fetchWithTimeout(GALERI_URL, { headers: { 'Accept': 'text/html' } }, 8000);
     if (!res.ok) return null;
-    return stripHtml(await res.text()).slice(0, 3500);
-  } catch (e) { return null; }
+    const html = await res.text();
+    // Coba cari JSON data di script tags (next.js/vite data)
+    const jsonMatches = html.match(/<script[^>]*id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/i) ||
+                        html.match(/<script[^>]*type="application\/json"[^>]*>([\s\S]*?)<\/script>/i);
+    if (jsonMatches) {
+      try {
+        const data = JSON.parse(jsonMatches[1]);
+        return JSON.stringify(data).slice(0, 5000);
+      } catch (e) { /* fallback */ }
+    }
+    // Fallback: strip HTML tapi berikan URL galeri
+    return `Galeri Ganespic XXV (SPA - data dinamis). Buka langsung: ${GALERI_URL}\nAlbum: Kelas 8 MTs, Kelas 9 MTs, Kelas 10 MA, Football Usman vs Tansri, dll.\n${stripHtml(html).slice(0, 2000)}`;
+  } catch (e) { console.warn('fetchGaleriText error:', e.message); return `Galeri: ${GALERI_URL} (tidak dapat di-scrape, SPA)`; }
 }
 
 async function fetchMPKData() {
   try {
-    const res = await fetch(MPK_URL + 'script.js');
+    const res = await fetchWithTimeout(MPK_URL + 'script.js', {}, 8000);
     if (!res.ok) return null;
     const js = await res.text();
+    // Cari dataMPK object - lebih robust
     const start = js.indexOf('const dataMPK');
     if (start === -1) return null;
-    let end = js.indexOf('\n};', start);
-    if (end === -1) end = js.indexOf('};', start);
-    const block = js.slice(start, end > start ? end + 2 : start + 6000);
-    return block.slice(0, 5000);
-  } catch (e) { return null; }
+    // Cari akhir object - handle nested braces
+    let braceCount = 0;
+    let end = start;
+    let foundFirstBrace = false;
+    for (let i = start; i < js.length; i++) {
+      if (js[i] === '{') { braceCount++; foundFirstBrace = true; }
+      else if (js[i] === '}') { braceCount--; if (foundFirstBrace && braceCount === 0) { end = i + 1; break; } }
+    }
+    if (end <= start) end = start + 6000;
+    return js.slice(start, end).slice(0, 8000);
+  } catch (e) { console.warn('fetchMPKData error:', e.message); return null; }
 }
 
 function formatKas(rows) {
@@ -117,7 +150,7 @@ export default async function handler(req, res) {
   if (!AI_API_KEY) {
     return res.status(200).json({ configured: false, answer: null });
   }
-try {
+  try {
     let body = req.body;
     if (typeof body === 'string') {
       try { body = JSON.parse(body); } catch (e) { /* abaikan */ }
