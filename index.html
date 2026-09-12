@@ -1502,27 +1502,27 @@
                 <a href="https://galery.ganespic.workers.dev/">Masuk Galeri →</a>
             </article>
 
-            <article class="card" id="btnAI" onclick="openAIChat()" style="cursor:pointer;">
+            <a href="ai.html" class="card" style="text-decoration:none;color:inherit;">
                 <div class="icon-big"><i class="fas fa-robot"></i></div>
                 <strong>AI</strong>
                 <p>Tanya apa saja seputar website Ganespic: ulang tahun anggota, jadwal event, dan tautan menu seperti
                     galeri, kas, serta struktural MPK.</p>
-                <a>Tanya AI →</a>
-            </article>
+                <span>Buka AI →</span>
+            </a>
         </section>
 
         <!-- ─── Sambutan ─── -->
         <section class="section">
             <h2>Pesan <span class="highlight">Sambutan</span></h2>
             <p>
-                Selamat datang, anggota baru dan sahabat lama angkatan XXV Ganespic.
+                Selamat datang sahabat lama angkatan XXV Ganespic.
                 Semoga halaman ini menjadi jembatan kreativitas, informasi, dan
                 kebersamaan untuk setiap momen perjalanan kita. Tetap semangat,
                 hormat, dan bangga berkolaborasi dalam keluarga besar Ganespic.
             </p>
             <div class="signature">— <span>Pengurus</span> Ganespic XXV</div>
         </section>
-
+          <p style="text-align: center;">Jika ada error atau bug,silahkan laporkan kepada developer.</p>
     </main>
 
     <!-- ─── FOOTER ─── -->
@@ -1536,6 +1536,9 @@
             </a>
             <a href="https://www.instagram.com/galeri.angkatan25/" target="_blank">
                 <i class="fab fa-instagram"></i> Galeri @galeri.angkatan25
+            </a>
+            <a href="https://www.youtube.com/@Ganespic25" target="blank">
+                <i class="fab fa-youtube"></i> YouTube @Ganespic25
             </a>
         </div>
         <div class="credit">
@@ -1578,22 +1581,6 @@
                     </a>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- ─── MODAL AI ─── -->
-    <div id="modalAI" class="modal-overlay">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h2 class="modal-title"><i class="fas fa-robot" style="color:var(--sage);"></i> AI · Asisten Ganespic</h2>
-                <button id="btnTutupAI" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
-            </div>
-            <div id="aiMessages" class="ai-messages" role="log" aria-live="polite"></div>
-            <div id="aiSuggest" class="ai-suggest"></div>
-            <form id="aiForm" class="ai-form" autocomplete="off">
-                <input type="text" id="aiInput" placeholder="Tanya seputar angkatan & website..." />
-                <button type="submit" id="btnKirimAI" aria-label="Kirim pertanyaan"><i class="fas fa-paper-plane"></i></button>
-            </form>
         </div>
     </div>
 
@@ -1746,12 +1733,6 @@
             // bersumber langsung dari API anggota (/api/anggota) dan agenda
             // (/api/news). Tidak memakai server eksternal / API key.
             // ══════════════════════════════════════════════════════════════════
-            const modalAI = document.getElementById('modalAI');
-            const aiMessages = document.getElementById('aiMessages');
-            const aiInput = document.getElementById('aiInput');
-            const aiForm = document.getElementById('aiForm');
-            const aiSuggest = document.getElementById('aiSuggest');
-
             const BULAN_ID = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
                 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
             ];
@@ -2260,29 +2241,15 @@
                     b.type = 'button';
                     b.className = 'ai-chip';
                     b.textContent = s;
-                    b.addEventListener('click', () => kirimPertanyaan(s));
+b.addEventListener('click', () => kirimPertanyaan(s));
                     aiSuggest.appendChild(b);
                 });
             }
 
-            window.openAIChat = function () {
-                bukaModalEl(modalAI);
-                if (!aiReady) {
-                    aiMsg('Halo! 👋 Aku <b>AI</b> asisten virtual Angkatan XXV.<br>Tanya apa saja seputar <b>website</b> &amp; <b>info angkatan</b> — ultah anggota, event tahun ini, atau tautan galeri, kas, dan struktural MPK. 🚀', 'bot');
-                    buatSaranAI();
-                    aiReady = true;
-                }
-                setTimeout(() => aiInput && aiInput.focus(), 350);
-            };
-
-            aiForm.addEventListener('submit', e => { e.preventDefault(); kirimPertanyaan(aiInput.value); });
-            document.getElementById('btnTutupAI').addEventListener('click', () => tutupModalEl(modalAI));
-            modalAI.addEventListener('click', e => { if (e.target === modalAI) tutupModalEl(modalAI); });
-
             // Tutup dengan tombol ESC
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
-                    [modalDeveloper, modalBerita, modalAI].forEach(function (m) {
+                    [modalDeveloper, modalBerita].forEach(function (m) {
                         tutupModalEl(m);
                     });
                 }

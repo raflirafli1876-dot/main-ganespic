@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Ganespic XXV — Asisten Virtual</title>
+  <link rel="icon" href="Logo_xxvganespic.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ─── Root Variables (sama persis dengan index.html) ─── */
+    :root {
+      --sage: #7CF498;
+      --sage-dark: #5bc97a;
+      --sage-dim: rgba(124, 244, 152, 0.12);
+      --sage-glow: rgba(124, 244, 152, 0.06);
+
+      --bg: #0a0d0b;
+      --bg-card: #111816;
+      --bg-card-hover: #18221c;
+      --bg-elevated: #141c18;
+      --border: #1e2c24;
+      --border-hover: #2d4a38;
+
+      --text: #e8f2ec;
+      --text-dim: #8aaa9a;
+      --text-muted: #5a7a6a;
+
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --radius: 20px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Light Theme */
+    [data-theme="light"] {
+      --bg: #f4f8f6;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f0f5f2;
+      --bg-elevated: #f8fbf9;
+      --border: #d0ded6;
+      --border-hover: #b0c8bc;
+
+      --text: #1a2a22;
+      --text-dim: #4a6a5a;
+      --text-muted: #7a9a8a;
+
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background var(--transition), color var(--transition);
+    }
+    header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .header-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: var(--sage-dim);
+    }
+    .header-text h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .header-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    main {
+      flex: 1;
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 72px);
+    }
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 4px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      scroll-behavior: smooth;
+    }
+    .msg {
+      display: flex;
+      gap: 10px;
+      max-width: 85%;
+      animation: msgIn 200ms ease-out;
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .msg.bot { align-self: flex-start; }
+    .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .msg.bot .avatar {
+      background: var(--sage-dim);
+      color: var(--sage);
+    }
+    .msg.user .avatar {
+      background: linear-gradient(135deg, var(--sage), var(--sage-dark));
+      color: #0a0d0b;
+    }
+    .bubble {
+      padding: 12px 16px;
+      border-radius: 16px;
+      line-height: 1.5;
+      font-size: 0.95rem;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+    }
+    .msg.bot .bubble {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+      box-shadow: var(--shadow);
+    }
+    .msg.user .bubble {
+      background: linear-gradient(135deg, var(--sage), var(--sage-dark));
+      color: #0a0d0b;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble a { color: inherit; text-decoration: underline; }
+    .msg.bot .bubble a { color: var(--sage); font-weight: 600; }
+    .msg.user .bubble a { color: rgba(10,13,11,0.9); }
+    .typing {
+      display: flex;
+      gap: 4px;
+      padding: 8px 12px;
+    }
+    .typing .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--sage);
+      opacity: 0.4;
+      animation: bounce 1s infinite ease-in-out;
+    }
+    .typing .dot:nth-child(2) { animation-delay: 0.15s; }
+    .typing .dot:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.4; }
+      40% { transform: scale(1.2); opacity: 1; }
+    }
+    .input-area {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      padding: 16px 20px;
+      position: sticky;
+      bottom: 0;
+    }
+    .input-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      gap: 10px;
+    }
+    .input-wrap input {
+      flex: 1;
+      padding: 14px 18px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      background: var(--bg-elevated);
+      color: var(--text);
+    }
+    .input-wrap input:focus { border-color: var(--sage); }
+    .input-wrap input::placeholder { color: var(--text-muted); }
+    .input-wrap button {
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--sage), var(--sage-dark));
+      color: #0a0d0b;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .input-wrap button:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124, 244, 152, 0.3); }
+    .input-wrap button:active { transform: scale(0.96); }
+    .input-wrap button:disabled { background: var(--border); cursor: not-allowed; }
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+    .suggestion-btn {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--bg-card);
+      font-size: 0.8rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .suggestion-btn:hover {
+      border-color: var(--sage);
+      color: var(--sage);
+      background: var(--sage-dim);
+    }
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state i { font-size: 3rem; margin-bottom: 16px; color: var(--sage); opacity: 0.5; }
+    .empty-state h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--text); }
+    .error-banner {
+      background: rgba(255, 59, 48, 0.15);
+      border: 1px solid rgba(255, 59, 48, 0.3);
+      color: #ff6b5b;
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .error-banner.hidden { display: none; }
+    @media (max-width: 480px) {
+      .msg { max-width: 92%; }
+      header { padding: 12px 16px; }
+      main { padding: 16px; height: calc(100vh - 68px); }
+      .input-area { padding: 12px 16px; }
+      .input-wrap input { padding: 12px 14px; }
+      .input-wrap button { width: 44px; height: 44px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <img src="Logo_xxvganespic.png" alt="Ganespic XXV" class="logo" onerror="this.style.display='none'">
+      <div class="header-text">
+        <h1>AI Ganespic XXV</h1>
+        <p>Asisten Virtual Angkatan XXV</p>
+      </div>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme" style="margin-left:auto;background:none;border:none;color:var(--text);font-size:1.2rem;cursor:pointer;padding:8px;border-radius:8px;display:flex;align-items:center;justify-content:center;width:40px;height:40px;">
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div id="errorBanner" class="error-banner hidden"></div>
+
+    <div id="suggestions" class="suggestions"></div>
+
+    <div id="chatContainer" class="chat-container"></div>
+
+    <div id="emptyState" class="empty-state">
+      <i class="fas fa-robot"></i>
+      <h3>Halo! Ada yang bisa dibantu?</h3>
+      <p>Tanya seputar anggota, ultah, event, kas, galeri, atau MPK.</p>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrap">
+        <input type="text" id="aiInput" placeholder="Tanya apa saja... (contoh: Siapa ketua angkatan?)" autocomplete="off">
+        <button id="sendBtn" aria-label="Kirim"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API_URL = '/api/ai';
+    const chatContainer = document.getElementById('chatContainer');
+    const aiInput = document.getElementById('aiInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const suggestionsEl = document.getElementById('suggestions');
+    const emptyState = document.getElementById('emptyState');
+    const errorBanner = document.getElementById('errorBanner');
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+
+    let aiMode = null;
+    let isLoading = false;
+
+    // Theme handling (sama dengan index.html)
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('ganespic-theme', theme);
+      themeIcon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+    const savedTheme = localStorage.getItem('ganespic-theme');
+    if (savedTheme) applyTheme(savedTheme);
+    else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) applyTheme('light');
+    else applyTheme('dark');
+
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    // Suggestion chips
+    const SUGGESTIONS = [
+      'Siapa ketua angkatan?',
+      'Kapan ultah Rafli?',
+      'Saldo kas berapa?',
+      'Event bulan ini apa?',
+      'Link galeri & kas?',
+      'Struktur MPK tansri'
+    ];
+
+    function renderSuggestions() {
+      suggestionsEl.innerHTML = SUGGESTIONS.map(s =>
+        `<button class="suggestion-btn" data-q="${escapeHtml(s)}">${escapeHtml(s)}</button>`
+      ).join('');
+      suggestionsEl.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => sendQuestion(btn.dataset.q));
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, c => ({
+        '&': '&', '<': '<', '>': '>', '"': '"', "'": '''
+      }[c]));
+    }
+
+    function showError(msg) {
+      errorBanner.textContent = msg;
+      errorBanner.classList.remove('hidden');
+      setTimeout(() => errorBanner.classList.add('hidden'), 8000);
+    }
+
+    function addMessage(text, from) {
+      emptyState.style.display = 'none';
+      const wrap = document.createElement('div');
+      wrap.className = 'msg ' + (from === 'user' ? 'user' : 'bot');
+      wrap.innerHTML = `
+        <div class="avatar"><i class="fas ${from === 'user' ? 'fa-user' : 'fa-robot'}"></i></div>
+        <div class="bubble">${from === 'user' ? escapeHtml(text) : text}</div>
+      `;
+      chatContainer.appendChild(wrap);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function showTyping() {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg bot typing-msg';
+      wrap.innerHTML = `
+        <div class="avatar"><i class="fas fa-robot"></i></div>
+        <div class="bubble"><div class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+      `;
+      chatContainer.appendChild(wrap);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      return wrap;
+    }
+
+    function removeTyping(el) {
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+    }
+
+    // Cek apakah AI generatif aktif (GET /api/ai)
+    async function checkAIMode() {
+      if (aiMode !== null) return aiMode;
+      try {
+        const r = await fetch(API_URL);
+        const d = await r.json();
+        aiMode = d && d.configured ? true : false;
+      } catch (e) {
+        aiMode = false;
+      }
+      return aiMode;
+    }
+
+    // Kirim pertanyaan ke API AI
+    async function askAI(question) {
+      try {
+        const r = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question })
+        });
+        const d = await r.json();
+        if (d && d.configured && d.answer) return d.answer;
+        return null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function sendQuestion(raw) {
+      const q = (raw || '').trim();
+      if (!q || isLoading) return;
+      isLoading = true;
+      sendBtn.disabled = true;
+
+      addMessage(q, 'user');
+      aiInput.value = '';
+      suggestionsEl.style.display = 'none';
+
+      const typingEl = showTyping();
+
+      try {
+        const mode = await checkAIMode();
+        let answer = null;
+        if (mode) {
+          answer = await askAI(q);
+        }
+        if (!answer) {
+          answer = mode
+            ? '🤖 <b>AI sedang error</b> — Gagal mendapatkan jawaban dari server. Coba tanya lagi sebentar.'
+            : '🤖 <b>AI belum aktif</b> — Pastikan env <code>AI_API_KEY</code> terisi di Vercel (Settings → Environment Variables).';
+        }
+        removeTyping(typingEl);
+        addMessage(answer, 'bot');
+      } catch (e) {
+        removeTyping(typingEl);
+        addMessage('🤖 <b>AI sedang error</b> — Terjadi gangguan koneksi. Coba lagi sebentar.', 'bot');
+      } finally {
+        isLoading = false;
+        sendBtn.disabled = false;
+        aiInput.focus();
+      }
+    }
+
+    // Event listeners
+    sendBtn.addEventListener('click', () => sendQuestion(aiInput.value));
+    aiInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendQuestion(aiInput.value);
+      }
+    });
+
+    // Init
+    renderSuggestions();
+    aiInput.focus();
+  </script>
+</body>
+</html>
