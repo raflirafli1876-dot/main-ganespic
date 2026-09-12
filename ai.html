@@ -329,17 +329,19 @@
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('ganespic-theme', theme);
-      themeIcon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+      if (themeIcon) themeIcon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
     }
     const savedTheme = localStorage.getItem('ganespic-theme');
     if (savedTheme) applyTheme(savedTheme);
     else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) applyTheme('light');
     else applyTheme('dark');
 
-    themeToggle.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme');
-      applyTheme(current === 'dark' ? 'light' : 'dark');
-    });
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+      });
+    }
 
     // Suggestion chips
     const SUGGESTIONS = [
@@ -465,13 +467,17 @@
     }
 
     // Event listeners
-    sendBtn.addEventListener('click', () => sendQuestion(aiInput.value));
-    aiInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendQuestion(aiInput.value);
-      }
-    });
+    if (sendBtn) {
+      sendBtn.addEventListener('click', () => sendQuestion(aiInput.value));
+    }
+    if (aiInput) {
+      aiInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendQuestion(aiInput.value);
+        }
+      });
+    }
 
     // Init
     renderSuggestions();
