@@ -305,7 +305,7 @@
 
     <div class="input-area">
       <div class="input-wrap">
-        <input type="text" id="aiInput" placeholder="Tanya apa saja... (contoh: Siapa ketua angkatan?)" autocomplete="off">
+        <textarea id="aiInput" placeholder="Tanya apa saja... (contoh: Siapa ketua angkatan?)" autocomplete="off" rows="1" style="resize:none;min-height:48px;max-height:120px;padding:14px 18px;"></textarea>
         <button id="sendBtn" aria-label="Kirim"><i class="fas fa-paper-plane"></i></button>
       </div>
     </div>
@@ -476,6 +476,11 @@
           e.preventDefault();
           sendQuestion(aiInput.value);
         }
+      });
+      // Auto-resize textarea
+      aiInput.addEventListener('input', () => {
+        aiInput.style.height = 'auto';
+        aiInput.style.height = Math.min(aiInput.scrollHeight, 120) + 'px';
       });
     }
 
