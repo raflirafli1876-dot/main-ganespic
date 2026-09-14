@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS agendas (
     nama_judul VARCHAR(255) NOT NULL,        -- Judul Event atau Nama Anggota
     deskripsi_nis TEXT,                      -- Deskripsi Event atau No ID / NIS Siswa
     tanggal DATE NOT NULL,                   -- Tanggal format YYYY-MM-DD (contoh: 2008-08-29)
-    foto_cdn_url TEXT,                       -- Link URL Foto dari CDN (ImgBB, Cloudinary, dll)
+    foto_cdn_url TEXT,                       -- Link URL Foto Poster Event dari CDN
+    spanduk_cdn_url TEXT,                    -- Link URL Spanduk/Banner Event dari CDN (landscape)
     is_tetap BOOLEAN DEFAULT TRUE,           -- TRUE = Event Tetap/Tahunan (ultah selalu TRUE)
                                              -- FALSE = Event Tidak Tetap (auto-hapus setelah hari berganti)
     anggota_id VARCHAR(64),                  -- Relasi ke tabel anggota (sinkronisasi ultah otomatis).

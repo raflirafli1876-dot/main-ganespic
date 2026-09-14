@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -189,6 +189,7 @@
       max-width: 720px;
       margin: 0 auto;
       display: flex;
+      align-items: flex-end;
       gap: 10px;
     }
     .input-wrap input,
@@ -213,6 +214,7 @@
     .input-wrap button {
       width: 48px;
       height: 48px;
+      flex-shrink: 0;
       border: none;
       border-radius: 12px;
       background: linear-gradient(135deg, var(--sage), var(--sage-dark));
@@ -333,12 +335,21 @@
     let isLoading = false;
 
     // Theme handling (sama dengan index.html)
+    function getStoredTheme() {
+      try { return localStorage.getItem('ganespic-theme'); } catch (e) { return null; }
+    }
+    function setStoredTheme(t) {
+      try { localStorage.setItem('ganespic-theme', t); } catch (e) { /* abaikan */ }
+    }
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('ganespic-theme', theme);
-      if (themeIcon) themeIcon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+      setStoredTheme(theme);
+      if (themeIcon) {
+        themeIcon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+        themeIcon.style.color = 'var(--sage)';
+      }
     }
-    const savedTheme = localStorage.getItem('ganespic-theme');
+    const savedTheme = getStoredTheme();
     if (savedTheme) applyTheme(savedTheme);
     else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) applyTheme('light');
     else applyTheme('dark');
@@ -435,11 +446,26 @@
           body: JSON.stringify({ question })
         });
         const d = await r.json();
-        if (d && d.configured && d.answer) return d.answer;
+        if (d && d.answer) return d.answer;
         return null;
       } catch (e) {
         return null;
       }
+    }
+
+    function hiResponse(question) {
+      const q = (question || '').toLowerCase();
+      const garisBantuan = '<br>• <b>Ultah</b> — "kapan ultah Rafli?"<br>• <b>Event</b> — "event apa saja tahun ini?"<br>• <b>Kas</b> — "saldo kas berapa?"<br>• <b>MPK</b> — "siapa ketua angkatan?"<br>• <b>Link</b> — "link galeri & kas"';
+      if (/^(halo|hai|hello|hi|yo|p|salam|assalamualaikum|selamat (pagi|siang|sore|malam))\b/.test(q) && q.split(/\s+/).length <= 4) {
+        return 'Halo! 👋 Aku <b>AI Ganespic XXV</b>, asisten khusus website & info angkatan. Kamu bisa tanya:' + garisBantuan;
+      }
+      if (/^(makasih|terima kasih|thanks|thank you|sip|mantap|oke|ok)\b/.test(q)) {
+        return 'Sama-sama! 😊 Senang bisa membantu. Kalau ada pertanyaan lain seputar angkatan atau website, langsung tanya saja ya.';
+      }
+      if (/\b(bantuan|help|tolong|kamu bisa apa|bisa apa|fitur apa|caranya|menu)\b/.test(q)) {
+        return 'Aku <b>AI</b> asisten <b>Ganespic XXV</b>. Yang bisa ditanyakan seputar website & angkatan:' + garisBantuan;
+      }
+      return null;
     }
 
     async function sendQuestion(raw) {
@@ -455,16 +481,26 @@
       const typingEl = showTyping();
 
       try {
-        const mode = await checkAIMode();
-        let answer = null;
-        if (mode) {
-          answer = await askAI(q);
+        // 1) SAPAAN / LEBIH DAHULU tanpa nunggu server
+        const lokal = hiResponse(q);
+        let answer = lokal;
+        if (lokal) {
+          removeTyping(typingEl);
+          addMessage(answer, 'bot');
+          return;
         }
-        if (!answer) {
-          answer = mode
-            ? '🤖 <b>AI sedang error</b> — Gagal mendapatkan jawaban dari server. Coba tanya lagi sebentar.'
-            : '🤖 <b>AI belum aktif</b> — Pastikan env <code>AI_API_KEY</code> terisi di Vercel (Settings → Environment Variables).';
+
+        // 2) Kirim ke /api/ai (server punya fallback data asli: kas, MPK, anggota, agenda, galeri)
+        answer = await askAI(q);
+
+        if (answer) {
+          removeTyping(typingEl);
+          addMessage(answer, 'bot');
+          return;
         }
+
+        // 3) Fallback terakhir: saran ramah
+        answer = '🤖 Maaf, aku belum menemukan jawabannya. Coba tanya yang lebih spesifik, misalnya:<br>• "Kapan ultah Rafli?"<br>• "Saldo kas berapa?"<br>• "Siapa ketua angkatan?"<br>• "Event bulan ini apa?"<br>• "Link galeri & kas?"';
         removeTyping(typingEl);
         addMessage(answer, 'bot');
       } catch (e) {
@@ -473,6 +509,7 @@
       } finally {
         isLoading = false;
         sendBtn.disabled = false;
+        suggestionsEl.style.display = '';
         aiInput.focus();
       }
     }
