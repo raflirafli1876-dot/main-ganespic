@@ -91,19 +91,24 @@ export default async function handler(req, res) {
 
       const rows = await sql`
         SELECT 
-          id, 
-          tipe, 
-          nama_judul AS judul, 
-          nama_judul AS nama, 
-          deskripsi_nis AS deskripsi, 
-          deskripsi_nis AS "noId", 
-          tanggal, 
-          foto_cdn_url AS "fotoUrl", 
-          is_tetap AS "isTetap",
-          anggota_id AS "anggotaId",
-          created_at AS dibuat 
-        FROM agendas 
-        ORDER BY tanggal ASC;
+          a.id, 
+          a.tipe, 
+          a.nama_judul AS judul, 
+          a.nama_judul AS nama, 
+          a.deskripsi_nis AS deskripsi, 
+          a.deskripsi_nis AS "noId", 
+          a.tanggal, 
+          CASE
+            WHEN COALESCE(a.foto_cdn_url, '') <> '' THEN a.foto_cdn_url
+            WHEN a.tipe = 'ultah' THEN COALESCE(g.foto_url, '')
+            ELSE ''
+          END AS "fotoUrl", 
+          a.is_tetap AS "isTetap",
+          a.anggota_id AS "anggotaId",
+          a.created_at AS dibuat 
+        FROM agendas a
+        LEFT JOIN anggota g ON g.no_induk = a.deskripsi_nis
+        ORDER BY a.tanggal ASC;
       `;
       return res.status(200).json({ news: rows || [] });
     } catch (error) {
