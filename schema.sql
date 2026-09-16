@@ -29,10 +29,13 @@ CREATE INDEX IF NOT EXISTS idx_agendas_is_tetap ON agendas (is_tetap);
 -- ==============================================================================
 -- PostgreSQL / Neon / Supabase:
 --   ALTER TABLE agendas ADD COLUMN IF NOT EXISTS is_tetap BOOLEAN DEFAULT TRUE;
+--   ALTER TABLE agendas ADD COLUMN IF NOT EXISTS spanduk_cdn_url TEXT;
 -- MySQL / MariaDB:
 --   ALTER TABLE agendas ADD COLUMN IF NOT EXISTS is_tetap BOOLEAN DEFAULT TRUE;
+--   ALTER TABLE agendas ADD COLUMN IF NOT EXISTS spanduk_cdn_url TEXT;
 -- SQLite / Cloudflare D1:
 --   ALTER TABLE agendas ADD COLUMN is_tetap INTEGER DEFAULT 1;
+--   ALTER TABLE agendas ADD COLUMN spanduk_cdn_url TEXT;
 --
 -- Catatan: API (api/news.js) juga menjalankan migrasi ini otomatis saat pertama
 -- kali diakses, jadi langkah manual di atas opsional.

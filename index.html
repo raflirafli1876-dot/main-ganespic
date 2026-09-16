@@ -278,11 +278,250 @@
             opacity: 1;
         }
 
+        /* ─── Top Event Banner (Navbar / Atas Landing Page) ─── */
+        .landing-event-banner-wrap {
+            margin-top: 80px;
+            margin-bottom: -40px;
+            position: relative;
+            z-index: 10;
+            animation: bannerFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes bannerFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .landing-event-banner-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 18px 18px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28), 0 0 32px var(--sage-glow);
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .landing-event-banner-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .banner-top-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .banner-tag-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .banner-pill-badge {
+            font-size: 0.74rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 100px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.02em;
+        }
+
+        .banner-pill-badge.event {
+            background: var(--sage-dim);
+            color: var(--sage);
+            border: 1px solid rgba(124, 244, 152, 0.25);
+        }
+
+        .banner-pill-badge.time {
+            background: rgba(255, 200, 90, 0.12);
+            color: #ffc85a;
+            border: 1px solid rgba(255, 200, 90, 0.28);
+        }
+
+        .banner-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+        }
+
+        .banner-ctrl-btn {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all var(--transition);
+        }
+
+        .banner-ctrl-btn:hover {
+            color: var(--text);
+            border-color: var(--sage);
+            background: var(--sage-dim);
+        }
+
+        .banner-ctrl-btn.close:hover {
+            color: #ff6b6b;
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .banner-pagination-indicator {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0 4px;
+            font-weight: 600;
+        }
+
+        .banner-image-container {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            min-height: 140px;
+            display: block;
+        }
+
+        .banner-image-container img {
+            width: 100%;
+            max-height: 260px;
+            min-height: 140px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .banner-image-container:hover img {
+            transform: scale(1.015);
+        }
+
+        .banner-image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(10, 13, 11, 0.94) 0%, rgba(10, 13, 11, 0.52) 50%, rgba(10, 13, 11, 0.15) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px 22px;
+            transition: background 0.3s ease;
+        }
+
+        [data-theme="light"] .banner-image-overlay {
+            background: linear-gradient(0deg, rgba(244, 248, 246, 0.95) 0%, rgba(244, 248, 246, 0.6) 50%, rgba(244, 248, 246, 0.2) 100%);
+        }
+
+        .banner-overlay-title {
+            font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+            line-height: 1.25;
+        }
+
+        .banner-overlay-desc {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-width: 750px;
+        }
+
+        .banner-overlay-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .banner-overlay-date {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--sage);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .banner-overlay-action-btn {
+            background: var(--sage);
+            color: #0a0d0b;
+            border: none;
+            padding: 7px 18px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all var(--transition);
+            box-shadow: 0 4px 15px rgba(124, 244, 152, 0.2);
+        }
+
+        .banner-overlay-action-btn:hover {
+            background: var(--sage-dark);
+            transform: translateY(-1px);
+        }
+
         /* ─── Hero ─── */
         .hero {
             padding: 120px 0 60px;
             text-align: center;
             position: relative;
+            transition: padding var(--transition);
+        }
+
+        .hero.has-banner {
+            padding-top: 55px;
+        }
+
+        @media (max-width: 768px) {
+            .landing-event-banner-wrap {
+                margin-top: 65px;
+                margin-bottom: -20px;
+            }
+            .landing-event-banner-card {
+                padding: 12px 14px 14px;
+            }
+            .banner-image-container img {
+                max-height: 190px;
+                min-height: 120px;
+            }
+            .banner-image-overlay {
+                padding: 14px 14px;
+            }
+            .banner-overlay-desc {
+                display: none;
+            }
+            .hero.has-banner {
+                padding-top: 40px;
+            }
         }
 
         .hero img {
@@ -1442,6 +1681,37 @@
     </button>
 
     <main>
+        <!-- ─── Top Event Banner (Navbar / Atas Landing Page) ─── -->
+        <div id="landingEventBanner" class="landing-event-banner-wrap" style="display: none;">
+            <div class="landing-event-banner-card" id="landingBannerCard">
+                <div class="banner-top-strip">
+                    <div class="banner-tag-group">
+                        <span class="banner-pill-badge event"><i class="fas fa-bullhorn"></i> Event Angkatan</span>
+                        <span class="banner-pill-badge time" id="bannerCountdownText"></span>
+                    </div>
+                    <div class="banner-controls">
+                        <button type="button" class="banner-ctrl-btn" id="bannerBtnPrev" style="display:none;" title="Event Sebelumnya"><i class="fas fa-chevron-left"></i></button>
+                        <span class="banner-pagination-indicator" id="bannerPaginationText" style="display:none;">1 / 1</span>
+                        <button type="button" class="banner-ctrl-btn" id="bannerBtnNext" style="display:none;" title="Event Selanjutnya"><i class="fas fa-chevron-right"></i></button>
+                        <button type="button" class="banner-ctrl-btn close" id="btnCloseEventBanner" title="Tutup banner"><i class="fas fa-xmark"></i></button>
+                    </div>
+                </div>
+                <div class="banner-image-container" id="bannerClickableArea" role="button" tabindex="0" title="Klik untuk lihat detail event">
+                    <img id="bannerDisplayImg" src="" alt="Banner Event" />
+                    <div class="banner-image-overlay">
+                        <h3 class="banner-overlay-title" id="bannerDisplayTitle"></h3>
+                        <p class="banner-overlay-desc" id="bannerDisplayDesc"></p>
+                        <div class="banner-overlay-footer">
+                            <span class="banner-overlay-date" id="bannerDisplayDate"><i class="fas fa-calendar-day"></i> </span>
+                            <button type="button" class="banner-overlay-action-btn" id="bannerActionBtn">
+                                <i class="fas fa-newspaper"></i> Lihat Detail Acara
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ─── Hero ─── -->
         <header class="hero">
             <img src="Logo_xxvganespic.png" alt="Logo Ganespic XXV" /><br>
@@ -1687,6 +1957,275 @@
                     list.innerHTML = '<div class="news-empty"><i class="fas fa-triangle-exclamation"></i><br>Gagal memuat berita. Cek koneksi atau URL API.</div>';
                 }
             }
+
+            // ── Helper & Detail Event Banner ──
+            function escHtml(s) {
+                return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            }
+
+            function formatIndonesianDate(d) {
+                if (!d) return '-';
+                const dateObj = typeof d === 'string' ? new Date(d) : d;
+                if (isNaN(dateObj.getTime())) return String(d);
+                const day = dateObj.getDate();
+                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                const month = months[dateObj.getMonth()];
+                const year = dateObj.getFullYear();
+                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const dayName = days[dateObj.getDay()];
+                return `${dayName}, ${day} ${month} ${year}`;
+            }
+
+            window.openEventDetail = function (item) {
+                if (!item) return;
+                const list = document.getElementById('beritaList');
+                const badge = '<span class="badge event">Event</span>';
+                const formattedDate = formatIndonesianDate(item.targetDate || item.tanggal);
+                let countdownBadge = '';
+                if (typeof item.diffDays === 'number') {
+                    if (item.diffDays > 0) {
+                        countdownBadge = `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:100px;background:rgba(255,200,90,.15);color:#ffc85a;font-weight:700;font-size:0.75rem;"><i class="fas fa-clock"></i> H-${item.diffDays} (${item.diffDays} Hari Lagi)</span>`;
+                    } else if (item.diffDays === 0) {
+                        countdownBadge = `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:100px;background:rgba(124,244,152,.15);color:var(--sage);font-weight:700;font-size:0.75rem;"><i class="fas fa-bullhorn"></i> 🎉 Hari Ini!</span>`;
+                    } else {
+                        countdownBadge = `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:100px;background:rgba(124,244,152,.15);color:var(--sage);font-weight:700;font-size:0.75rem;"><i class="fas fa-check-circle"></i> Sedang Berlangsung (H+${Math.abs(item.diffDays)})</span>`;
+                    }
+                }
+
+                const posterHtml = item.fotoUrl
+                    ? `<div style="text-align:center;margin:12px 0 16px;"><img src="${escHtml(item.fotoUrl)}" alt="Poster ${escHtml(item.judul)}" style="max-height:380px;width:auto;max-width:100%;object-fit:contain;border-radius:14px;border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,.25);" onerror="this.src='Logo_xxvganespic.png'" /></div>`
+                    : '';
+
+                const bannerHtml = item.bannerUrl
+                    ? `<div style="margin-bottom:14px;"><img src="${escHtml(item.bannerUrl)}" alt="Banner ${escHtml(item.judul)}" style="width:100%;max-height:190px;object-fit:cover;border-radius:12px;border:1px solid var(--border);" onerror="this.style.display='none'" /></div>`
+                    : '';
+
+                list.innerHTML = `
+                    <div style="padding:4px 0 12px;">
+                        ${bannerHtml}
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+                            ${badge}
+                            ${countdownBadge}
+                        </div>
+                        <h2 style="font-size:clamp(1.2rem, 3vw, 1.6rem);font-weight:800;margin:6px 0 8px;color:var(--text);line-height:1.3;">
+                            ${escHtml(item.judul)}
+                        </h2>
+                        <div style="font-size:0.85rem;color:var(--sage);font-weight:600;margin-bottom:14px;">
+                            <i class="fas fa-calendar-day"></i> ${formattedDate}
+                        </div>
+                        ${posterHtml}
+                        <div style="font-size:0.95rem;line-height:1.8;color:var(--text-dim);white-space:pre-line;background:var(--bg-elevated);padding:14px 18px;border-radius:14px;border:1px solid var(--border);">
+                            ${escHtml(item.deskripsi || 'Tidak ada deskripsi tambahan untuk event ini.')}
+                        </div>
+                    </div>
+                `;
+                bukaModalEl(document.getElementById('modalBerita'));
+            };
+
+            // ── Logika Banner Event di Navbar / Atas Landing Page ──
+            // Muncul 14 hari sebelum event s/d 7 hari setelah event, selebihnya tidak muncul.
+            // Hanya muncul jika link banner di-input.
+            function getActiveEventBanners(newsList) {
+                const now = new Date();
+                const currentYear = now.getFullYear();
+                const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+
+                const active = [];
+
+                (newsList || []).forEach(item => {
+                    if (item.tipe !== 'event') return;
+                    const banner = (item.bannerUrl || item.spandukUrl || '').trim();
+                    if (!banner) return; // Hanya jika link banner di-input
+                    if (!item.tanggal) return;
+
+                    const isTetap = item.isTetap !== false;
+                    let candidates = [];
+
+                    if (!isTetap) {
+                        const parts = item.tanggal.split('-');
+                        if (parts.length >= 3) {
+                            candidates.push(new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), 0, 0, 0, 0));
+                        }
+                    } else {
+                        const parts = item.tanggal.split('-');
+                        const mm = Number(parts[parts.length - 2]);
+                        const dd = Number(parts[parts.length - 1]);
+                        if (!isNaN(mm) && !isNaN(dd)) {
+                            candidates.push(new Date(currentYear - 1, mm - 1, dd, 0, 0, 0, 0));
+                            candidates.push(new Date(currentYear, mm - 1, dd, 0, 0, 0, 0));
+                            candidates.push(new Date(currentYear + 1, mm - 1, dd, 0, 0, 0, 0));
+                        }
+                    }
+
+                    let matched = null;
+                    let minDiff = Infinity;
+
+                    candidates.forEach(cand => {
+                        const diffDays = Math.round((cand.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
+                        // Rentang: 14 hari sebelum event s/d 7 hari setelah event
+                        if (diffDays >= -7 && diffDays <= 14) {
+                            if (Math.abs(diffDays) < Math.abs(minDiff)) {
+                                minDiff = diffDays;
+                                matched = { targetDate: cand, diffDays };
+                            }
+                        }
+                    });
+
+                    if (matched) {
+                        active.push({
+                            ...item,
+                            bannerUrl: banner,
+                            targetDate: matched.targetDate,
+                            diffDays: matched.diffDays
+                        });
+                    }
+                });
+
+                active.sort((a, b) => a.diffDays - b.diffDays);
+                return active;
+            }
+
+            let activeBannerIndex = 0;
+            let bannerRotationTimer = null;
+
+            async function initLandingEventBanner() {
+                const wrap = document.getElementById('landingEventBanner');
+                const hero = document.querySelector('.hero');
+                if (!wrap) return;
+
+                try {
+                    const res = await fetch(API_URL);
+                    if (!res.ok) return;
+                    const { news } = await res.json();
+                    const activeBanners = getActiveEventBanners(news);
+
+                    if (!activeBanners.length) {
+                        wrap.style.display = 'none';
+                        if (hero) hero.classList.remove('has-banner');
+                        return;
+                    }
+
+                    // Cek jika user sudah menutup banner di sesi ini
+                    const isClosed = sessionStorage.getItem('ganespic_banner_closed_session');
+                    if (isClosed === 'true') {
+                        wrap.style.display = 'none';
+                        if (hero) hero.classList.remove('has-banner');
+                        return;
+                    }
+
+                    wrap.style.display = 'block';
+                    if (hero) hero.classList.add('has-banner');
+
+                    function displayCurrentBanner(idx) {
+                        if (!activeBanners.length) return;
+                        activeBannerIndex = (idx + activeBanners.length) % activeBanners.length;
+                        const item = activeBanners[activeBannerIndex];
+
+                        const imgEl = document.getElementById('bannerDisplayImg');
+                        const titleEl = document.getElementById('bannerDisplayTitle');
+                        const descEl = document.getElementById('bannerDisplayDesc');
+                        const dateEl = document.getElementById('bannerDisplayDate');
+                        const cdText = document.getElementById('bannerCountdownText');
+                        const clickableArea = document.getElementById('bannerClickableArea');
+
+                        if (imgEl) imgEl.src = item.bannerUrl;
+                        if (titleEl) titleEl.textContent = item.judul || 'Event Angkatan';
+                        if (descEl) descEl.textContent = item.deskripsi || '';
+                        if (dateEl) dateEl.innerHTML = `<i class="fas fa-calendar-day"></i> ${formatIndonesianDate(item.targetDate || item.tanggal)}`;
+
+                        if (cdText) {
+                            if (item.diffDays > 0) {
+                                cdText.innerHTML = `<i class="fas fa-clock"></i> H-${item.diffDays} • ${item.diffDays} Hari Lagi`;
+                            } else if (item.diffDays === 0) {
+                                cdText.innerHTML = `<i class="fas fa-bullhorn"></i> 🎉 Sedang Berlangsung Hari Ini!`;
+                            } else {
+                                cdText.innerHTML = `<i class="fas fa-check-circle"></i> Sedang Berlangsung (H+${Math.abs(item.diffDays)})`;
+                            }
+                        }
+
+                        if (clickableArea) {
+                            clickableArea.onclick = () => openEventDetail(item);
+                        }
+                        const actionBtn = document.getElementById('bannerActionBtn');
+                        if (actionBtn) {
+                            actionBtn.onclick = (e) => {
+                                e.stopPropagation();
+                                openEventDetail(item);
+                            };
+                        }
+
+                        // Multi-banner controls
+                        const prevBtn = document.getElementById('bannerBtnPrev');
+                        const nextBtn = document.getElementById('bannerBtnNext');
+                        const pagText = document.getElementById('bannerPaginationText');
+
+                        if (activeBanners.length > 1) {
+                            if (prevBtn) prevBtn.style.display = 'grid';
+                            if (nextBtn) nextBtn.style.display = 'grid';
+                            if (pagText) {
+                                pagText.style.display = 'inline';
+                                pagText.textContent = `${activeBannerIndex + 1} / ${activeBanners.length}`;
+                            }
+                        } else {
+                            if (prevBtn) prevBtn.style.display = 'none';
+                            if (nextBtn) nextBtn.style.display = 'none';
+                            if (pagText) pagText.style.display = 'none';
+                        }
+                    }
+
+                    displayCurrentBanner(0);
+
+                    // Navigasi prev/next jika ada > 1 banner
+                    const prevBtn = document.getElementById('bannerBtnPrev');
+                    const nextBtn = document.getElementById('bannerBtnNext');
+                    if (prevBtn) {
+                        prevBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            clearInterval(bannerRotationTimer);
+                            displayCurrentBanner(activeBannerIndex - 1);
+                        };
+                    }
+                    if (nextBtn) {
+                        nextBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            clearInterval(bannerRotationTimer);
+                            displayCurrentBanner(activeBannerIndex + 1);
+                        };
+                    }
+
+                    // Tombol Tutup Banner (tutup selama sesi browser ini)
+                    const closeBtn = document.getElementById('btnCloseEventBanner');
+                    if (closeBtn) {
+                        closeBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            clearInterval(bannerRotationTimer);
+                            sessionStorage.setItem('ganespic_banner_closed_session', 'true');
+                            wrap.style.display = 'none';
+                            if (hero) hero.classList.remove('has-banner');
+                        };
+                    }
+
+                    // Auto-rotasi halus bila ada lebih dari 1 banner
+                    if (activeBanners.length > 1) {
+                        clearInterval(bannerRotationTimer);
+                        bannerRotationTimer = setInterval(() => {
+                            displayCurrentBanner(activeBannerIndex + 1);
+                        }, 7000);
+                        wrap.addEventListener('mouseenter', () => clearInterval(bannerRotationTimer));
+                        wrap.addEventListener('mouseleave', () => {
+                            clearInterval(bannerRotationTimer);
+                            bannerRotationTimer = setInterval(() => {
+                                displayCurrentBanner(activeBannerIndex + 1);
+                            }, 7000);
+                        });
+                    }
+                } catch (err) {
+                    console.warn('Gagal inisialisasi banner event:', err);
+                }
+            }
+
+            // Jalankan inisialisasi banner landing page
+            initLandingEventBanner();
 
             // ── Modal Berita ──
             const modalBerita = document.getElementById('modalBerita');

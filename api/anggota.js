@@ -94,6 +94,7 @@ export default async function handler(req, res) {
         deskripsi_nis TEXT,
         tanggal VARCHAR(20) NOT NULL,
         foto_cdn_url TEXT,
+        spanduk_cdn_url TEXT,
         is_tetap BOOLEAN DEFAULT TRUE,
         anggota_id VARCHAR(64),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -101,6 +102,7 @@ export default async function handler(req, res) {
     `;
     // Migrasi kolom relasi ke anggota (untuk database lama)
     await sql`ALTER TABLE agendas ADD COLUMN IF NOT EXISTS anggota_id VARCHAR(64);`;
+    await sql`ALTER TABLE agendas ADD COLUMN IF NOT EXISTS spanduk_cdn_url TEXT;`;
   }
 
   // Validasi tanggal lahir format YYYY-MM-DD (atau kosong)

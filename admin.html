@@ -1542,14 +1542,24 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">
-                                Link Foto / Banner CDN
-                                <span class="form-hint">Upload gratis di <a href="https://imgbb.com"
+                                Link Foto Poster Event (Muncul di Berita)
+                                <span class="form-hint">Format vertikal / bebas • Upload gratis di <a href="https://imgbb.com"
                                         target="_blank">ImgBB</a> / <a href="https://postimages.org"
                                         target="_blank">Postimages</a></span>
                             </label>
-                            <input type="url" id="eventFotoUrl" placeholder="https://i.ibb.co/contoh/foto-event.jpg" />
+                            <input type="url" id="eventFotoUrl" placeholder="https://i.ibb.co/contoh/poster-event.jpg" />
                             <div class="cdn-preview-box" id="previewBoxEvent" style="display:none;">
-                                <img id="imgPreviewEvent" alt="Preview CDN Event" />
+                                <img id="imgPreviewEvent" alt="Preview Poster Event" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                Link Banner Event (Muncul di Atas / Navbar Landing Page)
+                                <span class="form-hint">Format landscape (16:9 / 3:1) • Muncul H-14 s/d H+7 event • Opsional</span>
+                            </label>
+                            <input type="url" id="eventBannerUrl" placeholder="https://i.ibb.co/contoh/banner-navbar-event.jpg" />
+                            <div class="cdn-preview-box" id="previewBoxEventBanner" style="display:none;">
+                                <img id="imgPreviewEventBanner" alt="Preview Banner Event" />
                             </div>
                         </div>
                         <button type="submit" class="btn-submit" id="btnSubmitEvent">
@@ -2134,6 +2144,7 @@
                 });
             }
             setupCdnPreview('eventFotoUrl', 'previewBoxEvent', 'imgPreviewEvent');
+            setupCdnPreview('eventBannerUrl', 'previewBoxEventBanner', 'imgPreviewEventBanner');
             setupCdnPreview('ultahFotoUrl', 'previewBoxUltah', 'imgPreviewUltah');
 
             // ── Pilihan Jenis Event: Tetap / Tidak Tetap ──
@@ -2226,12 +2237,15 @@
             document.getElementById('formAddEvent').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const tetapChoice = document.querySelector('input[name="eventTetap"]:checked');
+                const bannerVal = document.getElementById('eventBannerUrl').value.trim();
                 await saveNewsPayload({
                     tipe: 'event',
                     judul: document.getElementById('eventJudul').value.trim(),
                     deskripsi: document.getElementById('eventDeskripsi').value.trim(),
                     tanggal: document.getElementById('eventTanggal').value, // YYYY-MM-DD
                     fotoUrl: document.getElementById('eventFotoUrl').value.trim(),
+                    spandukUrl: bannerVal,
+                    bannerUrl: bannerVal,
                     // true = Tetap (tahunan) • false = Tidak Tetap (auto-hapus setelah hari berganti)
                     isTetap: tetapChoice ? tetapChoice.value === 'tetap' : true
                 }, e.target, document.getElementById('btnSubmitEvent'), editingEventId ? 'PUT' : 'POST', editingEventId);
@@ -2309,8 +2323,9 @@
                             ? '<span class="agenda-item-badge" style="background:rgba(124,244,152,.15);color:var(--sage);">Anggota</span>'
                             : '<span class="agenda-item-badge ultah">Ultah</span>';
                     const ageText = (!isEvent && !isAnggota) ? getAgeInfo(item.tanggal, currentCalYear) : '';
+                    const hasBanner = isEvent && Boolean(item.bannerUrl || item.spandukUrl);
                     const meta = isEvent
-                        ? `<span><i class="fas fa-calendar"></i> ${item.tanggal || '-'}</span><span><i class="fas ${item.isTetap === false ? 'fa-clock-rotate-left' : 'fa-repeat'}"></i> ${item.isTetap === false ? 'Tidak Tetap (auto-hapus setelah event)' : 'Tetap / Tahunan'}</span>`
+                        ? `<span><i class="fas fa-calendar"></i> ${item.tanggal || '-'}</span><span><i class="fas ${item.isTetap === false ? 'fa-clock-rotate-left' : 'fa-repeat'}"></i> ${item.isTetap === false ? 'Tidak Tetap (auto-hapus setelah event)' : 'Tetap / Tahunan'}</span>${hasBanner ? '<span style="color:var(--sage);font-weight:600;"><i class="fas fa-panorama"></i> Banner Navbar</span>' : ''}`
                         : isAnggota
                             ? `<span><i class="fas fa-id-card"></i> NIS ${item.noInduk || '-'}</span>${item.igUsername ? `<span><i class="fab fa-instagram"></i> ${sosmedLink(item.igUsername, 'instagram')}</span>` : ''}${item.tiktokUsername ? `<span><i class="fab fa-tiktok"></i> ${sosmedLink(item.tiktokUsername, 'tiktok')}</span>` : ''}${item.whatsapp ? `<span><i class="fab fa-whatsapp"></i> +${escHtml(String(item.whatsapp).replace(/[^0-9]/g, '').replace(/^62/, ''))}</span>` : ''}`
                             : `<span><i class="fas fa-id-card"></i> ${item.noId || '-'} • <i class="fas fa-cake-candles"></i> ${item.tanggal || '-'}</span>${ageText ? `<span class="age-highlight">${ageText}</span>` : ''}`;
@@ -2403,6 +2418,15 @@
                     } else {
                         box.style.display = 'none';
                     }
+                    const banner = item.bannerUrl || item.spandukUrl || '';
+                    document.getElementById('eventBannerUrl').value = banner;
+                    const boxBanner = document.getElementById('previewBoxEventBanner');
+                    if (banner) {
+                        document.getElementById('imgPreviewEventBanner').src = banner;
+                        boxBanner.style.display = 'block';
+                    } else {
+                        boxBanner.style.display = 'none';
+                    }
                     document.getElementById('eventFormTitle').textContent = 'Edit Event';
                     document.getElementById('editIdEvent').textContent = item.id;
                     document.getElementById('editBannerEvent').style.display = 'flex';
@@ -2441,6 +2465,7 @@
                     document.getElementById('formAddEvent').reset();
                     syncTetapChoiceUI();
                     document.getElementById('previewBoxEvent').style.display = 'none';
+                    document.getElementById('previewBoxEventBanner').style.display = 'none';
                     document.getElementById('eventFormTitle').textContent = 'Tambah Event Baru';
                     document.getElementById('editBannerEvent').style.display = 'none';
                     const btn = document.getElementById('btnSubmitEvent');

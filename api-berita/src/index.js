@@ -36,7 +36,7 @@ export default {
       if (env.DB) {
         try {
           const { results } = await env.DB.prepare(
-            'SELECT id, tipe, nama_judul as judul, nama_judul as nama, deskripsi_nis as deskripsi, deskripsi_nis as noId, tanggal, foto_cdn_url as fotoUrl, created_at as dibuat FROM agendas ORDER BY tanggal ASC'
+            'SELECT id, tipe, nama_judul as judul, nama_judul as nama, deskripsi_nis as deskripsi, deskripsi_nis as noId, tanggal, foto_cdn_url as fotoUrl, spanduk_cdn_url as spandukUrl, spanduk_cdn_url as bannerUrl, created_at as dibuat FROM agendas ORDER BY tanggal ASC'
           ).all();
           return json({ news: results || [] }, 200, origin);
         } catch (err) {
@@ -74,6 +74,7 @@ export default {
           nama: formData.get('nama'),
           id: formData.get('id'),
           fotoUrl: formData.get('fotoUrl') || formData.get('foto_cdn_url') || '',
+          spandukUrl: formData.get('spandukUrl') || formData.get('bannerUrl') || formData.get('spanduk_cdn_url') || '',
         };
       }
 
@@ -83,13 +84,14 @@ export default {
       const namaJudul = (tipe === 'event' ? payload.judul : payload.nama) || '';
       const deskripsiNis = (tipe === 'event' ? payload.deskripsi : (payload.id || payload.noId)) || '';
       const fotoUrl = payload.fotoUrl || payload.foto_cdn_url || '';
+      const spandukUrl = payload.spandukUrl || payload.bannerUrl || payload.spanduk_cdn_url || '';
 
       // Jika menggunakan D1 SQL Database
       if (env.DB) {
         try {
           await env.DB.prepare(
-            'INSERT INTO agendas (id, tipe, nama_judul, deskripsi_nis, tanggal, foto_cdn_url) VALUES (?, ?, ?, ?, ?, ?)'
-          ).bind(id, tipe, namaJudul, deskripsiNis, tanggal, fotoUrl).run();
+            'INSERT INTO agendas (id, tipe, nama_judul, deskripsi_nis, tanggal, foto_cdn_url, spanduk_cdn_url) VALUES (?, ?, ?, ?, ?, ?, ?)'
+          ).bind(id, tipe, namaJudul, deskripsiNis, tanggal, fotoUrl, spandukUrl).run();
           return json({ ok: true, id }, 200, origin);
         } catch (err) {
           return json({ error: err.message }, 500, origin);
@@ -109,6 +111,8 @@ export default {
           nama: tipe === 'ultah' ? namaJudul : undefined,
           noId: tipe === 'ultah' ? deskripsiNis : undefined,
           fotoUrl,
+          spandukUrl,
+          bannerUrl: spandukUrl,
           dibuat: new Date().toISOString(),
         });
         await env.FOTOS.put('news.json', JSON.stringify(data));

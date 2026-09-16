@@ -55,6 +55,7 @@ export default async function handler(req, res) {
         deskripsi_nis TEXT,
         tanggal VARCHAR(20) NOT NULL,
         foto_cdn_url TEXT,
+        spanduk_cdn_url TEXT,
         is_tetap BOOLEAN DEFAULT TRUE,
         anggota_id VARCHAR(64),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -70,6 +71,10 @@ export default async function handler(req, res) {
     await sql`
       ALTER TABLE agendas ADD COLUMN IF NOT EXISTS anggota_id VARCHAR(64);
     `;
+    // Kolom link banner / spanduk event (landscape) untuk navbar landing page
+    await sql`
+      ALTER TABLE agendas ADD COLUMN IF NOT EXISTS spanduk_cdn_url TEXT;
+    `;
   }
 
   // ── 1. GET: Ambil semua agenda dari database ──
@@ -78,15 +83,16 @@ export default async function handler(req, res) {
       await initTable();
 
       // ── Auto-delete event "Tidak Tetap" ──
-      // Begitu hari berganti (esok hari), event tidak tetap yang tanggalnya
-      // sudah lewat otomatis dihapus dari database. Zona waktu: Asia/Jakarta (WIB).
-      const todayJakarta = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
+      // Event tidak tetap otomatis dihapus setelah lewat 7 hari pasca-acara
+      // agar banner dan arsip tetap dapat diakses selama periode H+7 (Zona waktu: Asia/Jakarta).
+      const sevenDaysAgoJakarta = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        .toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
       await sql`
         DELETE FROM agendas
         WHERE tipe = 'event'
           AND is_tetap = FALSE
           AND LENGTH(tanggal) = 10
-          AND tanggal < ${todayJakarta};
+          AND tanggal < ${sevenDaysAgoJakarta};
       `;
 
       const rows = await sql`
@@ -103,6 +109,8 @@ export default async function handler(req, res) {
             WHEN a.tipe = 'ultah' THEN COALESCE(g.foto_url, '')
             ELSE ''
           END AS "fotoUrl", 
+          COALESCE(a.spanduk_cdn_url, '') AS "spandukUrl",
+          COALESCE(a.spanduk_cdn_url, '') AS "bannerUrl",
           a.is_tetap AS "isTetap",
           a.anggota_id AS "anggotaId",
           a.created_at AS dibuat 
@@ -137,6 +145,7 @@ export default async function handler(req, res) {
       const deskripsiNis = (tipe === 'event' ? body.deskripsi : (body.id || body.noId)) || '';
       const tanggal = body.tanggal || ''; // YYYY-MM-DD
       const fotoCdnUrl = body.fotoUrl || body.foto_cdn_url || '';
+      const spandukCdnUrl = body.spandukUrl || body.bannerUrl || body.spanduk_cdn_url || body.banner_cdn_url || '';
       const anggotaId = body.anggotaId || body.anggota_id || '';
       // Ulang tahun selalu "tetap" (berulang tiap tahun). Event mengikuti pilihan admin.
       const isTetap = tipe === 'ultah' ? true : (body.isTetap === undefined ? true : Boolean(body.isTetap));
@@ -174,6 +183,7 @@ export default async function handler(req, res) {
                 deskripsi_nis = ${deskripsiNis},
                 tanggal = ${tanggal},
                 foto_cdn_url = ${fotoCdnUrl},
+                spanduk_cdn_url = ${spandukCdnUrl},
                 is_tetap = TRUE
             WHERE anggota_id = ${anggotaId};
           `;
@@ -181,15 +191,15 @@ export default async function handler(req, res) {
         }
         // Belum ada → insert dengan anggota_id
         await sql`
-          INSERT INTO agendas (id, tipe, nama_judul, deskripsi_nis, tanggal, foto_cdn_url, is_tetap, anggota_id)
-          VALUES (${id}, ${tipe}, ${namaJudul}, ${deskripsiNis}, ${tanggal}, ${fotoCdnUrl}, ${isTetap}, ${anggotaId});
+          INSERT INTO agendas (id, tipe, nama_judul, deskripsi_nis, tanggal, foto_cdn_url, spanduk_cdn_url, is_tetap, anggota_id)
+          VALUES (${id}, ${tipe}, ${namaJudul}, ${deskripsiNis}, ${tanggal}, ${fotoCdnUrl}, ${spandukCdnUrl}, ${isTetap}, ${anggotaId});
         `;
         return res.status(200).json({ ok: true, id });
       }
 
       await sql`
-        INSERT INTO agendas (id, tipe, nama_judul, deskripsi_nis, tanggal, foto_cdn_url, is_tetap)
-        VALUES (${id}, ${tipe}, ${namaJudul}, ${deskripsiNis}, ${tanggal}, ${fotoCdnUrl}, ${isTetap});
+        INSERT INTO agendas (id, tipe, nama_judul, deskripsi_nis, tanggal, foto_cdn_url, spanduk_cdn_url, is_tetap)
+        VALUES (${id}, ${tipe}, ${namaJudul}, ${deskripsiNis}, ${tanggal}, ${fotoCdnUrl}, ${spandukCdnUrl}, ${isTetap});
       `;
 
       return res.status(200).json({ ok: true, id });
@@ -223,6 +233,7 @@ export default async function handler(req, res) {
       const deskripsiNis = (tipe === 'event' ? body.deskripsi : (body.id || body.noId)) || '';
       const tanggal = body.tanggal || '';
       const fotoCdnUrl = body.fotoUrl || body.foto_cdn_url || '';
+      const spandukCdnUrl = body.spandukUrl || body.bannerUrl || body.spanduk_cdn_url || body.banner_cdn_url || '';
       // Ulang tahun selalu "tetap" (berulang tiap tahun). Event mengikuti pilihan admin.
       const isTetap = tipe === 'ultah' ? true : (body.isTetap === undefined ? true : Boolean(body.isTetap));
 
@@ -237,6 +248,7 @@ export default async function handler(req, res) {
             deskripsi_nis = ${deskripsiNis},
             tanggal = ${tanggal},
             foto_cdn_url = ${fotoCdnUrl},
+            spanduk_cdn_url = ${spandukCdnUrl},
             is_tetap = ${isTetap}
         WHERE id = ${id};
       `;
