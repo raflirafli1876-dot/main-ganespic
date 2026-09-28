@@ -331,7 +331,6 @@
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
 
-    let aiMode = null;
     let isLoading = false;
 
     // Theme handling (sama dengan index.html)
@@ -424,48 +423,41 @@
       if (el && el.parentNode) el.parentNode.removeChild(el);
     }
 
-    // Cek apakah AI generatif aktif (GET /api/ai)
-    async function checkAIMode() {
-      if (aiMode !== null) return aiMode;
-      try {
-        const r = await fetch(API_URL);
-        const d = await r.json();
-        aiMode = d && d.configured ? true : false;
-      } catch (e) {
-        aiMode = false;
-      }
-      return aiMode;
-    }
-
-    // Kirim pertanyaan ke API AI
+    // ── Kirim pertanyaan ke API AI (wajib via server, tanpa fallback JS) ──
     async function askAI(question) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 35000);
       try {
         const r = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question })
+          body: JSON.stringify({ question }),
+          signal: controller.signal
         });
+        if (!r.ok) return { answer: null, error: '🤖 <b>AI sedang error</b> — Server merespons gagal (' + r.status + '). Coba lagi sebentar.' };
         const d = await r.json();
-        if (d && d.answer) return d.answer;
-        return null;
+        if (d && d.answer) return { answer: d.answer, error: null };
+        return {
+          answer: null,
+          error: (d && d.error)
+            ? '🤖 <b>' + esc(d.error) + '</b>'
+            : '🤖 <b>AI sedang error</b> — Gagal mendapatkan jawaban dari server. Coba lagi sebentar.'
+        };
       } catch (e) {
-        return null;
+        const timeout = e && e.name === 'AbortError';
+        return {
+          answer: null,
+          error: timeout
+            ? '🤖 <b>AI timeout</b> — Server terlalu lama merespons. Coba lagi sebentar.'
+            : '🤖 <b>AI sedang error</b> — Terjadi gangguan koneksi. Coba lagi sebentar.'
+        };
+      } finally {
+        clearTimeout(timer);
       }
     }
 
-    function hiResponse(question) {
-      const q = (question || '').toLowerCase();
-      const garisBantuan = '<br>• <b>Ultah</b> — "kapan ultah Rafli?"<br>• <b>Event</b> — "event apa saja tahun ini?"<br>• <b>Kas</b> — "saldo kas berapa?"<br>• <b>MPK</b> — "siapa ketua angkatan?"<br>• <b>Link</b> — "link galeri & kas"';
-      if (/^(halo|hai|hello|hi|yo|p|salam|assalamualaikum|selamat (pagi|siang|sore|malam))\b/.test(q) && q.split(/\s+/).length <= 4) {
-        return 'Halo! 👋 Aku <b>AI Ganespic XXV</b>, asisten khusus website & info angkatan. Kamu bisa tanya:' + garisBantuan;
-      }
-      if (/^(makasih|terima kasih|thanks|thank you|sip|mantap|oke|ok)\b/.test(q)) {
-        return 'Sama-sama! 😊 Senang bisa membantu. Kalau ada pertanyaan lain seputar angkatan atau website, langsung tanya saja ya.';
-      }
-      if (/\b(bantuan|help|tolong|kamu bisa apa|bisa apa|fitur apa|caranya|menu)\b/.test(q)) {
-        return 'Aku <b>AI</b> asisten <b>Ganespic XXV</b>. Yang bisa ditanyakan seputar website & angkatan:' + garisBantuan;
-      }
-      return null;
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     async function sendQuestion(raw) {
@@ -481,28 +473,9 @@
       const typingEl = showTyping();
 
       try {
-        // 1) SAPAAN / LEBIH DAHULU tanpa nunggu server
-        const lokal = hiResponse(q);
-        let answer = lokal;
-        if (lokal) {
-          removeTyping(typingEl);
-          addMessage(answer, 'bot');
-          return;
-        }
-
-        // 2) Kirim ke /api/ai (server punya fallback data asli: kas, MPK, anggota, agenda, galeri)
-        answer = await askAI(q);
-
-        if (answer) {
-          removeTyping(typingEl);
-          addMessage(answer, 'bot');
-          return;
-        }
-
-        // 3) Fallback terakhir: saran ramah
-        answer = '🤖 Maaf, aku belum menemukan jawabannya. Coba tanya yang lebih spesifik, misalnya:<br>• "Kapan ultah Rafli?"<br>• "Saldo kas berapa?"<br>• "Siapa ketua angkatan?"<br>• "Event bulan ini apa?"<br>• "Link galeri & kas?"';
+        const hasil = await askAI(q);
         removeTyping(typingEl);
-        addMessage(answer, 'bot');
+        addMessage(hasil.answer || hasil.error, 'bot');
       } catch (e) {
         removeTyping(typingEl);
         addMessage('🤖 <b>AI sedang error</b> — Terjadi gangguan koneksi. Coba lagi sebentar.', 'bot');

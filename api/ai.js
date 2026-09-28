@@ -1,6 +1,8 @@
-// ==============================================================================
-// API AI · Jembatan AI Generatif Ganespic XXV — v2 (multi-source)
-// ==============================================================================
+// ═══════════════════════════════════════════════════════════════════════
+// API AI · Jembatan AI Generatif Ganespic XXV — v3 (multi-source, API only)
+// ═══════════════════════════════════════════════════════════════════════
+// TANPA fallback offline/JS. Kalau AI generatif tidak aktif, error, atau
+// timeout, API hanya mengembalikan pesan error — tidak ada jawaban cadangan.
 // Konteks yang diambil tiap request (cache 5 menit):
 //   1. Anggota + Agenda  → database Neon (Postgres)
 //   2. Kas Angkatan      → Supabase REST API (tabel `kas`)
@@ -122,168 +124,12 @@ async function getContext() {
   return result;
 }
 
-// ── Fallback offline: jawab pakai DATA ASLI yang sudah diambil (kas, MPK, anggota, agenda, galeri) ──
-// Dipakai ketika API AI generatif error/401/tidak aktif agar user tetap dapat jawaban akurat,
-// bukan sekadar link maupun pesan error.
-function escServer(s) {
-  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-function cariDiBaris(lines, q, minLen) {
-  const tokens = String(q).toLowerCase().replace(/[^a-z0-9\s]/gi, ' ').trim().split(/\s+/).filter(t => t.length > (minLen || 2));
-  let bestLine = null, bestScore = 0;
-  for (const l of lines) {
-    const ll = String(l).toLowerCase();
-    let hit = 0;
-    tokens.forEach(t => { if (ll.includes(t)) hit++; });
-    if (hit > bestScore && (hit >= 2 || tokens.some(t => t.length >= 5 && ll.includes(t)))) {
-      bestScore = hit; bestLine = l;
-    }
-  }
-  return { line: bestLine, score: bestScore };
-}
-
-function fallbackAnswer(ctx, question) {
-  const q = String(question || '').toLowerCase();
-  const esc = escServer;
-
-  // 💰 SALDO KAS
-  if (/(saldo|uang kas|kas.{0,15}(berapa|saldo|total)|berapa.{0,10}kas|pemasukan|pengeluaran|transaksi)/.test(q)) {
-    const saldo = /(?:- )?Saldo Kas: ?(Rp ?[\d.,]+)/.exec(ctx.kasTxt || '');
-    const masuk = /(?:- )?Total Pemasukan: ?(Rp ?[\d.,]+)/.exec(ctx.kasTxt || '');
-    const keluar = /(?:- )?Total Pengeluaran: ?(Rp ?[\d.,]+)/.exec(ctx.kasTxt || '');
-    if (saldo) {
-      return '💰 Saldo kas Angkatan XXV saat ini: <b>' + saldo[1] + '</b>\n<br>• Pemasukan: ' + (masuk ? masuk[1] : '-') +
-        '\n<br>• Pengeluaran: ' + (keluar ? keluar[1] : '-') +
-        '\n<br><small>Detail transaksi: <a href="https://kas-ganespic.vercel.app/">Kas Angkatan</a></small>';
-    }
-    return 'Data kas sedang tidak tersedia saat ini. Coba langsung di <a href="https://kas-ganespic.vercel.app/">Kas Angkatan</a>.';
-  }
-
-  // 🏛️ KETUA ANGKATAN / STRUKTURAL MPK
-  if (/(ketua|pimpinan|mpk|struktural|struktur|gedung|wakil|bendahara|sekretaris|divisi)/.test(q)) {
-    const mpkTxt = ctx.mpkTxt || '';
-    const ketua = /["']?ketuaAngkatan["']?\s*:\s*["']([^"']+)["']/.exec(mpkTxt);
-    if (/(ketua\s*angkatan|pimpinan|ketua\s*xxv|ketua\s*ganespic)/.test(q) && ketua) {
-      return '🏛️ Ketua Angkatan XXV Ganespic sekarang adalah <b>' + esc(ketua[1]) + '</b>.\n<br><small>Struktur lengkap: <a href="https://mpk-ganespic.vercel.app/">Struktural MPK</a></small>';
-    }
-    const gedung = /tansri/.test(q) ? 'tansri' : /uts?man|ust?man/.test(q) ? 'utsman' : null;
-    if (gedung) {
-      // Ekstrak blok gedung dgn brace-matching (mpkTxt adalah JS object: gedung: { ... })
-      let gStart = mpkTxt.indexOf(gedung);
-      if (gStart === -1 && gedung === 'utsman') gStart = mpkTxt.indexOf('ustman'); // dukung dua ejaan
-      if (gStart !== -1) {
-        const colonIdx = mpkTxt.indexOf(':', gStart);
-        const openIdx = mpkTxt.indexOf('{', colonIdx);
-        if (colonIdx !== -1 && openIdx !== -1) {
-          let bc = 0, end = openIdx, inStr = false;
-          for (let i = openIdx; i < mpkTxt.length; i++) {
-            const ch = mpkTxt[i];
-            if (inStr) { if (ch === '"' && mpkTxt[i - 1] !== '\\') inStr = false; continue; }
-            if (ch === '"') { inStr = true; continue; }
-            if (ch === '{') bc++;
-            else if (ch === '}') { bc--; if (bc === 0) { end = i + 1; break; } }
-          }
-          const blok = mpkTxt.slice(openIdx, end);
-          const ambil = (key) => {
-            const km = new RegExp('["\']?' + key + '["\']?\\s*:\\s*({[^{}]*}|[^,}]+)', 'i').exec(blok);
-            if (!km) return null;
-            return km[1].replace(/^{|}$/g, '').replace(/["']/g, '').trim();
-          };
-          const nama = ambil('nama') || ambil('ketua') || null;
-          const ketuaRaw = ambil('ketua');
-          const det = (ketuaRaw && ketuaRaw.includes('nama')) ? ambil('nama') : ketuaRaw;
-          const ket = det || nama;
-          if (ket) {
-            return (gedung === 'utsman' ? '🇺 Gedung <b>Utsman</b> — Ketua: ' : '🇹 Gedung <b>Tansri</b> — Ketua: ') + esc(ket);
-          }
-        }
-      }
-    }
-    const jb = /(bendahara|sekretaris|wakil)/.exec(q);
-    if (jb) {
-      const key = jb[1];
-      const km = new RegExp('["\']' + key + '["\']\\s*:\\s*([^,}]+)', 'i').exec(mpkTxt);
-      if (km) {
-        return '👤 <b>' + key.charAt(0).toUpperCase() + key.slice(1) + '</b> MPK: ' + esc(km[1].replace(/^["']|["']$/g, ''));
-      }
-    }
-    if (ketua) {
-      return '🏛️ Ketua Angkatan XXV: <b>' + esc(ketua[1]) + '</b>.\n<br><small>Data detail MPK: <a href="https://mpk-ganespic.vercel.app/">Struktural MPK</a></small>';
-    }
-  }
-
-  // 👥 JUMLAH ANGGOTA
-  if (/(berapa|total|jumlah).{0,15}(anggota|orang)|anggota.{0,15}(berapa|total|jumlah)/.test(q)) {
-    const n = (ctx.anggotaTxt || '').split('\n').filter(l => l.trim().startsWith('-')).length;
-    if (n) {
-      return 'Angkatan XXV Ganespic saat ini terdaftar <b>' + n + ' anggota</b> di database. 👥\n<br>Lihat profil lengkap di <a href="/anggota">halaman Anggota</a>.';
-    }
-    return 'Data anggota belum tersedia di database. Hubungi pengurus ya. 🙏';
-  }
-
-  // 🎂 ULTAH
-  if (/(ultah|ulang\s*tahun|lahir|birthday|hbd)/.test(q)) {
-    const aLines = (ctx.anggotaTxt || '').split('\n').filter(l => l.trim().startsWith('-'));
-    const c = cariDiBaris(aLines, q, 2);
-    if (c.line) {
-      const nama = c.line.replace(/^-\s*/, '').split(' | ')[0];
-      const tgl = /Lahir ([0-9-]+)/.exec(c.line);
-      if (tgl) {
-        return '🎂 Ultah <b>' + esc(nama) + '</b> jatuh pada <b>' + esc(tgl[1]) + '</b>.\n<br><small>Kalender lengkap: <a href="/kalender">Kalender</a></small>';
-      }
-    }
-    const nLines = (ctx.agendaTxt || '').split('\n').filter(l => l.includes('[ultah]'));
-    const cn = cariDiBaris(nLines, q, 2);
-    if (cn.line) {
-      const nama = cn.line.replace(/^-\s*\[ultah\]\s*/, '').split(' | ')[0];
-      const tgl = /([0-9]{4}-[0-9]{2}-[0-9]{2})/.exec(cn.line);
-      if (tgl) {
-        return '🎂 Ultah <b>' + esc(nama) + '</b> jatuh pada <b>' + esc(tgl[1]) + '</b>.\n<br><small>Kalender: <a href="/kalender">Kalender</a></small>';
-      }
-    }
-    return 'Aku belum menemukan data ultah itu. Coba tanya nama yang terdaftar di <a href="/anggota">halaman Anggota</a>. 🙂';
-  }
-
-  // 📅 EVENT
-  if (/(event|acara|agenda|kegiatan|makrab|dies|gathering|pentas|jadwal|tahun\s*ini|tahun\s*depan|bulan\s*ini|bulan\s*depan)/.test(q)) {
-    const thn = /tahun\s*depan/.test(q) ? new Date().getFullYear() + 1 : new Date().getFullYear();
-    const baris = (ctx.agendaTxt || '').split('\n').filter(l => l.includes('[event]') && l.includes(String(thn)));
-    const c = cariDiBaris(baris, q, 2);
-    if (c.line) {
-      const judul = c.line.replace(/^-\s*\[event\]\s*/, '').split(' | ')[0];
-      const tgl = /([0-9]{4}-[0-9]{2}-[0-9]{2})/.exec(c.line);
-      return '📅 Event <b>' + esc(judul) + '</b>' + (tgl ? ' pada <b>' + esc(tgl[1]) + '</b>' : '') + '.';
-    }
-    if (baris.length) {
-      const rows = baris.slice(0, 10).map(b => {
-        const jd = b.replace(/^-\s*\[event\]\s*/, '').split(' | ')[0];
-        const t = /([0-9]{4}-[0-9]{2}-[0-9]{2})/.exec(b);
-        return '• ' + esc(jd) + (t ? ' (tanggal ' + esc(t[1]) + ')' : '');
-      }).join('\n<br>');
-      return '📅 Event tahun ' + thn + ' ada <b>' + baris.length + '</b>:\n<br>' + rows +
-        '\n<br><small>Lihat <a href="/kalender">Kalender</a> untuk lengkapnya.</small>';
-    }
-    return 'Belum ada data event untuk tahun ' + thn + '. Cek <a href="/kalender">Kalender</a>.';
-  }
-
-  // 🖼️ GALERI
-  if (/(galeri|galery|foto|album|dokumentasi|kenangan|gambar)/.test(q)) {
-    const g = ctx.galeriTxt || '';
-    const albumM = /(\d+)\s*album/i.exec(g) || /album[:\s]+(\d+)/i.exec(g);
-    if (albumM) {
-      return '🖼️ Galeri Ganespic XXV menyimpan <b>' + albumM[1] + ' album</b> kegiatan.\n<br><small>Buka: <a href="https://galery.ganespic.workers.dev/">Galeri Angkatan</a></small>';
-    }
-    return '🖼️ Galeri Ganespic XXV bisa dibuka langsung di <a href="https://galery.ganespic.workers.dev/">Galeri Angkatan</a>.';
-  }
-
-  // 🔗 LINK / TAUTAN
-  if (/(link|tautan|buka|alamat|ke mana|dimana|di mana|menu|halaman|kas|galeri|mpk|struktural)/.test(q)) {
-    return '🔗 Tautan yang tersedia:\n<br>• <a href="https://galery.ganespic.workers.dev/">Galeri Angkatan</a>\n<br>• <a href="https://kas-ganespic.vercel.app/">Kas Angkatan</a>\n<br>• <a href="https://mpk-ganespic.vercel.app/">Struktural MPK</a>\n<br>• <a href="/anggota">Anggota</a>\n<br>• <a href="/kalender">Kalender</a>';
-  }
-
-  return null;
-}
+// ── Tanpa fallback offline ──
+// Kalau AI generatif tidak aktif / error / timeout, API hanya balas error.
+// Tidak ada lagi jawaban cadangan berbasis JS di server.
+const PESAN_TIDAK_AKTIF = 'AI belum aktif. Pastikan env AI_API_KEY terisi di Vercel (Settings → Environment Variables).';
+const PESAN_ERROR = 'AI sedang error. Gagal mendapatkan jawaban dari server. Coba lagi sebentar.';
+const PESAN_TIMEOUT = 'AI timeout. Server terlalu lama merespons, coba lagi sebentar.';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -309,17 +155,9 @@ export default async function handler(req, res) {
 
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
 
-  // Kalau key belum diisi → tetap jawab dari DATA ASLI (fallback offline) supaya AI selalu merespons
+  // Kalau key belum diisi → balas error, tanpa jawaban cadangan
   if (!AI_API_KEY) {
-    try {
-      const body0 = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
-      const q0 = String(body0.question || '').trim().slice(0, 1500);
-      const ctx0 = await getContext();
-      const fb = q0 ? fallbackAnswer(ctx0, q0) : null;
-      return res.status(200).json({ configured: false, answer: fb, model: null });
-    } catch (e) {
-      return res.status(200).json({ configured: false, answer: null, model: null });
-    }
+    return res.status(200).json({ configured: false, answer: null, model: null, error: PESAN_TIDAK_AKTIF });
   }
   try {
     let body = req.body;
@@ -368,53 +206,53 @@ PANDUAN:
 5. EVENT: Sebutkan judul, tanggal, dan deskripsi.
 6. Jika data tidak ditemukan, jujur katakan "belum ada data" — JANGAN berhalusinasi/mengarang.`;
 
-    // ── Panggil LLM (OpenAI-compatible) ──
-    const resp = await fetch(`${AI_BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${AI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: AI_MODEL,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: question }
-        ],
-        temperature: 0.4,
-        max_tokens: 500
-      })
-    });
+    // ── Panggil LLM (OpenAI-compatible) — timeout 30 detik ──
+    let resp;
+    try {
+      resp = await fetchWithTimeout(`${AI_BASE_URL}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${AI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: AI_MODEL,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: question }
+          ],
+          temperature: 0.4,
+          max_tokens: 500
+        })
+      }, 30000);
+    } catch (e) {
+      const msg = (e && (e.name === 'AbortError' || /abort|timeout/i.test(e.message || ''))) ? PESAN_TIMEOUT : PESAN_ERROR;
+      console.error('AI bridge timeout/error:', e && e.message);
+      return res.status(200).json({ configured: true, answer: null, model: AI_MODEL, error: msg });
+    }
 
     if (!resp.ok) {
       const errText = await resp.text().catch(() => '');
       console.error('AI API error', resp.status, errText.slice(0, 300));
-      // Fallback: jawab dari DATA ASLI (kas/MPK/anggota/agenda/galeri) supaya AI tetap akurat
-      const fb = fallbackAnswer(ctx, question);
       return res.status(200).json({
         configured: true,
-        answer: fb,
+        answer: null,
         model: AI_MODEL,
-        fallback: !!fb,
-        debug: { keyLen: AI_KEY_LEN, keyHead: AI_KEY_HEAD, base: AI_BASE_URL, model: AI_MODEL }
+        error: PESAN_ERROR,
+        debug: { status: resp.status, keyLen: AI_KEY_LEN, keyHead: AI_KEY_HEAD, base: AI_BASE_URL, model: AI_MODEL }
       });
     }
 
     const data = await resp.json();
-    let answer = (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || null;
+    const answer = (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || null;
 
-    // Kalau LLM tidak memberi jawaban → fallback data asli
-    const trimmed = (answer || '').trim();
-    if (!trimmed) {
-      const fb = fallbackAnswer(ctx, question);
-      answer = fb;
+    if (!answer || !answer.trim()) {
+      return res.status(200).json({ configured: true, answer: null, model: AI_MODEL, error: PESAN_ERROR });
     }
 
-    return res.status(200).json({ configured: true, answer, model: AI_MODEL, fallback: !trimmed });
+    return res.status(200).json({ configured: true, answer, model: AI_MODEL });
   } catch (error) {
     console.error('AI bridge error:', error);
-    let fb = null;
-    try { if (typeof error === 'object' && error && error.__ctx) fb = fallbackAnswer(error.__ctx, ''); } catch (e) { /* abaikan */ }
-    return res.status(200).json({ configured: true, answer: fb, error: error.message });
+    return res.status(200).json({ configured: true, answer: null, error: PESAN_ERROR });
   }
 }
