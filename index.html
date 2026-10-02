@@ -2080,8 +2080,8 @@
             };
 
             // ── Logika Banner/Poster di Navbar / Atas Landing Page ──
-            // Muncul 14 hari sebelum tanggal s/d 7 hari setelahnya, selebihnya tidak muncul.
-            // Berlaku untuk EVENT (pakai link banner/spanduk) dan ULTAH (pakai foto anggota).
+            // EVENT  → muncul H-14 sampai H+7 (pakai link banner/spanduk)
+            // ULTAH  → hanya muncul di hari-H-nya (pakai foto anggota)
             function getActiveEventBanners(newsList) {
                 const now = new Date();
                 const currentYear = now.getFullYear();
@@ -2122,10 +2122,15 @@
                     let matched = null;
                     let minDiff = Infinity;
 
+                    // Jendela tampil:
+                    // - EVENT  → muncul H-14 sampai H+7
+                    // - ULTAH  → hanya hari-H-nya saja (diffDays = 0)
+                    const minDiffBatas = isUltah ? 0 : -7;
+                    const maksDiffBatas = isUltah ? 0 : 14;
+
                     candidates.forEach(cand => {
                         const diffDays = Math.round((cand.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
-                        // Rentang: 14 hari sebelum s/d 7 hari setelah
-                        if (diffDays >= -7 && diffDays <= 14) {
+                        if (diffDays >= minDiffBatas && diffDays <= maksDiffBatas) {
                             if (Math.abs(diffDays) < Math.abs(minDiff)) {
                                 minDiff = diffDays;
                                 matched = { targetDate: cand, diffDays };
