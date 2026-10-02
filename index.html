@@ -349,6 +349,12 @@
             border: 1px solid rgba(124, 244, 152, 0.25);
         }
 
+        .banner-pill-badge.ultah {
+            background: rgba(255, 200, 90, 0.12);
+            color: #ffc85a;
+            border: 1px solid rgba(255, 200, 90, 0.28);
+        }
+
         .banner-pill-badge.time {
             background: rgba(255, 200, 90, 0.12);
             color: #ffc85a;
@@ -417,6 +423,28 @@
 
         .banner-image-container:hover img {
             transform: scale(1.015);
+        }
+
+        /* Poster ultah: foto ditampilkan sesuai ukuran aslinya (contain, tidak dipotong) */
+        .banner-image-container.is-foto {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            min-height: 0;
+        }
+
+        .banner-image-container.is-foto img {
+            width: auto;
+            max-width: 100%;
+            max-height: 300px;
+            min-height: 0;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .banner-image-container.is-foto:hover img {
+            transform: scale(1.02);
         }
 
         .banner-image-overlay {
@@ -1696,7 +1724,7 @@
             <div class="landing-event-banner-card" id="landingBannerCard">
                 <div class="banner-top-strip">
                     <div class="banner-tag-group">
-                        <span class="banner-pill-badge event"><i class="fas fa-bullhorn"></i> Event Angkatan</span>
+                        <span class="banner-pill-badge event" id="bannerTypeBadge"><i class="fas fa-bullhorn"></i> Event Angkatan</span>
                         <span class="banner-pill-badge time" id="bannerCountdownText"></span>
                     </div>
                     <div class="banner-controls">
@@ -2004,7 +2032,10 @@
             window.openEventDetail = function (item) {
                 if (!item) return;
                 const list = document.getElementById('beritaList');
-                const badge = '<span class="badge event">Event</span>';
+                const isUltah = item.tipe === 'ultah';
+                const badge = isUltah
+                    ? '<span class="badge ultah">Ulang Tahun</span>'
+                    : '<span class="badge event">Event</span>';
                 const formattedDate = formatIndonesianDate(item.targetDate || item.tanggal);
                 let countdownBadge = '';
                 if (typeof item.diffDays === 'number') {
@@ -2017,12 +2048,13 @@
                     }
                 }
 
+                const judul = item.judul || item.nama || (isUltah ? 'Ulang Tahun Anggota' : 'Event');
                 const posterHtml = item.fotoUrl
-                    ? `<div style="text-align:center;margin:12px 0 16px;"><img src="${escHtml(item.fotoUrl)}" alt="Poster ${escHtml(item.judul)}" style="max-height:380px;width:auto;max-width:100%;object-fit:contain;border-radius:14px;border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,.25);" onerror="this.src='Logo_xxvganespic.png'" /></div>`
+                    ? `<div style="text-align:center;margin:12px 0 16px;"><img src="${escHtml(item.fotoUrl)}" alt="Poster ${escHtml(judul)}" style="max-height:380px;width:auto;max-width:100%;object-fit:contain;border-radius:14px;border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,.25);" onerror="this.src='Logo_xxvganespic.png'" /></div>`
                     : '';
 
-                const bannerHtml = item.bannerUrl
-                    ? `<div style="margin-bottom:14px;"><img src="${escHtml(item.bannerUrl)}" alt="Banner ${escHtml(item.judul)}" style="width:100%;max-height:190px;object-fit:cover;border-radius:12px;border:1px solid var(--border);" onerror="this.style.display='none'" /></div>`
+                const bannerHtml = item.bannerUrl && !isUltah
+                    ? `<div style="margin-bottom:14px;"><img src="${escHtml(item.bannerUrl)}" alt="Banner ${escHtml(judul)}" style="width:100%;max-height:190px;object-fit:cover;border-radius:12px;border:1px solid var(--border);" onerror="this.style.display='none'" /></div>`
                     : '';
 
                 list.innerHTML = `
@@ -2033,23 +2065,23 @@
                             ${countdownBadge}
                         </div>
                         <h2 style="font-size:clamp(1.2rem, 3vw, 1.6rem);font-weight:800;margin:6px 0 8px;color:var(--text);line-height:1.3;">
-                            ${escHtml(item.judul)}
+                            ${escHtml(judul)}
                         </h2>
                         <div style="font-size:0.85rem;color:var(--sage);font-weight:600;margin-bottom:14px;">
                             <i class="fas fa-calendar-day"></i> ${formattedDate}
                         </div>
                         ${posterHtml}
                         <div style="font-size:0.95rem;line-height:1.8;color:var(--text-dim);white-space:pre-line;background:var(--bg-elevated);padding:14px 18px;border-radius:14px;border:1px solid var(--border);">
-                            ${escHtml(item.deskripsi || 'Tidak ada deskripsi tambahan untuk event ini.')}
+                            ${escHtml(item.deskripsi || (isUltah ? 'Selamat ulang tahun untuk anggota angkatan XXV Ganespic 🎂' : 'Tidak ada deskripsi tambahan untuk event ini.'))}
                         </div>
                     </div>
                 `;
                 bukaModalEl(document.getElementById('modalBerita'));
             };
 
-            // ── Logika Banner Event di Navbar / Atas Landing Page ──
-            // Muncul 14 hari sebelum event s/d 7 hari setelah event, selebihnya tidak muncul.
-            // Hanya muncul jika link banner di-input.
+            // ── Logika Banner/Poster di Navbar / Atas Landing Page ──
+            // Muncul 14 hari sebelum tanggal s/d 7 hari setelahnya, selebihnya tidak muncul.
+            // Berlaku untuk EVENT (pakai link banner/spanduk) dan ULTAH (pakai foto anggota).
             function getActiveEventBanners(newsList) {
                 const now = new Date();
                 const currentYear = now.getFullYear();
@@ -2058,12 +2090,17 @@
                 const active = [];
 
                 (newsList || []).forEach(item => {
-                    if (item.tipe !== 'event') return;
-                    const banner = (item.bannerUrl || item.spandukUrl || '').trim();
-                    if (!banner) return; // Hanya jika link banner di-input
+                    const isEvent = item.tipe === 'event';
+                    const isUltah = item.tipe === 'ultah';
+                    if (!isEvent && !isUltah) return;
+                    // Poster: event → banner/spanduk, ultah → foto anggota
+                    const banner = (isUltah
+                        ? (item.fotoUrl || '').trim()
+                        : (item.bannerUrl || item.spandukUrl || '').trim());
+                    if (!banner) return; // Hanya jika ada poster
                     if (!item.tanggal) return;
 
-                    const isTetap = item.isTetap !== false;
+                    const isTetap = isUltah ? true : (item.isTetap !== false);
                     let candidates = [];
 
                     if (!isTetap) {
@@ -2087,7 +2124,7 @@
 
                     candidates.forEach(cand => {
                         const diffDays = Math.round((cand.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
-                        // Rentang: 14 hari sebelum event s/d 7 hari setelah event
+                        // Rentang: 14 hari sebelum s/d 7 hari setelah
                         if (diffDays >= -7 && diffDays <= 14) {
                             if (Math.abs(diffDays) < Math.abs(minDiff)) {
                                 minDiff = diffDays;
@@ -2100,13 +2137,19 @@
                         active.push({
                             ...item,
                             bannerUrl: banner,
+                            judul: item.judul || item.nama || (isUltah ? 'Ulang Tahun Anggota' : 'Event Angkatan'),
+                            deskripsi: isUltah && !item.deskripsiDesc
+                                ? 'Selamat ulang tahun untuk anggota angkatan XXV Ganespic 🎂' + (item.noId && item.noId !== '-' ? ' (No ID: ' + item.noId + ')' : '')
+                                : item.deskripsi,
                             targetDate: matched.targetDate,
                             diffDays: matched.diffDays
                         });
                     }
                 });
 
-                active.sort((a, b) => a.diffDays - b.diffDays);
+                // Urutan tampil: EVENT dulu (atas), lalu ULTAH (bawah)
+                const urutanTipe = (a, b) => (a.tipe === 'event' ? 0 : 1) - (b.tipe === 'event' ? 0 : 1);
+                active.sort((a, b) => (urutanTipe(a, b) || a.diffDays - b.diffDays));
                 return active;
             }
 
@@ -2152,14 +2195,31 @@
                         const dateEl = document.getElementById('bannerDisplayDate');
                         const cdText = document.getElementById('bannerCountdownText');
                         const clickableArea = document.getElementById('bannerClickableArea');
+                        const typeBadge = document.getElementById('bannerTypeBadge');
+                        const isUltah = item.tipe === 'ultah';
 
                         if (imgEl) imgEl.src = item.bannerUrl;
-                        if (titleEl) titleEl.textContent = item.judul || 'Event Angkatan';
+                        if (clickableArea) clickableArea.classList.toggle('is-foto', isUltah);
+                        if (typeBadge) {
+                            typeBadge.className = 'banner-pill-badge ' + (isUltah ? 'ultah' : 'event');
+                            typeBadge.innerHTML = isUltah
+                                ? '<i class="fas fa-cake-candles"></i> Ulang Tahun Anggota'
+                                : '<i class="fas fa-bullhorn"></i> Event Angkatan';
+                        }
+                        if (titleEl) titleEl.textContent = item.judul || (isUltah ? 'Ulang Tahun Anggota' : 'Event Angkatan');
                         if (descEl) descEl.textContent = item.deskripsi || '';
                         if (dateEl) dateEl.innerHTML = `<i class="fas fa-calendar-day"></i> ${formatIndonesianDate(item.targetDate || item.tanggal)}`;
 
                         if (cdText) {
-                            if (item.diffDays > 0) {
+                            if (isUltah) {
+                                if (item.diffDays > 0) {
+                                    cdText.innerHTML = `<i class="fas fa-clock"></i> H-${item.diffDays} • ${item.diffDays} Hari Lagi`;
+                                } else if (item.diffDays === 0) {
+                                    cdText.innerHTML = `<i class="fas fa-cake-candles"></i> 🎂 Ultah Hari Ini!`;
+                                } else {
+                                    cdText.innerHTML = `<i class="fas fa-check-circle"></i> Baru Lewat (H+${Math.abs(item.diffDays)})`;
+                                }
+                            } else if (item.diffDays > 0) {
                                 cdText.innerHTML = `<i class="fas fa-clock"></i> H-${item.diffDays} • ${item.diffDays} Hari Lagi`;
                             } else if (item.diffDays === 0) {
                                 cdText.innerHTML = `<i class="fas fa-bullhorn"></i> 🎉 Sedang Berlangsung Hari Ini!`;

@@ -94,34 +94,163 @@ async function fetchMPKData() {
   } catch (e) { console.warn('fetchMPKData error:', e.message); return null; }
 }
 
-function formatKas(rows) {
+function formatKas(rows, question) {
   if (!rows || !rows.length) return '(belum ada transaksi kas tercatat)';
   let masuk = 0, keluar = 0;
   rows.forEach(r => { if (r.jenis === 'masuk') masuk += (r.nominal || 0); else keluar += (r.nominal || 0); });
   const fmt = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
-  const rowsTxt = rows.slice(0, 30).map(r =>
-    `- ${r.tanggal} | ${r.jenis === 'masuk' ? 'MASUK' : 'KELUAR'} | ${fmt(r.nominal)} | ${r.keterangan || '-'}`
+
+  // Ringkasan SELALU ikut (lengkap, bukan sampel) + transaksi relevan bila ada
+  let chosen = [];
+  const tokens = tokenize(question);
+  if (tokens.length) {
+    chosen = rows.filter(r => {
+      const s = ((r.keterangan || '') + ' ' + r.tanggal + ' ' + r.jenis).toLowerCase();
+      return tokens.some(t => s.includes(t));
+    });
+  }
+  const dipakai = (chosen.length ? chosen : rows).slice(0, 20);
+  const rowsTxt = dipakai.map(r =>
+    `- ${r.tanggal} | ${r.jenis === 'masuk' ? 'MASUK' : 'KELUAR'} | ${fmt(r.nominal)} | ${(r.keterangan || '-').slice(0, 40)}`
   ).join('\n');
-  return `RINGKASAN KAS:\n- Total Pemasukan: ${fmt(masuk)}\n- Total Pengeluaran: ${fmt(keluar)}\n- Saldo Kas: ${fmt(masuk - keluar)}\n- Jumlah transaksi: ${rows.length}\n\nRIWAYAT TRANSAKSI (terbaru dulu):\n${rowsTxt}`;
+
+  return `RINGKASAN KAS (SEMUA TRANSAKSI, total ${rows.length}):\n- Total Pemasukan: ${fmt(masuk)}\n- Total Pengeluaran: ${fmt(keluar)}\n- Saldo Kas: ${fmt(masuk - keluar)}\n\nRIWAYAT TRANSAKSI:\n${rowsTxt}`;
 }
 
-async function getContext() {
-  if (cache.data && (Date.now() - cache.ts) < CACHE_TTL) return cache.data;
-  const cs = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL_UNPOOLED || process.env.POSTGRES_URL_NON_POOLING;
-  const [anggota, agenda, kasRows, galeriText, mpkData] = await Promise.all([
-    cs ? (async () => { try { return await neon(cs)`SELECT no_induk, nama_lengkap, nama_panggilan, tanggal_lahir FROM anggota ORDER BY no_induk ASC LIMIT 400;`; } catch (e) { return null; } })() : Promise.resolve(null),
-    cs ? (async () => { try { return await neon(cs)`SELECT tipe, nama_judul, deskripsi_nis, tanggal, is_tetap FROM agendas ORDER BY tanggal ASC LIMIT 300;`; } catch (e) { return null; } })() : Promise.resolve(null),
-    fetchKasData(), fetchGaleriText(), fetchMPKData()
-  ]);
-  const result = {
-    anggotaTxt: anggota ? anggota.map(a => `- ${a.nama_lengkap} | No.ID ${a.no_induk} | Lahir ${a.tanggal_lahir || '-'}${a.nama_panggilan ? ' | Panggilan ' + a.nama_panggilan : ''}`).join('\n') || '(kosong)' : '(db belum terhubung)',
-    agendaTxt: agenda ? agenda.map(n => `- [${n.tipe}] ${n.nama_judul} | ${n.tanggal}${n.deskripsi_nis ? ' | ' + n.deskripsi_nis : ''}${n.is_tetap ? '' : ' (sekali)'}`).join('\n') || '(kosong)' : '(db belum terhubung)',
-    kasTxt: formatKas(kasRows),
-    galeriTxt: galeriText || '(galeri tidak dapat diakses)',
-    mpkTxt: mpkData || '(MPK tidak dapat diakses)'
+function potong(teks, max) {
+  const s = String(teks || '');
+  return s.length > max ? s.slice(0, max) + ' …(dipotong)' : s;
+}
+
+// Kata umum yang TIDAK boleh dipakai untuk mencocokkan nama (bikin semua baris jadi cocok)
+const STOPWORD = new Set(['apa', 'saya', 'kamu', 'kau', 'dong', 'tolong', 'boleh', 'banget', 'adalah',
+  'anggota', 'nama', 'ultah', 'ulang', 'tahun', 'lahir', 'event', 'acara', 'agenda', 'kegiatan', 'jadwal',
+  'siapa', 'kapan', 'dimana', 'berapa', 'jumlah', 'total', 'kas', 'uang', 'saldo', 'hari', 'tanggal',
+  'bulan', 'ini', 'dan', 'atau', 'itu', 'yang', 'untuk', 'dari', 'pada', 'dengan', 'bisa',
+  'gimana', 'bagaimana', 'kenapa', 'mengapa', 'minta', 'mohon', 'info', 'informasi', 'data',
+  'banyak', 'cek', 'lihat', 'buka', 'kasih', 'tahu', 'tau', 'contoh', 'nomor', 'panggilan', 'gelar']);
+
+function tokenize(q) {
+  return String(q || '').toLowerCase().replace(/[^a-z0-9\s]/gi, ' ').split(/\s+/)
+    .filter(t => t.length >= 3 && !STOPWORD.has(t));
+}
+
+const BULAN = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
+
+// Susun konteks SESUAI pertanyaan: data relevan dikirim LENGKAP,
+// hanya data yang tidak nyambung yang tidak ikut (hemat token, tetap akurat).
+function susunAnggota(anggota, question) {
+  if (!anggota) return '(db belum terhubung)';
+  const total = anggota.length;
+  const tokens = tokenize(question);
+  const fmt = (a, withPanggilan) =>
+    `- ${a.nama_lengkap} | No.ID ${a.no_induk} | Lahir ${a.tanggal_lahir || '-'}` +
+    (withPanggilan && a.nama_panggilan ? ' | Panggilan ' + a.nama_panggilan : '');
+
+  // 1) Pertanyaan menyebut nama / No.ID → semua yang cocok, LENGKAP
+  if (tokens.length) {
+    const scored = anggota.map(a => {
+      const s = ((a.nama_lengkap || '') + ' ' + (a.nama_panggilan || '') + ' ' + (a.no_induk || '')).toLowerCase();
+      const hit = tokens.filter(t => s.includes(t));
+      return { a, hit, skor: hit.reduce((n, t) => n + t.length, 0) };
+    }).filter(x => x.hit.length);
+
+    if (scored.length) {
+      const maxSkor = Math.max.apply(null, scored.map(x => x.skor));
+      const kuat = scored.filter(x => x.skor === maxSkor && x.hit.some(t => t.length >= 4));
+      const pilihan = (kuat.length ? kuat : scored).slice(0, 40);
+      return `TOTAL ANGGOTA: ${total} (di bawah ini ${pilihan.length} anggota yang cocok dengan pertanyaan — LENGKAP, sisanya tidak relevan)\n` +
+        pilihan.map(x => fmt(x.a, true)).join('\n');
+    }
+  }
+
+  // 2) Pertanyaan umum → roster LENGKAP semua anggota
+  return `TOTAL ANGGOTA: ${total} (daftar lengkap semua anggota):\n` + anggota.map(a => fmt(a, false)).join('\n');
+}
+
+function bulanDariPertanyaan(q) {
+  const lower = String(q || '').toLowerCase();
+  const byName = BULAN.findIndex(b => new RegExp('\\b' + b + '\\b').test(lower));
+  if (byName !== -1) return byName;
+  const m = lower.match(/bulan\s*(\d{1,2})/);
+  if (m) {
+    const n = parseInt(m[1], 10);
+    if (n >= 1 && n <= 12) return n - 1;
+  }
+  return -1;
+}
+
+function susunAgenda(agenda, question) {
+  if (!agenda) return '(db belum terhubung)';
+  const total = agenda.length;
+  const q = String(question || '').toLowerCase();
+  const tokens = tokenize(question);
+
+  // 1) Menyebut bulan → hanya agenda bulan itu, LENGKAP
+  const bulanAda = bulanDariPertanyaan(q);
+  if (bulanAda !== -1) {
+    const mm = String(bulanAda + 1).padStart(2, '0');
+    const list = agenda.filter(n => String(n.tanggal || '').slice(5, 7) === mm);
+    if (list.length) {
+      return `AGENDA (${total} total; semua agenda bulan ${BULAN[bulanAda]} — LENGKAP):\n` + list.map(fmtAgenda).join('\n');
+    }
+  }
+
+  // 2) Menyebut ultah / event → kategori itu, LENGKAP
+  const mauUltah = /\bultah\b|ulang ?tahun|birthday|\bhbd\b/.test(q);
+  const mauEvent = /\bevent\b|\bacara\b|\bmakrab\b|\bdies\b|gathering|pentas|perayaan|syukuran/.test(q);
+  if (mauUltah && !mauEvent) {
+    const list = agenda.filter(n => n.tipe === 'ultah');
+    if (list.length) return `AGENDA ULTAH (${list.length} dari ${total}; event tidak ditampilkan):\n` + list.map(fmtAgenda).join('\n');
+  }
+  if (mauEvent && !mauUltah) {
+    const list = agenda.filter(n => n.tipe === 'event');
+    if (list.length) return `AGENDA EVENT (${list.length} dari ${total}; ultah tidak ditampilkan):\n` + list.map(fmtAgenda).join('\n');
+  }
+  if (mauEvent && mauUltah) {
+    return `AGENDA LENGKAP (${total} — ultah & event):\n` + agenda.map(fmtAgenda).join('\n');
+  }
+
+  // 3) Menyebut judul agenda → semua yang cocok, LENGKAP
+  if (tokens.length) {
+    const cocok = agenda.filter(n => {
+      const s = ((n.nama_judul || '') + ' ' + (n.deskripsi_nis || '')).toLowerCase();
+      return tokens.some(t => s.includes(t));
+    });
+    if (cocok.length) {
+      return `AGENDA (${total} total; ${cocok.length} yang cocok — LENGKAP):\n` + cocok.map(fmtAgenda).join('\n');
+    }
+  }
+
+  // 4) Pertanyaan umum → agenda LENGKAP
+  return `AGENDA LENGKAP (${total} total — semua ultah & event):\n` + agenda.map(fmtAgenda).join('\n');
+}
+
+function fmtAgenda(n) {
+  return `- [${n.tipe}] ${n.nama_judul} | ${n.tanggal}${n.deskripsi_nis ? ' | ' + n.deskripsi_nis : ''}${n.is_tetap ? '' : ' (sekali)'}`;
+}
+
+async function getContext(question) {
+  if (!cache.data) {
+    const cs = process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL_UNPOOLED || process.env.POSTGRES_URL_NON_POOLING;
+    const [anggota, agenda, kasRows, galeriText, mpkData] = await Promise.all([
+      cs ? (async () => { try { return await neon(cs)`SELECT no_induk, nama_lengkap, nama_panggilan, tanggal_lahir FROM anggota ORDER BY no_induk ASC LIMIT 400;`; } catch (e) { return null; } })() : Promise.resolve(null),
+      cs ? (async () => { try { return await neon(cs)`SELECT tipe, nama_judul, deskripsi_nis, tanggal, is_tetap FROM agendas ORDER BY tanggal ASC LIMIT 300;`; } catch (e) { return null; } })() : Promise.resolve(null),
+      fetchKasData(), fetchGaleriText(), fetchMPKData()
+    ]);
+    cache = { ts: Date.now(), data: { anggota, agenda, kasRows, galeriText, mpkData } };
+  }
+
+  const c = cache.data;
+  // ⚠️ Potongan hanya sebagai pengaman terakhir (free tier Groq ~8.000 token/menit).
+  // Data relevan sudah diseleksi penuh di atas, jadi jawaban tetap akurat.
+  return {
+    anggotaTxt: potong(susunAnggota(c.anggota, question), 12000),
+    agendaTxt: potong(susunAgenda(c.agenda, question), 5000),
+    kasTxt: potong(formatKas(c.kasRows, question), 2000),
+    galeriTxt: potong(c.galeriText || '(galeri tidak dapat diakses)', 800),
+    mpkTxt: potong(c.mpkData || '(MPK tidak dapat diakses)', 2000)
   };
-  cache = { ts: Date.now(), data: result };
-  return result;
 }
 
 // ── Tanpa fallback offline ──
@@ -130,6 +259,11 @@ async function getContext() {
 const PESAN_TIDAK_AKTIF = 'AI belum aktif. Pastikan env AI_API_KEY terisi di Vercel (Settings → Environment Variables).';
 const PESAN_ERROR = 'AI sedang error. Gagal mendapatkan jawaban dari server. Coba lagi sebentar.';
 const PESAN_TIMEOUT = 'AI timeout. Server terlalu lama merespons, coba lagi sebentar.';
+const PESAN_MODEL_SALAH = 'Model AI tidak tersedia di akun ini. Coba ubah env AI_MODEL di Vercel ke: openai/gpt-oss-120b atau openai/gpt-oss-20b.';
+const PESAN_SIBUK = 'AI sedang sibuk (kena rate limit). Tunggu sekitar 20 detik lalu coba lagi.';
+
+// Model gratis Groq yang tersedia untuk key ini (fallback otomatis bila AI_MODEL tidak cocok)
+const MODEL_CADANGAN = ['openai/gpt-oss-120b', 'openai/gpt-oss-20b'];
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -143,7 +277,7 @@ export default async function handler(req, res) {
   const rawKey = (process.env.AI_API_KEY || '');
   const AI_API_KEY = rawKey.trim().replace(/^["']+|["']+$/g, '').replace(/\s+/g, '');
   const AI_BASE_URL = (process.env.AI_BASE_URL || 'https://api.groq.com/openai/v1').trim().replace(/^["']+|["']+$/g, '').replace(/\/+$/, '');
-  const AI_MODEL = (process.env.AI_MODEL || 'llama-3.3-70b-versatile').trim().replace(/^["']+|["']+$/g, '');
+  const AI_MODEL = (process.env.AI_MODEL || 'openai/gpt-oss-120b').trim().replace(/^["']+|["']+$/g, '');
   // Debug token (untuk diagnosa key di server)
   const AI_KEY_LEN = AI_API_KEY.length;
   const AI_KEY_HEAD = AI_API_KEY.slice(0, 6);
@@ -169,7 +303,8 @@ export default async function handler(req, res) {
     if (!question) return res.status(400).json({ error: 'Question wajib diisi' });
 
     // ── Ambil konteks dari SEMUA sumber (DB + kas + galeri + MPK), cache 5 menit ──
-    const ctx = await getContext();
+    // Konteks disusun sesuai pertanyaan (data relevan dikirim lengkap).
+    const ctx = await getContext(question);
 
     const systemPrompt = `Kamu adalah "AI Ganespic XXV", asisten virtual resmi Angkatan XXV Ganespic.
 Tugasmu menjawab SEMUA pertanyaan seputar website & informasi angkatan: anggota, ulang tahun, event/agenda, keuangan kas, galeri foto, dan struktur organisasi MPK.
@@ -204,53 +339,82 @@ PANDUAN:
 3. GALERI: Jika ditanya galeri/foto/album/kegiatan, jawab dari DATA GALERI di atas.
 4. ULTAH: Sebutkan nama, tanggal lengkap, dan umur (hitung dari tahun lahir ke tahun sekarang).
 5. EVENT: Sebutkan judul, tanggal, dan deskripsi.
-6. Jika data tidak ditemukan, jujur katakan "belum ada data" — JANGAN berhalusinasi/mengarang.`;
+6. JUMLAH: pakai angka TOTAL yang tertulis di data, bukan hasil hitung baris yang ditampilkan.
+7. Data di atas sudah disaring sesuai pertanyaan — yang tidak ditampilkan TIDAK relevan.
+8. Jika data yang ditanya tidak ada di daftar, jujur katakan "belum ada data" — JANGAN menebak atau berhalusinasi.`;
 
-    // ── Panggil LLM (OpenAI-compatible) — timeout 30 detik ──
-    let resp;
-    try {
-      resp = await fetchWithTimeout(`${AI_BASE_URL}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${AI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: AI_MODEL,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: question }
-          ],
-          temperature: 0.4,
-          max_tokens: 500
-        })
-      }, 30000);
-    } catch (e) {
-      const msg = (e && (e.name === 'AbortError' || /abort|timeout/i.test(e.message || ''))) ? PESAN_TIMEOUT : PESAN_ERROR;
-      console.error('AI bridge timeout/error:', e && e.message);
-      return res.status(200).json({ configured: true, answer: null, model: AI_MODEL, error: msg });
+    // ── Panggil LLM (OpenAI-compatible) — timeout 30 detik per percobaan ──
+    // Model dari env dipakai pertama; kalau provider menolak (mis. model tidak ada),
+    // coba model gratis cadangan. Tetap model AI asli, bukan fallback JS.
+    const daftarModel = [AI_MODEL, ...MODEL_CADANGAN.filter(m => m !== AI_MODEL)];
+    let modelDipakai = AI_MODEL;
+    let resp = null;
+    let lastErr = null;
+
+    for (const model of daftarModel) {
+      // Model gpt-oss adalah reasoning model: pakai reasoning_effort rendah
+      // supaya token tidak habis untuk "berpikir" dan jawaban tetap keluar.
+      const bodyReq = {
+        model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: question }
+        ],
+        max_tokens: 600
+      };
+      if (/gpt-oss/i.test(model)) bodyReq.reasoning_effort = 'low';
+      else bodyReq.temperature = 0.4;
+
+      let percobaan;
+      try {
+        percobaan = await fetchWithTimeout(`${AI_BASE_URL}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AI_API_KEY}`
+          },
+          body: JSON.stringify(bodyReq)
+        }, 20000);
+      } catch (e) {
+        const isTimeout = e && (e.name === 'AbortError' || /abort|timeout/i.test(e.message || ''));
+        console.error('AI bridge timeout/error:', e && e.message);
+        return res.status(200).json({
+          configured: true, answer: null, model,
+          error: isTimeout ? PESAN_TIMEOUT : PESAN_ERROR
+        });
+      }
+
+      if (percobaan.ok) { resp = percobaan; modelDipakai = model; break; }
+
+      const errText = await percobaan.text().catch(() => '');
+      lastErr = { status: percobaan.status, text: errText.slice(0, 300), model };
+      console.error('AI API error', percobaan.status, model, lastErr.text);
+      // 400/404 = model tidak tersedia → coba model gratis berikutnya
+      if (percobaan.status === 404 || percobaan.status === 400 || percobaan.status === 429) continue;
+      break;
     }
 
-    if (!resp.ok) {
-      const errText = await resp.text().catch(() => '');
-      console.error('AI API error', resp.status, errText.slice(0, 300));
+    if (!resp) {
+      const modelTidakAda = lastErr && /model_not_found|does not exist/i.test(lastErr.text || '');
+      const kenaLimit = lastErr && (lastErr.status === 429 || /rate limit/i.test(lastErr.text || ''));
       return res.status(200).json({
         configured: true,
         answer: null,
-        model: AI_MODEL,
-        error: PESAN_ERROR,
-        debug: { status: resp.status, keyLen: AI_KEY_LEN, keyHead: AI_KEY_HEAD, base: AI_BASE_URL, model: AI_MODEL }
+        model: modelDipakai,
+        error: modelTidakAda ? PESAN_MODEL_SALAH : (kenaLimit ? PESAN_SIBUK : PESAN_ERROR),
+        debug: { status: lastErr && lastErr.status, model: lastErr && lastErr.model, base: AI_BASE_URL }
       });
     }
 
     const data = await resp.json();
-    const answer = (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || null;
+    const msg = (data && data.choices && data.choices[0] && data.choices[0].message) || {};
+    const answer = msg.content || '';
 
-    if (!answer || !answer.trim()) {
-      return res.status(200).json({ configured: true, answer: null, model: AI_MODEL, error: PESAN_ERROR });
+    if (!answer.trim()) {
+      return res.status(200).json({ configured: true, answer: null, model: modelDipakai, error: PESAN_ERROR });
     }
 
-    return res.status(200).json({ configured: true, answer, model: AI_MODEL });
+    return res.status(200).json({ configured: true, answer, model: modelDipakai });
   } catch (error) {
     console.error('AI bridge error:', error);
     return res.status(200).json({ configured: true, answer: null, error: PESAN_ERROR });
