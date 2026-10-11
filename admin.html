@@ -1668,6 +1668,13 @@
                             <input type="text" id="angNamaPanggilan" placeholder="Contoh: Bayu" />
                         </div>
                         <div class="form-group">
+                            <label class="form-label">Kordinator <span class="form-hint">Opsional</span></label>
+                            <div class="form-icon-group">
+                                <i class="fas fa-user-tie"></i>
+                                <input type="text" id="angKordinator" placeholder="Nama kordinator / pembimbing anggota" />
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="form-label">
                                 Tanggal Lahir <span class="form-hint">Otomatis masuk ke data ulang tahun kalender & berita</span>
                             </label>
@@ -1732,13 +1739,6 @@
                             <label class="form-label">Alamat Rumah</label>
                             <textarea id="angAlamatRumah" placeholder="Alamat lengkap rumah anggota..."></textarea>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Kordinator <span class="form-hint">Opsional</span></label>
-                            <div class="form-icon-group">
-                                <i class="fas fa-user-tie"></i>
-                                <input type="text" id="angKordinator" placeholder="Nama kordinator / pembimbing anggota" />
-                            </div>
-                        </div>
                         <button type="submit" class="btn-submit" id="btnSubmitAnggota">
                             <i class="fas fa-paper-plane"></i> Simpan Anggota ke Database
                         </button>
@@ -1749,7 +1749,7 @@
                     <div class="kelola-top">
                         <div class="kelola-search">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="anggotaSearchInput" placeholder="Cari nama / no induk anggota..." />
+                            <input type="text" id="anggotaSearchInput" placeholder="Cari nama, No ID, panggilan, kordinator..." />
                         </div>
                     </div>
                     <div class="kelola-grid" id="anggotaGrid">
@@ -1965,6 +1965,7 @@
 
                 updateStats();
                 renderCalendar();
+                renderMonthAgenda();
                 renderManageList();
                 loadAnggota();
 
@@ -2123,16 +2124,66 @@
                 }).join('');
             }
 
+            function renderMonthAgenda() {
+                const list = document.getElementById('agendaList');
+                const curMonthStr = String(currentCalMonth + 1).padStart(2, '0');
+                const monthItems = allNewsData.filter(item => {
+                    if (!item.tanggal) return false;
+                    if (item.tipe === 'event' && item.isTetap === false) {
+                        return item.tanggal.startsWith(`${currentCalYear}-${curMonthStr}-`);
+                    }
+                    const cleanTgl = item.tanggal.length > 5 ? item.tanggal.slice(5) : item.tanggal;
+                    return cleanTgl.startsWith(curMonthStr + '-');
+                }).sort((a, b) => String(a.tanggal || '').localeCompare(String(b.tanggal || '')));
+
+                if (!monthItems.length) {
+                    list.innerHTML = `
+                        <div class="agenda-empty">
+                            <i class="fas fa-calendar-xmark"></i>
+                            <p>Tidak ada event atau ulang tahun di bulan ini.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                list.innerHTML = monthItems.map(item => {
+                    const isEvent = item.tipe === 'event';
+                    const badgeClass = isEvent ? 'agenda-item-badge event' : 'agenda-item-badge ultah';
+                    const badgeText = isEvent ? (item.isTetap === false ? 'Event • Tidak Tetap' : 'Event • Tetap') : 'Ulang Tahun';
+                    const title = isEvent ? item.judul : item.nama;
+                    const ageText = !isEvent ? getAgeInfo(item.tanggal, currentCalYear) : '';
+                    const desc = isEvent
+                        ? (item.deskripsi || '')
+                        : `${ageText ? `<strong class="age-highlight">${ageText}</strong><br>` : ''}No ID: ${item.noId || '-'}`;
+                    const img = item.fotoUrl || 'Logo_xxvganespic.png';
+                    const tglDisplay = item.tanggal.length >= 10 ? item.tanggal.slice(8, 10) + ' ' + monthNames[parseInt(item.tanggal.slice(5, 7), 10) - 1] : item.tanggal;
+
+                    return `
+                        <div class="agenda-item">
+                            <img src="${img}" alt="${title}" onerror="this.src='Logo_xxvganespic.png'" />
+                            <div class="agenda-item-info">
+                                <span class="${badgeClass}">${badgeText}</span>
+                                <div class="agenda-item-title">${title}</div>
+                                <div class="agenda-item-desc">${desc}</div>
+                                <small style="color:var(--text-muted);font-size:0.7rem;margin-top:4px;display:block;">${tglDisplay}</small>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
             // Calendar Nav
             document.getElementById('btnPrevMonth').addEventListener('click', () => {
                 currentCalMonth--;
                 if (currentCalMonth < 0) { currentCalMonth = 11; currentCalYear--; }
                 renderCalendar();
+                renderMonthAgenda();
             });
             document.getElementById('btnNextMonth').addEventListener('click', () => {
                 currentCalMonth++;
                 if (currentCalMonth > 11) { currentCalMonth = 0; currentCalYear++; }
                 renderCalendar();
+                renderMonthAgenda();
             });
             document.getElementById('btnToday').addEventListener('click', () => {
                 const now = new Date();
@@ -2599,6 +2650,7 @@
                     return (a.namaLengkap || '').toLowerCase().includes(query) ||
                         (a.noInduk || '').toLowerCase().includes(query) ||
                         (a.namaPanggilan || '').toLowerCase().includes(query) ||
+                        (a.kordinator || '').toLowerCase().includes(query) ||
                         (a.tanggalLahir || '').toLowerCase().includes(query);
                 });
 
