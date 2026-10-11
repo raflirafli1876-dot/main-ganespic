@@ -1424,6 +1424,13 @@
                     </div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div>
+                        <div class="stat-val" id="statAnggotaCount">0</div>
+                        <div class="stat-label">Total Anggota Terdaftar</div>
+                    </div>
+                </div>
+                <div class="stat-card">
                     <div class="stat-icon today"><i class="fas fa-clock"></i></div>
                     <div>
                         <div class="stat-val" id="statMonthCount">0</div>
@@ -1447,7 +1454,7 @@
                     <i class="fas fa-users"></i> Anggota Angkatan
                 </button>
                 <button class="tab-btn" data-target="tabManage">
-                    <i class="fas fa-list-check"></i> Kelola Data (<span id="totalDataBadge">0</span>)
+                    <i class="fas fa-list-check"></i> Kelola Data
                 </button>
             </nav>
 
@@ -1981,12 +1988,11 @@
 
                 document.getElementById('statEventCount').textContent = events.length;
                 document.getElementById('statUltahCount').textContent = ultahs.length;
-                document.getElementById('totalDataBadge').textContent = allNewsData.length + allAnggotaData.length;
+                document.getElementById('statAnggotaCount').textContent = allAnggotaData.length;
 
                 const curMonthStr = String(currentCalMonth + 1).padStart(2, '0');
                 const monthAgendas = allNewsData.filter(item => {
                     if (!item.tanggal) return false;
-                    // Event tidak tetap dihitung hanya jika tahunnya juga cocok
                     if (item.tipe === 'event' && item.isTetap === false) {
                         return item.tanggal.startsWith(`${currentCalYear}-${curMonthStr}-`);
                     }
