@@ -742,7 +742,7 @@
             <!-- Search -->
             <div class="search-wrap">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="search" id="searchInput" placeholder="Cari nama / panggilan / no ID..." autocomplete="off" />
+                <input type="search" id="searchInput" placeholder="Cari nama, No.ID, panggilan, kordinator, atau ultah (bulan/tanggal)..." autocomplete="off" />
             </div>
 
             <!-- List Header -->
@@ -900,10 +900,17 @@
                 const q = (query || '').trim().toLowerCase();
                 const list = q
                     ? all.filter(a => {
+                        const tgl = pick(a, 'tanggalLahir', 'tanggal_lahir') || '';
+                        const bulanNama = tgl.length >= 10 
+                            ? ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][parseInt(tgl.slice(5, 7), 10) - 1] || ''
+                            : '';
                         const hay = [
                             pick(a, 'noInduk', 'no_induk'),
                             pick(a, 'namaLengkap', 'nama_lengkap'),
-                            pick(a, 'namaPanggilan', 'nama_panggilan')
+                            pick(a, 'namaPanggilan', 'nama_panggilan'),
+                            pick(a, 'kordinator', 'kordinator'),
+                            tgl,
+                            bulanNama
                         ].join(' ').toLowerCase();
                         return hay.includes(q);
                     })
@@ -957,9 +964,14 @@
                 const wa = pick(a, 'whatsapp', 'whatsapp');
                 const email = pick(a, 'email', 'email');
                 const alamat = pick(a, 'alamatRumah', 'alamat_rumah');
+                const kordinator = pick(a, 'kordinator', 'kordinator');
                 const tglLahir = pick(a, 'tanggalLahir', 'tanggal_lahir');
 
                 const items = [
+                    detailItem('fas fa-user-tie', 'Kordinator',
+                        kordinator
+                            ? escHtml(String(kordinator).trim())
+                            : '<span class="ang-belum">Belum diisi</span>'),
                     detailItem('fas fa-cake-candles', 'Tanggal Lahir',
                         tglLahir
                             ? formatTanggalLahir(String(tglLahir))

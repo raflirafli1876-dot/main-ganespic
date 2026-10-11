@@ -72,6 +72,8 @@ export default async function handler(req, res) {
     await sql`ALTER TABLE anggota ADD COLUMN IF NOT EXISTS email VARCHAR(255);`;
     // Kolom tanggal lahir (sumber data otomatis ulang tahun di kalender)
     await sql`ALTER TABLE anggota ADD COLUMN IF NOT EXISTS tanggal_lahir VARCHAR(20);`;
+    // Kolom kordinator (nama pembimbing/kordinator anggota)
+    await sql`ALTER TABLE anggota ADD COLUMN IF NOT EXISTS kordinator VARCHAR(255);`;
     await sql`CREATE INDEX IF NOT EXISTS idx_anggota_no_induk ON anggota (no_induk);`;
   }
 
@@ -168,7 +170,7 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       await initTable();
-      const rows = await sql`
+       const rows = await sql`
         SELECT
           id,
           no_induk AS "noInduk",
@@ -180,6 +182,7 @@ export default async function handler(req, res) {
           whatsapp,
           email,
           alamat_rumah AS "alamatRumah",
+          kordinator,
           tanggal_lahir AS "tanggalLahir",
           created_at AS dibuat
         FROM anggota
@@ -206,7 +209,7 @@ export default async function handler(req, res) {
       const id = 'anggota-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
       const tanggalLahir = normalizeTanggalLahir(body.tanggalLahir);
       await sql`
-        INSERT INTO anggota (id, no_induk, nama_lengkap, nama_panggilan, foto_url, ig_username, tiktok_username, whatsapp, email, alamat_rumah, tanggal_lahir)
+        INSERT INTO anggota (id, no_induk, nama_lengkap, nama_panggilan, foto_url, ig_username, tiktok_username, whatsapp, email, alamat_rumah, kordinator, tanggal_lahir)
         VALUES (
           ${id}, ${noInduk}, ${namaLengkap},
           ${body.namaPanggilan || ''},
@@ -216,6 +219,7 @@ export default async function handler(req, res) {
           ${body.whatsapp || ''},
           ${body.email || ''},
           ${body.alamatRumah || ''},
+          ${body.kordinator || ''},
           ${tanggalLahir || null}
         );
       `;
@@ -251,15 +255,16 @@ export default async function handler(req, res) {
       await sql`
         UPDATE anggota
         SET no_induk = ${noInduk},
-      nama_lengkap = ${namaLengkap},
-      nama_panggilan = ${body.namaPanggilan || ''},
-      foto_url = ${body.fotoUrl || ''},
-      ig_username = ${body.igUsername || ''},
-      tiktok_username = ${body.tiktokUsername || ''},
-      whatsapp = ${body.whatsapp || ''},
-      email = ${body.email || ''},
-      alamat_rumah = ${body.alamatRumah || ''},
-      tanggal_lahir = ${tanggalLahir || null}
+            nama_lengkap = ${namaLengkap},
+            nama_panggilan = ${body.namaPanggilan || ''},
+            foto_url = ${body.fotoUrl || ''},
+            ig_username = ${body.igUsername || ''},
+            tiktok_username = ${body.tiktokUsername || ''},
+            whatsapp = ${body.whatsapp || ''},
+            email = ${body.email || ''},
+            alamat_rumah = ${body.alamatRumah || ''},
+            kordinator = ${body.kordinator || ''},
+            tanggal_lahir = ${tanggalLahir || null}
         WHERE id = ${id};
       `;
       // Auto-sinkron: perbarui data ulang tahun di kalender mengikuti data terbaru anggota.

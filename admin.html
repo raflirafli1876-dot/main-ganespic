@@ -1732,6 +1732,13 @@
                             <label class="form-label">Alamat Rumah</label>
                             <textarea id="angAlamatRumah" placeholder="Alamat lengkap rumah anggota..."></textarea>
                         </div>
+                        <div class="form-group">
+                            <label class="form-label">Kordinator <span class="form-hint">Opsional</span></label>
+                            <div class="form-icon-group">
+                                <i class="fas fa-user-tie"></i>
+                                <input type="text" id="angKordinator" placeholder="Nama kordinator / pembimbing anggota" />
+                            </div>
+                        </div>
                         <button type="submit" class="btn-submit" id="btnSubmitAnggota">
                             <i class="fas fa-paper-plane"></i> Simpan Anggota ke Database
                         </button>
@@ -2676,6 +2683,7 @@
                     email: document.getElementById('angEmail').value.trim(),
                     whatsapp: document.getElementById('angWhatsapp').value.trim(),
                     alamatRumah: document.getElementById('angAlamatRumah').value.trim(),
+                    kordinator: document.getElementById('angKordinator').value.trim(),
                     tanggalLahir: document.getElementById('angTanggalLahir').value || ''
                 };
                 btn.disabled = true;
@@ -2716,6 +2724,7 @@
                 document.getElementById('angWhatsapp').value = item.whatsapp || '';
                 waInput.dispatchEvent(new Event('input'));
                 document.getElementById('angAlamatRumah').value = item.alamatRumah || '';
+                document.getElementById('angKordinator').value = item.kordinator || '';
                 const foto = item.fotoUrl || '';
                 document.getElementById('angFotoUrl').value = foto;
                 const box = document.getElementById('previewBoxAnggota');

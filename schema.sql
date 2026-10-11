@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS anggota (
     whatsapp VARCHAR(32),                     -- Nomor WhatsApp
     email VARCHAR(255),                       -- Email anggota
     alamat_rumah TEXT,                        -- Alamat rumah lengkap
+    kordinator VARCHAR(255),                  -- Nama Kordinator / Pembimbing
     tanggal_lahir VARCHAR(20),                -- Tanggal lahir YYYY-MM-DD. Sumber otomatis data ultah.
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -61,6 +62,7 @@ CREATE INDEX IF NOT EXISTS idx_agendas_anggota_id ON agendas (anggota_id);
 -- Migrasi database lama:
 --   ALTER TABLE anggota ADD COLUMN IF NOT EXISTS email VARCHAR(255);
 --   ALTER TABLE anggota ADD COLUMN IF NOT EXISTS tanggal_lahir VARCHAR(20);
+--   ALTER TABLE anggota ADD COLUMN IF NOT EXISTS kordinator VARCHAR(255);
 --   ALTER TABLE agendas ADD COLUMN IF NOT EXISTS anggota_id VARCHAR(64);
 -- (API juga menjalankan migrasi ini otomatis saat pertama kali diakses)
 
