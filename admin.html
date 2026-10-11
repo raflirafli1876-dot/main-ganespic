@@ -1970,7 +1970,6 @@
                     console.warn('API fetch note:', e);
                 }
 
-                updateStats();
                 renderCalendar();
                 renderMonthAgenda();
                 renderManageList();
@@ -2631,15 +2630,13 @@
                 try {
                     const res = await fetch(ANGGOTA_API);
                     const data = await res.json().catch(() => ({}));
-                    // Normalisasi: pastikan tiap anggota punya tipe 'anggota',
-                    // agar terpisah dari 'event'/'ultah' di tab Kelola Data
-                    // (badge, filter, tombol edit, dan hapus jadi benar).
                     allAnggotaData = (res.ok ? (data.anggota || []) : []).map(a => ({ ...a, tipe: 'anggota' }));
                 } catch (e) {
                     console.warn('Anggota fetch note:', e);
                     allAnggotaData = [];
                 }
                 renderAnggotaList();
+                updateStats();
             }
 
             const anggotaSearchInput = document.getElementById('anggotaSearchInput');
