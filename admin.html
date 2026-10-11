@@ -2077,8 +2077,6 @@
                     cell.innerHTML = `<span class="cal-cell-num">${n}</span>`;
                     grid.appendChild(cell);
                 }
-
-                updateStats();
             }
 
             function selectDate(fullDateStr) {
@@ -2183,12 +2181,14 @@
                 if (currentCalMonth < 0) { currentCalMonth = 11; currentCalYear--; }
                 renderCalendar();
                 renderMonthAgenda();
+                updateStats();
             });
             document.getElementById('btnNextMonth').addEventListener('click', () => {
                 currentCalMonth++;
                 if (currentCalMonth > 11) { currentCalMonth = 0; currentCalYear++; }
                 renderCalendar();
                 renderMonthAgenda();
+                updateStats();
             });
             document.getElementById('btnToday').addEventListener('click', () => {
                 const now = new Date();
